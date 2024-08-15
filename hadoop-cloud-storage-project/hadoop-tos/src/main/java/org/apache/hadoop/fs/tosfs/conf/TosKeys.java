@@ -29,4 +29,49 @@ public class TosKeys {
    * The accessKey key to access the tos object storage.
    */
   public static final String FS_TOS_ACCESS_KEY_ID = "fs.tos.access-key-id";
+
+  /**
+   * The secret access key to access the object storage.
+   */
+  public static final String FS_TOS_SECRET_ACCESS_KEY = "fs.tos.secret-access-key";
+
+  /**
+   * The session token to access the object storage.
+   */
+  public static final String FS_TOS_SESSION_TOKEN = "fs.tos.session-token";
+
+  /**
+   * The access key to access the object storage for the configured bucket, where %s is the bucket
+   * name.
+   */
+  public static final String FS_TOS_BUCKET_ACCESS_KEY_ID_TEMPLATE = "fs.tos.bucket.%s.access-key-id";
+
+  /**
+   * The secret access key to access the object storage for the configured bucket, where %s is the
+   * bucket name.
+   */
+  public static final String FS_TOS_BUCKET_SECRET_ACCESS_KEY_TEMPLATE = "fs.tos.bucket.%s.secret-access-key";
+
+  /**
+   * The session token to access the object storage for the configured bucket, where %s is the
+   * bucket name.
+   */
+  public static final String FS_TOS_BUCKET_SESSION_TOKEN_TEMPLATE = "fs.tos.bucket.%s.session-token";
+
+  /**
+   * User customized credential provider classes, separate provider class name with comma if there
+   * are multiple providers.
+   */
+  public static final String FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES =
+      "fs.tos.credential.provider.custom.classes";
+
+  public static final String FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES_DEFAULT =
+      "io.proton.common.object.tos.auth.EnvironmentCredentialsProvider,io.proton.common.object.tos.auth.SimpleCredentialsProvider";
+
+  /**
+   * Construct key from template and corresponding arguments.
+   */
+  public static final String get(String template, Object... arguments) {
+    return String.format(template, arguments);
+  }
 }

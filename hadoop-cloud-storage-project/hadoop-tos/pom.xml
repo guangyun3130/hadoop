@@ -34,6 +34,7 @@
 
   <properties>
     <file.encoding>UTF-8</file.encoding>
+    <ve-tos-java-sdk.version>2.8.2</ve-tos-java-sdk.version>
   </properties>
 
   <dependencies>
@@ -47,6 +48,12 @@
       <artifactId>hadoop-common</artifactId>
       <scope>test</scope>
       <type>test-jar</type>
+    </dependency>
+
+    <dependency>
+      <groupId>com.volcengine</groupId>
+      <artifactId>ve-tos-java-sdk</artifactId>
+      <version>${ve-tos-java-sdk.version}</version>
     </dependency>
 
     <dependency>
