@@ -16,20 +16,28 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.common;
+package org.apache.hadoop.fs.tosfs.object.response;
 
-import java.util.Iterator;
-import java.util.function.Supplier;
+import org.apache.hadoop.fs.tosfs.object.ObjectInfo;
 
-public class LazyReload<T> implements Iterable<T> {
-  private final Supplier<Reload<T>> reload;
+import java.util.List;
 
-  public LazyReload(Supplier<Reload<T>> reload) {
-    this.reload = reload;
+public class ListObjectsResponse {
+  private final List<ObjectInfo> objects;
+  private final List<String> commonPrefixes;
+
+  public ListObjectsResponse(
+      List<ObjectInfo> objects,
+      List<String> commonPrefixes) {
+    this.objects = objects;
+    this.commonPrefixes = commonPrefixes;
   }
 
-  @Override
-  public Iterator<T> iterator() {
-    return new LazyReloadIter<>(reload.get());
+  public List<ObjectInfo> objects() {
+    return objects;
+  }
+
+  public List<String> commonPrefixes() {
+    return commonPrefixes;
   }
 }

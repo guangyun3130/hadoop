@@ -16,23 +16,29 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss;
+package org.apache.hadoop.fs.tosfs.util;
 
-public class ChecksumInfo {
-  private final String algorithm;
-  private final ChecksumType checksumType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  public ChecksumInfo(String algorithm, ChecksumType checksumType) {
-    this.algorithm = algorithm;
-    this.checksumType = checksumType;
+public class CommonUtils {
+  private static final Logger LOG = LoggerFactory.getLogger(CommonUtils.class);
+
+  public static void runQuietly(RunWithException run) {
+    runQuietly(run, true);
   }
 
-  public String algorithm() {
-    return algorithm;
+  public static void runQuietly(RunWithException run, boolean logError) {
+    try {
+      run.run();
+    } catch (Exception e) {
+      if (logError) {
+        LOG.info("Encounter error but can be ignored: ", e);
+      }
+    }
   }
 
-  public ChecksumType checksumType() {
-    return checksumType;
+  public interface RunWithException {
+    void run() throws Exception;
   }
 }
-

@@ -16,29 +16,46 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.common;
+package org.apache.hadoop.fs.tosfs.object;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public enum ChecksumType {
+  NULL((byte) 0, 0),
+  CRC32((byte) 1, 4),
 
-public class CommonUtils {
-  private static final Logger LOG = LoggerFactory.getLogger(CommonUtils.class);
+  CRC32C((byte) 2, 4),
+  CRC64ECMA((byte) 3, 8),
+  MD5((byte) 4, 128);
 
-  public static void runQuietly(RunWithException run) {
-    runQuietly(run, true);
+  private final byte value;
+  private final int bytes;
+
+  ChecksumType(byte value, int bytes) {
+    this.value = value;
+    this.bytes = bytes;
   }
 
-  public static void runQuietly(RunWithException run, boolean logError) {
-    try {
-      run.run();
-    } catch (Exception e) {
-      if (logError) {
-        LOG.info("Encounter error but can be ignored: ", e);
+  public byte value() {
+    return value;
+  }
+
+  public int bytes() {
+    return bytes;
+  }
+
+  public static ChecksumType valueOf(byte value) {
+    for (ChecksumType t : values()) {
+      if (t.value == value) {
+        return t;
       }
     }
+    throw new IllegalStateException("Unknown checksum type with value: " + value);
   }
 
-  public interface RunWithException {
-    void run() throws Exception;
+  public static int maxBytes() {
+    int maxBytes = 0;
+    for (ChecksumType t : values()) {
+      maxBytes = Math.max(maxBytes, t.bytes());
+    }
+    return maxBytes;
   }
 }

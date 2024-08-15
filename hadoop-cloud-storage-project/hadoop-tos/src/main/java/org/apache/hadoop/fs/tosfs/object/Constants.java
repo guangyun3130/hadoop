@@ -16,14 +16,15 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.common;
+package org.apache.hadoop.fs.tosfs.object;
 
-import java.util.List;
+public class Constants {
+  private Constants() {
+  }
 
-public interface Reload<T> {
-  /**
-   * @param buf contains the filled data
-   * @return true if no need to fill again since the source is exhausted, otherwise false.
-   */
-  boolean fill(List<T> buf);
+  // Magic checksum means doesn't support checksum, if the file type is dir or the filesystem/object
+  // storage doesn't implement checksum algorithm will use magic checksum as the file checksum.
+  public static final byte[] MAGIC_CHECKSUM = new byte[] { 'M' };
+
+  public static final String SLASH = "/";
 }

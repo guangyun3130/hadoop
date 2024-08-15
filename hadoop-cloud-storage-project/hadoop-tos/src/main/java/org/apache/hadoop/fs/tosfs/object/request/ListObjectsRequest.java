@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss.request;
+package org.apache.hadoop.fs.tosfs.object.request;
 
 public class ListObjectsRequest {
   private final String prefix;

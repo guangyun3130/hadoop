@@ -16,46 +16,23 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss;
+package org.apache.hadoop.fs.tosfs.object;
 
-public enum ChecksumType {
-  NULL((byte) 0, 0),
-  CRC32((byte) 1, 4),
+public class ChecksumInfo {
+  private final String algorithm;
+  private final ChecksumType checksumType;
 
-  CRC32C((byte) 2, 4),
-  CRC64ECMA((byte) 3, 8),
-  MD5((byte) 4, 128);
-
-  private final byte value;
-  private final int bytes;
-
-  ChecksumType(byte value, int bytes) {
-    this.value = value;
-    this.bytes = bytes;
+  public ChecksumInfo(String algorithm, ChecksumType checksumType) {
+    this.algorithm = algorithm;
+    this.checksumType = checksumType;
   }
 
-  public byte value() {
-    return value;
+  public String algorithm() {
+    return algorithm;
   }
 
-  public int bytes() {
-    return bytes;
-  }
-
-  public static ChecksumType valueOf(byte value) {
-    for (ChecksumType t : values()) {
-      if (t.value == value) {
-        return t;
-      }
-    }
-    throw new IllegalStateException("Unknown checksum type with value: " + value);
-  }
-
-  public static int maxBytes() {
-    int maxBytes = 0;
-    for (ChecksumType t : values()) {
-      maxBytes = Math.max(maxBytes, t.bytes());
-    }
-    return maxBytes;
+  public ChecksumType checksumType() {
+    return checksumType;
   }
 }
+

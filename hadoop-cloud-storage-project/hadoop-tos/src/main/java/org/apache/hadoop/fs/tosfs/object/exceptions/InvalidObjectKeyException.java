@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.common;
+package org.apache.hadoop.fs.tosfs.object.exceptions;
 
-public class NotAppendableException extends RuntimeException {
-  public NotAppendableException(String msg) {
-    super(msg);
+/**
+ * Regarding accessing an object in directory bucket, if the object is locating under an existing file in directory
+ * bucket, the {@link InvalidObjectKeyException} will be thrown. E.g. there is a file object 'a/b/file' exists in
+ * directory bucket, the {@link InvalidObjectKeyException} will be thrown if head object 'a/b/file/c' no matter
+ * whether 'c' exists or not.
+ */
+public class InvalidObjectKeyException extends RuntimeException {
+  public InvalidObjectKeyException(Throwable cause) {
+    super(cause);
   }
 }

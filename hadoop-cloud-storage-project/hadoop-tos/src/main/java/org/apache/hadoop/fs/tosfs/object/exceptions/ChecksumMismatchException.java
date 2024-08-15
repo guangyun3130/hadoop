@@ -1,4 +1,4 @@
-package org.apache.hadoop.fs.tosfs.common;
+package org.apache.hadoop.fs.tosfs.object.exceptions;
 
 import org.apache.hadoop.util.StringUtils;
 

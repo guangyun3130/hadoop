@@ -16,28 +16,10 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss.response;
+package org.apache.hadoop.fs.tosfs.object.exceptions;
 
-import org.apache.hadoop.fs.tosfs.oss.ObjectInfo;
-
-import java.util.List;
-
-public class ListObjectsResponse {
-  private final List<ObjectInfo> objects;
-  private final List<String> commonPrefixes;
-
-  public ListObjectsResponse(
-      List<ObjectInfo> objects,
-      List<String> commonPrefixes) {
-    this.objects = objects;
-    this.commonPrefixes = commonPrefixes;
-  }
-
-  public List<ObjectInfo> objects() {
-    return objects;
-  }
-
-  public List<String> commonPrefixes() {
-    return commonPrefixes;
+public class NotAppendableException extends RuntimeException {
+  public NotAppendableException(String msg) {
+    super(msg);
   }
 }

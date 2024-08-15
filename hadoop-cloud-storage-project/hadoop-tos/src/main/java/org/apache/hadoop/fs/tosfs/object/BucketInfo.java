@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss;
+package org.apache.hadoop.fs.tosfs.object;
 
 import org.apache.hadoop.thirdparty.com.google.common.base.MoreObjects;
 

@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss;
+package org.apache.hadoop.fs.tosfs.object;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.tosfs.common.InvalidObjectKeyException;
-import org.apache.hadoop.fs.tosfs.common.LazyReload;
-import org.apache.hadoop.fs.tosfs.common.NotAppendableException;
-import org.apache.hadoop.fs.tosfs.oss.request.ListObjectsRequest;
-import org.apache.hadoop.fs.tosfs.oss.response.ListObjectsResponse;
+import org.apache.hadoop.fs.tosfs.object.exceptions.InvalidObjectKeyException;
+import org.apache.hadoop.fs.tosfs.util.LazyReload;
+import org.apache.hadoop.fs.tosfs.object.exceptions.NotAppendableException;
+import org.apache.hadoop.fs.tosfs.object.request.ListObjectsRequest;
+import org.apache.hadoop.fs.tosfs.object.response.ListObjectsResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;

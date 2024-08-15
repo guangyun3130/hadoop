@@ -16,38 +16,20 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.oss;
-
-import org.apache.hadoop.fs.tosfs.common.ChecksumMismatchException;
-import org.apache.hadoop.fs.tosfs.common.CommonUtils;
+package org.apache.hadoop.fs.tosfs.object;
 
 import java.io.InputStream;
-import java.util.Arrays;
 
-public class ObjectContent {
-  private final byte[] checksum;
-  private final InputStream stream;
-
-  public ObjectContent(byte[] checksum, InputStream stream) {
-    this.checksum = checksum;
-    this.stream = stream;
-  }
-
-  public InputStream stream() {
-    return stream;
-  }
-
-  public InputStream verifiedStream(byte[] expectedChecksum) throws ChecksumMismatchException {
-    if (!Arrays.equals(expectedChecksum, checksum)) {
-      CommonUtils.runQuietly(stream::close);
-      throw new ChecksumMismatchException(expectedChecksum, checksum);
-    }
-
-    return stream;
-  }
-
-  public byte[] checksum() {
-    return checksum;
-  }
+/**
+ * Provides the content stream of a request.
+ * <p>
+ * Each call to the {@link #newStream()} method must result in a stream
+ * whose position is at the beginning of the content.
+ * Implementations may return a new stream or the same stream for each call.
+ * If returning a new stream, the implementation must ensure to {@code close()}
+ * and free any resources acquired by the previous stream.
+ */
+public interface InputStreamProvider {
+  InputStream newStream();
 }
 
