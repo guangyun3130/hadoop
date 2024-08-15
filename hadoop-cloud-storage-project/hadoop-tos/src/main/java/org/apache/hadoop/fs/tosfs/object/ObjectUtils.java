@@ -21,8 +21,8 @@ package org.apache.hadoop.fs.tosfs.object;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.tosfs.util.Range;
 import org.apache.hadoop.thirdparty.com.google.common.base.Joiner;
-import org.apache.hadoop.thirdparty.com.google.common.base.Preconditions;
 import org.apache.hadoop.util.Lists;
+import org.apache.hadoop.util.Preconditions;
 
 import java.util.List;
 
