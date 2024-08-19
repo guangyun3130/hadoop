@@ -21,9 +21,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.tosfs.conf.TosKeys;
 
 import static org.apache.hadoop.fs.tosfs.conf.TosKeys.FS_TOS_ACCESS_KEY_ID;
-import static org.apache.hadoop.fs.tosfs.conf.TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID_TEMPLATE;
-import static org.apache.hadoop.fs.tosfs.conf.TosKeys.FS_TOS_BUCKET_SECRET_ACCESS_KEY_TEMPLATE;
-import static org.apache.hadoop.fs.tosfs.conf.TosKeys.FS_TOS_BUCKET_SESSION_TOKEN_TEMPLATE;
 import static org.apache.hadoop.fs.tosfs.conf.TosKeys.FS_TOS_SECRET_ACCESS_KEY;
 import static org.apache.hadoop.fs.tosfs.conf.TosKeys.FS_TOS_SESSION_TOKEN;
 
@@ -33,14 +30,12 @@ public class SimpleCredentialsProvider extends AbstractCredentialsProvider {
 
   @Override
   protected ExpireableCredential createCredential() {
-    String accessKey = lookup(conf(), TosKeys.get(FS_TOS_BUCKET_ACCESS_KEY_ID_TEMPLATE, bucket()),
-        FS_TOS_ACCESS_KEY_ID);
-    String secretKey =
-        lookup(conf(), TosKeys.get(FS_TOS_BUCKET_SECRET_ACCESS_KEY_TEMPLATE, bucket()),
-            FS_TOS_SECRET_ACCESS_KEY);
+    String accessKey =
+        lookup(conf(), TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key(bucket()), FS_TOS_ACCESS_KEY_ID);
+    String secretKey = lookup(conf(), TosKeys.FS_TOS_BUCKET_SECRET_ACCESS_KEY.key(bucket()),
+        FS_TOS_SECRET_ACCESS_KEY);
     String sessionToken =
-        lookup(conf(), TosKeys.get(FS_TOS_BUCKET_SESSION_TOKEN_TEMPLATE, bucket()),
-            FS_TOS_SESSION_TOKEN);
+        lookup(conf(), TosKeys.FS_TOS_BUCKET_SESSION_TOKEN.key(bucket()), FS_TOS_SESSION_TOKEN);
     if (StringUtils.isEmpty(sessionToken)) {
       // This is a static ak sk configuration.
       return new ExpireableCredential(accessKey, secretKey);

@@ -62,7 +62,7 @@ public class DefaultCredentialsProviderChain extends AbstractCredentialsProvider
     String[] classes = conf().getStringCollection(FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES)
         .toArray(new String[0]);
     if (classes.length == 0) {
-      classes = FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES_DEFAULT.split(",");
+      classes = FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES_DEFAULT;
     }
     return classes;
   }

@@ -19,6 +19,7 @@
 package org.apache.hadoop.fs.tosfs.conf;
 
 public class FileStoreKeys {
+
   /**
    * File store object storage endpoint to connect to.
    */

@@ -19,6 +19,7 @@
 package org.apache.hadoop.fs.tosfs.conf;
 
 public class TosKeys {
+
   /**
    * Tos object storage endpoint to connect to, which should include both region and object domain
    * name.
@@ -44,19 +45,22 @@ public class TosKeys {
    * The access key to access the object storage for the configured bucket, where %s is the bucket
    * name.
    */
-  public static final String FS_TOS_BUCKET_ACCESS_KEY_ID_TEMPLATE = "fs.tos.bucket.%s.access-key-id";
+  public static final ArgumentKey FS_TOS_BUCKET_ACCESS_KEY_ID =
+      new ArgumentKey("fs.tos.bucket.%s.access-key-id");
 
   /**
    * The secret access key to access the object storage for the configured bucket, where %s is the
    * bucket name.
    */
-  public static final String FS_TOS_BUCKET_SECRET_ACCESS_KEY_TEMPLATE = "fs.tos.bucket.%s.secret-access-key";
+  public static final ArgumentKey FS_TOS_BUCKET_SECRET_ACCESS_KEY =
+      new ArgumentKey("fs.tos.bucket.%s.secret-access-key");
 
   /**
    * The session token to access the object storage for the configured bucket, where %s is the
    * bucket name.
    */
-  public static final String FS_TOS_BUCKET_SESSION_TOKEN_TEMPLATE = "fs.tos.bucket.%s.session-token";
+  public static final ArgumentKey FS_TOS_BUCKET_SESSION_TOKEN =
+      new ArgumentKey("fs.tos.bucket.%s.session-token");
 
   /**
    * User customized credential provider classes, separate provider class name with comma if there
@@ -65,13 +69,7 @@ public class TosKeys {
   public static final String FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES =
       "fs.tos.credential.provider.custom.classes";
 
-  public static final String FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES_DEFAULT =
-      "io.proton.common.object.tos.auth.EnvironmentCredentialsProvider,io.proton.common.object.tos.auth.SimpleCredentialsProvider";
-
-  /**
-   * Construct key from template and corresponding arguments.
-   */
-  public static final String get(String template, Object... arguments) {
-    return String.format(template, arguments);
-  }
+  public static final String[] FS_TOS_CUSTOM_CREDENTIAL_PROVIDER_CLASSES_DEFAULT =
+      new String[] { "org.apache.hadoop.fs.tosfs.object.tos.auth.EnvironmentCredentialsProvider",
+          "org.apache.hadoop.fs.tosfs.object.tos.auth.SimpleCredentialsProvider" };
 }

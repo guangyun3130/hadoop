@@ -18,15 +18,15 @@
 
 package org.apache.hadoop.fs.tosfs.conf;
 
-public class ConfKeys {
+public class ArgumentKey {
 
-  public static final ArgumentKey FS_TOS_ENDPOINT = new ArgumentKey("fs.%s.endpoint");
+  private final String template;
 
-  /**
-   * The object storage implementation for the defined scheme. For example, we can delegate the
-   * scheme 'abc' to TOS (or other object storage),and access the TOS object storage as
-   * 'abc://bucket/path/to/key'
-   */
-  public static final ArgumentKey FS_OBJECT_STORAGE_IMPL =
-      new ArgumentKey("fs.objectstorage.%s.impl");
+  public ArgumentKey(String template) {
+    this.template = template;
+  }
+
+  public String key(Object... arguments) {
+    return String.format(template, arguments);
+  }
 }
