@@ -18,12 +18,12 @@
 
 package org.apache.hadoop.fs.tosfs.object;
 
-import com.google.common.collect.Iterables;
 import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.tosfs.object.request.ListObjectsRequest;
 import org.apache.hadoop.fs.tosfs.object.response.ListObjectsResponse;
 import org.apache.hadoop.thirdparty.com.google.common.base.Strings;
+import org.apache.hadoop.thirdparty.com.google.common.collect.Iterables;
 import org.apache.hadoop.util.Preconditions;
 
 import java.io.IOException;
