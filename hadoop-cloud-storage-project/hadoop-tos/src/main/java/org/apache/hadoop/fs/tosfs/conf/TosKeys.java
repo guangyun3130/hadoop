@@ -21,6 +21,9 @@ package org.apache.hadoop.fs.tosfs.conf;
 import org.apache.hadoop.fs.tosfs.object.ChecksumType;
 import org.apache.hadoop.fs.tosfs.object.tos.TOSErrorCodes;
 
+import java.util.Collections;
+import java.util.List;
+
 public class TosKeys {
 
   /**
@@ -64,6 +67,15 @@ public class TosKeys {
    */
   public static final ArgumentKey FS_TOS_BUCKET_SESSION_TOKEN =
       new ArgumentKey("fs.tos.bucket.%s.session-token");
+
+  // Credential
+  /**
+   * Default credentials provider chain that looks for credentials in this order:
+   * SimpleCredentialsProvider,EnvironmentCredentialsProvider,IAMInstanceCredentialsProvider.
+   */
+  public static final String FS_TOS_CREDENTIALS_PROVIDER = "fs.tos.credentials.provider";
+  public static final String FS_TOS_CREDENTIALS_PROVIDER_DEFAULT =
+      "org.apache.hadoop.fs.tosfs.object.tos.auth.DefaultCredentialsProviderChain";
 
   /**
    * User customized credential provider classes, separate provider class name with comma if there

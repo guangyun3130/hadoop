@@ -18,15 +18,11 @@
 
 package org.apache.hadoop.fs.tosfs.object;
 
-public class Constants {
-  private Constants() {
+public class ObjectConstants {
+  public static final int MIN_PART_SIZE = 5 * 1024 * 1024;
+  public static final int MAX_PART_COUNT = 10000;
+
+  private ObjectConstants() {
   }
-
-  public static final String PROTON = "Proton";
-
-  // Magic checksum means doesn't support checksum, if the file type is dir or the filesystem/object
-  // storage doesn't implement checksum algorithm will use magic checksum as the file checksum.
-  public static final byte[] MAGIC_CHECKSUM = new byte[] { 'M' };
-
-  public static final String SLASH = "/";
 }
+
