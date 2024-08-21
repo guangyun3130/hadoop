@@ -20,7 +20,17 @@ package org.apache.hadoop.fs.tosfs.conf;
 
 public class ConfKeys {
 
+  /**
+   * Object storage endpoint to connect to, which should include both region and object domain name.
+   * e.g. 'fs.tos.endpoint'='tos-cn-beijing.volces.com'.
+   */
   public static final ArgumentKey FS_TOS_ENDPOINT = new ArgumentKey("fs.%s.endpoint");
+
+  /**
+   * The region of the object storage, e.g. fs.tos.region. Parsing template "fs.%s.endpoint" to
+   * know the region.
+   */
+  public static final ArgumentKey FS_TOS_REGION = new ArgumentKey("fs.%s.region");
 
   /**
    * The object storage implementation for the defined scheme. For example, we can delegate the
@@ -29,4 +39,11 @@ public class ConfKeys {
    */
   public static final ArgumentKey FS_OBJECT_STORAGE_IMPL =
       new ArgumentKey("fs.objectstorage.%s.impl");
+
+  /**
+   * The batch size of deleting multiple objects per request for the given object storage.
+   * e.g. fs.tos.delete.batch-size
+   */
+  public static final ArgumentKey FS_BATCH_DELETE_SIZE = new ArgumentKey("fs.%s.delete.batch-size");
+  public static final int FS_BATCH_DELETE_SIZE_DEFAULT = 250;
 }
