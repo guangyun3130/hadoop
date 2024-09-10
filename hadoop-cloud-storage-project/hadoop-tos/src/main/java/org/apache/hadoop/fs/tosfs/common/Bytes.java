@@ -16,7 +16,10 @@
 
 package org.apache.hadoop.fs.tosfs.common;
 
-// TODO: Remove this class?
+import org.apache.hadoop.util.Preconditions;
+
+import java.nio.ByteBuffer;
+
 public class Bytes {
   private Bytes() {
   }
@@ -26,11 +29,11 @@ public class Bytes {
   // Encode basic Java types into big-endian binaries.
 
   public static byte[] toBytes(boolean b) {
-    return new byte[]{b ? (byte) -1 : (byte) 0};
+    return new byte[] { b ? (byte) -1 : (byte) 0 };
   }
 
   public static byte[] toBytes(byte b) {
-    return new byte[]{b};
+    return new byte[] { b };
   }
 
   public static byte[] toBytes(short val) {
@@ -58,5 +61,109 @@ public class Bytes {
       val >>>= 8;
     }
     return b;
+  }
+
+  // Decode big-endian binaries into basic Java types.
+
+  public static boolean toBoolean(byte[] b) {
+    return toBoolean(b, 0, 1);
+  }
+
+  public static boolean toBoolean(byte[] b, int off) {
+    return toBoolean(b, off, 1);
+  }
+
+  public static boolean toBoolean(byte[] b, int off, int len) {
+    Preconditions.checkArgument(len == 1, "Invalid len: %s", len);
+    return b[off] != (byte) 0;
+  }
+
+  public static byte toByte(byte[] b) {
+    return b[0];
+  }
+
+  public static byte toByte(byte[] b, int off) {
+    return b[off];
+  }
+
+  public static short toShort(byte[] b) {
+    return toShort(b, 0, 2);
+  }
+
+  public static short toShort(byte[] b, int off) {
+    return toShort(b, off, 2);
+  }
+
+  public static short toShort(byte[] b, int off, int len) {
+    Preconditions.checkArgument(len == 2, "Invalid len: %s", len);
+    Preconditions.checkArgument(off >= 0 && off + len <= b.length,
+        "Invalid off: %s, len: %s, array size: %s", off, len, b.length);
+    short n = 0;
+    n = (short) ((n ^ b[off]) & 0xFF);
+    n = (short) (n << 8);
+    n ^= (short) (b[off + 1] & 0xFF);
+    return n;
+  }
+
+  public static int toInt(byte[] b) {
+    return toInt(b, 0, 4);
+  }
+
+  public static int toInt(byte[] b, int off) {
+    return toInt(b, off, 4);
+  }
+
+  public static int toInt(byte[] b, int off, int len) {
+    Preconditions.checkArgument(len == 4, "Invalid len: %s", len);
+    Preconditions.checkArgument(off >= 0 && off + len <= b.length,
+        "Invalid off: %s, len: %s, array size: %s", off, len, b.length);
+    int n = 0;
+    for (int i = off; i < (off + len); i++) {
+      n <<= 8;
+      n ^= b[i] & 0xFF;
+    }
+    return n;
+  }
+
+  public static int toInt(ByteBuffer b) {
+    Preconditions.checkArgument(4 <= b.remaining(),
+        "Invalid ByteBuffer which remaining must be >= 4, but is: %s", b.remaining());
+    int n = 0;
+    int off = b.position();
+    for (int i = off; i < (off + 4); i++) {
+      n <<= 8;
+      n ^= b.get(i) & 0xFF;
+    }
+    return n;
+  }
+
+  public static long toLong(byte[] b) {
+    return toLong(b, 0, 8);
+  }
+
+  public static long toLong(byte[] b, int off) {
+    return toLong(b, off, 8);
+  }
+
+  public static long toLong(byte[] b, int off, int len) {
+    Preconditions.checkArgument(len == 8, "Invalid len: %s", len);
+    Preconditions.checkArgument(off >= 0 && off + len <= b.length,
+        "Invalid off: %s, len: %s, array size: %s", off, len, b.length);
+    long l = 0;
+    for (int i = off; i < off + len; i++) {
+      l <<= 8;
+      l ^= b[i] & 0xFF;
+    }
+    return l;
+  }
+
+  public static byte[] toBytes(byte[] b, int off, int len) {
+    Preconditions.checkArgument(off >= 0, "off %s must be >=0", off);
+    Preconditions.checkArgument(len >= 0, "len %s must be >= 0", len);
+    Preconditions.checkArgument(off + len <= b.length, "off (%s) + len (%s) must be <= %s", off,
+        len, b.length);
+    byte[] data = new byte[len];
+    System.arraycopy(b, off, data, 0, len);
+    return data;
   }
 }
