@@ -18,5 +18,33 @@
 
 package org.apache.hadoop.fs.tosfs;
 
-public class TosFileSystem {
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.tosfs.object.Constants;
+
+public class RawFileStatus extends FileStatus {
+  private final byte[] checksum;
+
+  /**
+   * File status of directory
+   *
+   * @param path  directory path
+   * @param owner directory owner
+   */
+  public RawFileStatus(Path path, String owner) {
+    this(0, true, 1, System.currentTimeMillis(), path, owner, Constants.MAGIC_CHECKSUM);
+  }
+
+  public RawFileStatus(
+      long length, boolean isdir, long blocksize,
+      long modification_time, Path path, String owner, byte[] checksum) {
+    super(length, isdir, 1, blocksize, modification_time, path);
+    setOwner(owner);
+    setGroup(owner);
+    this.checksum = checksum;
+  }
+
+  public byte[] checksum() {
+    return checksum;
+  }
 }

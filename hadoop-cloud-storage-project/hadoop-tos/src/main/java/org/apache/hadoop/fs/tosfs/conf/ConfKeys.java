@@ -46,4 +46,42 @@ public class ConfKeys {
    */
   public static final ArgumentKey FS_BATCH_DELETE_SIZE = new ArgumentKey("fs.%s.delete.batch-size");
   public static final int FS_BATCH_DELETE_SIZE_DEFAULT = 250;
+
+  /**
+   * The multipart upload part size of the given object storage, e.g. fs.tos.multipart.size.
+   */
+  public static final String MULTIPART_SIZE = "fs.tos.multipart.size";
+  public static final long MULTIPART_SIZE_DEFAULT = 8L << 20;
+
+  /**
+   * The threshold (larger than this value) to enable multipart upload during copying objects
+   * in the given object storage. If the copied data size is less than threshold, will copy data via
+   * executing copyObject instead of uploadPartCopy. E.g. fs.tos.multipart.copy-threshold
+   */
+  public static final String MULTIPART_COPY_THRESHOLD = "fs.tos.multipart.copy-threshold";
+  public static final long MULTIPART_COPY_THRESHOLD_DEFAULT = 5L << 20;
+
+  /**
+   * The batch size of deleting multiple objects per request for the given object storage.
+   * e.g. fs.tos.delete.batch-size
+   */
+  public static final String BATCH_DELETE_SIZE = "fs.tos.delete.batch-size";
+  public static final int BATCH_DELETE_SIZE_DEFAULT = 250;
+
+  /**
+   * True to create the missed parent dir asynchronously during deleting or renaming a file or dir.
+   */
+  public static final String ASYNC_CREATE_MISSED_PARENT = "fs.tos.missed.parent.dir.async-create";
+  public static final boolean ASYNC_CREATE_MISSED_PARENT_DEFAULT = true;
+
+  /**
+   * Whether using rename semantic of object storage during rename files, otherwise using
+   * copy + delete.
+   * Please ensure that the object storage support and enable rename semantic and before enable it,
+   * and also ensure grant rename permission to the requester.
+   * If you are using TOS, you have to send putBucketRename request before sending rename request,
+   * otherwise MethodNotAllowed exception will be thrown.
+   */
+  public static final String OBJECT_RENAME_ENABLED = "fs.tos.rename.enabled";
+  public static final boolean OBJECT_RENAME_ENABLED_DEFAULT = false;
 }
