@@ -18,6 +18,10 @@
 
 package org.apache.hadoop.fs.tosfs.conf;
 
+import org.apache.hadoop.thirdparty.com.google.common.base.Preconditions;
+
+import java.util.List;
+
 public class ConfKeys {
 
   /**
@@ -62,6 +66,30 @@ public class ConfKeys {
   public static final long MULTIPART_COPY_THRESHOLD_DEFAULT = 5L << 20;
 
   /**
+   * The threshold which control whether enable multipart upload during writing data to the given
+   * object storage, if the write data size is less than threshold, will write data via simple put
+   * instead of multipart upload. E.g. fs.tos.multipart.threshold.
+   */
+  public static final String MULTIPART_THRESHOLD = "fs.tos.multipart.threshold";
+  public static final long MULTIPART_THRESHOLD_DEFAULT = 10 << 20;
+
+  /**
+   * The max byte size which will buffer the staging data in-memory before flushing to the staging
+   * file. It will decrease the random write in local staging disk dramatically if writing plenty of
+   * small files.
+   */
+  public static final String MULTIPART_STAGING_BUFFER_SIZE = "fs.tos.multipart.staging-buffer-size";
+  public static final int MULTIPART_STAGING_BUFFER_SIZE_DEFAULT = 4 << 10;
+
+  /**
+   * The multipart upload part staging dir(s) of the given object storage.
+   * e.g. fs.tos.multipart.staging-dir.
+   * Separate the staging dirs with comma if there are many staging dir paths.
+   */
+  public static final String MULTIPART_STAGING_DIR = "fs.tos.multipart.staging-dir";
+  public static final String MULTIPART_STAGING_DIR_DEFAULT = defaultDir("multipart-staging-dir");
+
+  /**
    * The batch size of deleting multiple objects per request for the given object storage.
    * e.g. fs.tos.delete.batch-size
    */
@@ -90,4 +118,15 @@ public class ConfKeys {
    */
   public static final String OBJECT_STREAM_RANGE_SIZE = "proton.objectstorage.stream.range-size";
   public static final long OBJECT_STREAM_RANGE_SIZE_DEFAULT = Long.MAX_VALUE;
+
+  public static String defaultDir(String basename) {
+    String tmpdir = System.getProperty("java.io.tmpdir");
+    Preconditions.checkNotNull(tmpdir, "System property 'java.io.tmpdir' cannot be null");
+
+    if (tmpdir.endsWith("/")) {
+      return String.format("%s%s", tmpdir, basename);
+    } else {
+      return String.format("%s/%s", tmpdir, basename);
+    }
+  }
 }
