@@ -84,4 +84,10 @@ public class ConfKeys {
    */
   public static final String OBJECT_RENAME_ENABLED = "fs.tos.rename.enabled";
   public static final boolean OBJECT_RENAME_ENABLED_DEFAULT = false;
+
+  /**
+   * The range size when open object storage input stream. Value must be positive.
+   */
+  public static final String OBJECT_STREAM_RANGE_SIZE = "proton.objectstorage.stream.range-size";
+  public static final long OBJECT_STREAM_RANGE_SIZE_DEFAULT = Long.MAX_VALUE;
 }
