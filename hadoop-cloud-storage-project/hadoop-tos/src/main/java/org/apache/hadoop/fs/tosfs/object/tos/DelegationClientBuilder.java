@@ -44,8 +44,8 @@ import static org.apache.hadoop.fs.tosfs.object.tos.TOS.TOS_SCHEME;
 public class DelegationClientBuilder {
 
   public static final int DISABLE_TOS_RETRY_VALUE = -1;
-  private static final String TOS_ENDPOINT_KEY = ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME);
-  private static final String TOS_REGION_KEY = ConfKeys.FS_TOS_REGION.key(TOS_SCHEME);
+  private static final String TOS_ENDPOINT_KEY = ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME);
+  private static final String TOS_REGION_KEY = ConfKeys.FS_OBJECT_STORAGE_REGION.key(TOS_SCHEME);
 
   @VisibleForTesting
   static final Map<String, DelegationClient> CACHE = new ConcurrentHashMap<>();

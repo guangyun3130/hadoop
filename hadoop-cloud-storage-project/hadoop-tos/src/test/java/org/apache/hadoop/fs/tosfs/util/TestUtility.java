@@ -145,7 +145,7 @@ public class TestUtility {
     Configuration conf = new Configuration();
     String endpoint = ParseUtils.envAsString(TOS.ENV_TOS_ENDPOINT, "");
     if (!StringUtils.isEmpty(endpoint)) {
-      conf.set(ConfKeys.FS_TOS_ENDPOINT.key(scheme()), endpoint);
+      conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(scheme()), endpoint);
     }
 
     return ObjectStorageFactory.createWithPrefix(
@@ -159,7 +159,7 @@ public class TestUtility {
     } else {
       String endpoint = ParseUtils.envAsString(ENV_DIRECTORY_BUCKET_ENDPOINT, "");
       if (!StringUtils.isEmpty(endpoint)) {
-        conf.set(ConfKeys.FS_TOS_ENDPOINT.key(scheme()), endpoint);
+        conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(scheme()), endpoint);
       }
       return ObjectStorageFactory.createWithPrefix(
           String.format("%s-%s/", scheme(), UUIDUtils.random()), scheme(), bucket, conf);
@@ -171,7 +171,7 @@ public class TestUtility {
 
     // 1. FileStore
     Configuration fileStoreConf = new Configuration();
-    fileStoreConf.set(ConfKeys.FS_TOS_ENDPOINT.key("filestore"), fileStoreRoot);
+    fileStoreConf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key("filestore"), fileStoreRoot);
     storages.add(ObjectStorageFactory.create("filestore", TestUtility.bucket(), fileStoreConf));
 
     // 2. General Bucket

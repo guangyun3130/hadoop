@@ -76,7 +76,7 @@ public class TestTOSRetryPolicy {
 
   private DelegationClient createRetryableDelegationClient() {
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.setBoolean(TosKeys.FS_TOS_DISABLE_CLIENT_CACHE, true);
     conf.set(TosKeys.FS_TOS_ACCESS_KEY_ID, "ACCESS_KEY");

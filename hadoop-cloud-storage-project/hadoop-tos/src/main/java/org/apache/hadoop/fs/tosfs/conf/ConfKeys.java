@@ -20,21 +20,19 @@ package org.apache.hadoop.fs.tosfs.conf;
 
 import org.apache.hadoop.thirdparty.com.google.common.base.Preconditions;
 
-import java.util.List;
-
 public class ConfKeys {
 
   /**
    * Object storage endpoint to connect to, which should include both region and object domain name.
    * e.g. 'fs.tos.endpoint'='tos-cn-beijing.volces.com'.
    */
-  public static final ArgumentKey FS_TOS_ENDPOINT = new ArgumentKey("fs.%s.endpoint");
+  public static final ArgumentKey FS_OBJECT_STORAGE_ENDPOINT = new ArgumentKey("fs.%s.endpoint");
 
   /**
    * The region of the object storage, e.g. fs.tos.region. Parsing template "fs.%s.endpoint" to
    * know the region.
    */
-  public static final ArgumentKey FS_TOS_REGION = new ArgumentKey("fs.%s.region");
+  public static final ArgumentKey FS_OBJECT_STORAGE_REGION = new ArgumentKey("fs.%s.region");
 
   /**
    * The object storage implementation for the defined scheme. For example, we can delegate the

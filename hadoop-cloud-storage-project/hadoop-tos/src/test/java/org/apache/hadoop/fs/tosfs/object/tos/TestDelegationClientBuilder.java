@@ -106,7 +106,7 @@ public class TestDelegationClientBuilder {
   @Test
   public void testHeadApiRetry() throws IOException {
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.setBoolean(TosKeys.FS_TOS_DISABLE_CLIENT_CACHE, false);
     conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key("test"), "ACCESS_KEY");
@@ -163,7 +163,7 @@ public class TestDelegationClientBuilder {
   public void testEnableCrcCheck() throws IOException {
     String bucket = name.getMethodName();
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.setBoolean(TosKeys.FS_TOS_DISABLE_CLIENT_CACHE, true);
     conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key("test"), "ACCESS_KEY");
@@ -183,7 +183,7 @@ public class TestDelegationClientBuilder {
   public void testClientCache() throws IOException {
     String bucket = name.getMethodName();
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.setBoolean(TosKeys.FS_TOS_DISABLE_CLIENT_CACHE, false);
     conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key(bucket), "ACCESS_KEY");
@@ -217,7 +217,7 @@ public class TestDelegationClientBuilder {
   @Test
   public void testOverwriteHttpConfig() throws IOException {
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key("test"), "ACCESS_KEY");
     conf.set(TosKeys.FS_TOS_BUCKET_SECRET_ACCESS_KEY.key("test"), "SECRET_KEY");
@@ -243,7 +243,7 @@ public class TestDelegationClientBuilder {
   @Test
   public void testDynamicRefreshAkSk() throws IOException {
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key(TestUtility.bucket()), ENV_ACCESS_KEY);
     conf.set(TosKeys.FS_TOS_BUCKET_SECRET_ACCESS_KEY.key(TestUtility.bucket()), ENV_SECRET_KEY);
@@ -281,7 +281,7 @@ public class TestDelegationClientBuilder {
   @Test
   public void testCreateClientWithEnvironmentCredentials() throws IOException {
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), "https://test.tos-cn-beijing.ivolces.com");
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, EnvironmentCredentialsProvider.NAME);
 
     DelegationClient tosV2 =
@@ -300,7 +300,7 @@ public class TestDelegationClientBuilder {
   @Test
   public void testCreateClientWithSimpleCredentials() throws IOException {
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), ENV_ENDPOINT);
+    conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), ENV_ENDPOINT);
     conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
     conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key(TestUtility.bucket()), ENV_ACCESS_KEY);
     conf.set(TosKeys.FS_TOS_BUCKET_SECRET_ACCESS_KEY.key(TestUtility.bucket()), ENV_SECRET_KEY);
@@ -331,7 +331,7 @@ public class TestDelegationClientBuilder {
 
     Function<String, Configuration> commonConf = bucket -> {
       Configuration conf = new Configuration();
-      conf.set(ConfKeys.FS_TOS_ENDPOINT.key(TOS_SCHEME), ENV_ENDPOINT);
+      conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(TOS_SCHEME), ENV_ENDPOINT);
       conf.set(TosKeys.FS_TOS_CREDENTIALS_PROVIDER, SimpleCredentialsProvider.NAME);
       conf.set(TosKeys.FS_TOS_BUCKET_ACCESS_KEY_ID.key(bucket), ENV_ACCESS_KEY);
       conf.set(TosKeys.FS_TOS_BUCKET_SECRET_ACCESS_KEY.key(bucket), ENV_SECRET_KEY);
