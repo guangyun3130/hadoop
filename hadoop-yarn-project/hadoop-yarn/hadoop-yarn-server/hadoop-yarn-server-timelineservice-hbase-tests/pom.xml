@@ -101,8 +101,8 @@
           <artifactId>hadoop-hdfs-client</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-json</artifactId>
+          <groupId>org.glassfish.jersey.media</groupId>
+          <artifactId>jersey-media-json-binding</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -186,7 +186,7 @@
     </dependency>
 
     <dependency>
-      <groupId>com.sun.jersey</groupId>
+      <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-client</artifactId>
       <scope>test</scope>
     </dependency>
