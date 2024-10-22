@@ -480,7 +480,7 @@ public class TestDecayRpcScheduler {
     scheduler.forceDecay();
     // Check priorities on cache
     String summary = scheduler.getSchedulingDecisionSummary();
-    Map<String, Object> summaryMap = (Map<String, Object>) JSON.parse(summary);
+    Map<String, Object> summaryMap = (Map<String, Object>) new JSON().parse(new JSON.StringSource(summary));
     assertNotEquals(0L, summaryMap.get("user1"));
     assertEquals(0L, summaryMap.get("service1"));
     assertEquals(0L, summaryMap.get("service2"));

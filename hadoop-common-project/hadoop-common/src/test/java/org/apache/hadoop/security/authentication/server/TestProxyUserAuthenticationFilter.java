@@ -105,16 +105,6 @@ public class TestProxyUserAuthenticationFilter {
     }
 
     @Override
-    public String encodeUrl(String url) {
-      return null;
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url) {
-      return null;
-    }
-
-    @Override
     public void sendError(int sc, String msg) throws IOException {
 
     }
@@ -128,6 +118,9 @@ public class TestProxyUserAuthenticationFilter {
     public void sendRedirect(String location) throws IOException {
 
     }
+
+    @Override
+    public void sendRedirect(String s, int i, boolean b) throws IOException {}
 
     @Override
     public void setDateHeader(String name, long date) {
@@ -161,11 +154,6 @@ public class TestProxyUserAuthenticationFilter {
 
     @Override
     public void setStatus(int sc) {
-
-    }
-
-    @Override
-    public void setStatus(int sc, String sm) {
 
     }
 

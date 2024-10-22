@@ -204,7 +204,7 @@ public class TestConfServlet {
     ConfServlet.writeResponse(getTestConf(), sw, "json");
     String json = sw.toString();
     boolean foundSetting = false;
-    Object parsed = JSON.parse(json);
+    Object parsed = new JSON().parse(new JSON.StringSource(json));
     Object[] properties = ((Map<String, Object[]>)parsed).get("properties");
     for (Object o : properties) {
       Map<String, Object> propertyInfo = (Map<String, Object>)o;

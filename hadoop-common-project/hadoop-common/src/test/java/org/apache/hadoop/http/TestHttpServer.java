@@ -560,7 +560,7 @@ public class TestHttpServer extends HttpServerFunctionalTest {
 
   @SuppressWarnings("unchecked")
   private static Map<String, Object> parse(String jsonString) {
-    return (Map<String, Object>) JSON.parse(jsonString);
+    return (Map<String, Object>) new JSON().parse(new JSON.StringSource(jsonString));
   }
 
   @Test public void testJersey() throws Exception {
