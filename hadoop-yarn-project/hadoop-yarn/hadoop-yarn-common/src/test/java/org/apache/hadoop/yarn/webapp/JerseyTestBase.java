@@ -21,26 +21,27 @@ package org.apache.hadoop.yarn.webapp;
 import java.io.IOException;
 import java.util.Random;
 
-import com.sun.jersey.test.framework.JerseyTest;
-import com.sun.jersey.test.framework.WebAppDescriptor;
 
 import org.apache.hadoop.net.ServerSocketUtil;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
+import org.glassfish.jersey.test.spi.TestContainerFactory;
 
 public abstract class JerseyTestBase extends JerseyTest {
-  public JerseyTestBase(WebAppDescriptor appDescriptor) {
-    super(appDescriptor);
-  }
 
-  @Override
-  protected int getPort(int port) {
-    Random rand = new Random();
-    int jerseyPort = port + rand.nextInt(1000);
-    try {
-      jerseyPort = ServerSocketUtil.getPort(jerseyPort, 10);
-    } catch (IOException e) {
-      // Ignore exception even after 10 times free port is
-      // not received.
-    }
-    return super.getPort(jerseyPort);
+  public JerseyTestBase(TestContainerFactory factory) {
+    super(factory);
   }
+//
+//  protected int getPort(int port) {
+//    Random rand = new Random();
+//    int jerseyPort = port + rand.nextInt(1000);
+//    try {
+//      jerseyPort = ServerSocketUtil.getPort(jerseyPort, 10);
+//    } catch (IOException e) {
+//      // Ignore exception even after 10 times free port is
+//      // not received.
+//    }
+//    return super.getPort(jerseyPort);
+//  }
 }

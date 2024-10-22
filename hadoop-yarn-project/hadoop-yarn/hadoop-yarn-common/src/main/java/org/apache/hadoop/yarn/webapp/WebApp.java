@@ -34,6 +34,7 @@ import org.apache.hadoop.http.HttpServer2;
 import org.apache.hadoop.util.Lists;
 import org.apache.hadoop.yarn.webapp.view.RobotsTextPage;
 
+import org.glassfish.jersey.server.ServerProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +43,8 @@ import org.apache.hadoop.thirdparty.com.google.common.base.Splitter;
 import com.google.inject.Provides;
 import com.google.inject.servlet.GuiceFilter;
 import com.google.inject.servlet.ServletModule;
-import com.sun.jersey.api.container.filter.GZIPContentEncodingFilter;
-import com.sun.jersey.api.core.ResourceConfig;
-import com.sun.jersey.core.util.FeaturesAndProperties;
-import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
+import org.glassfish.jersey.server.filter.EncodingFilter;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 /**
  * @see WebApps for a usage example
@@ -186,17 +184,18 @@ public abstract class WebApp extends ServletModule {
       serveRegex(regex).with(DefaultWrapperServlet.class);
 
       Map<String, String> params = new HashMap<String, String>();
-      params.put(ResourceConfig.FEATURE_IMPLICIT_VIEWABLES, "true");
-      params.put(ServletContainer.FEATURE_FILTER_FORWARD_ON_404, "true");
-      params.put(FeaturesAndProperties.FEATURE_XMLROOTELEMENT_PROCESSING, "true");
-      params.put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, GZIPContentEncodingFilter.class.getName());
-      params.put(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, GZIPContentEncodingFilter.class.getName());
+      // ToDo: find new properties
+//      params.put(ResourceConfig.FEATURE_IMPLICIT_VIEWABLES, "true");
+//      params.put(ServletContainer.FEATURE_FILTER_FORWARD_ON_404, "true");
+//      params.put(FeaturesAndProperties.FEATURE_XMLROOTELEMENT_PROCESSING, "true");
+//      params.put(ResourceConfig.PROPERTY_CONTAINER_REQUEST_FILTERS, EncodingFilter.class.getName());
+//      params.put(ResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS, EncodingFilter.class.getName());
       filter("/*").through(getWebAppFilterClass(), params);
     }
   }
 
-  protected Class<? extends GuiceContainer> getWebAppFilterClass() {
-    return GuiceContainer.class;
+  protected Class<? extends GuiceFilter> getWebAppFilterClass() {
+    return GuiceFilter.class;
   }
 
   /**

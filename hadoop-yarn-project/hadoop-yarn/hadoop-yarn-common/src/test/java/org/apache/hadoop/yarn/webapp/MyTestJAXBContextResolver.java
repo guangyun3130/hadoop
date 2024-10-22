@@ -26,8 +26,6 @@ import jakarta.ws.rs.ext.Provider;
 import jakarta.xml.bind.JAXBContext;
 
 import com.google.inject.Singleton;
-import com.sun.jersey.api.json.JSONConfiguration;
-import com.sun.jersey.api.json.JSONJAXBContext;
 
 import org.apache.hadoop.yarn.webapp.MyTestWebService.MyInfo;
 
@@ -43,9 +41,7 @@ public class MyTestJAXBContextResolver implements ContextResolver<JAXBContext> {
 
   public MyTestJAXBContextResolver() throws Exception {
     this.types = new HashSet<Class>(Arrays.asList(cTypes));
-    this.context =
-        new JSONJAXBContext(JSONConfiguration.natural().rootUnwrapping(false)
-          .build(), cTypes);
+    this.context = JAXBContext.newInstance(cTypes);
   }
 
   @Override

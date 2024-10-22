@@ -25,7 +25,12 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.HashMap;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 
 import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -48,7 +53,6 @@ import org.apache.hadoop.http.HttpServer2;
 import org.apache.hadoop.net.NetUtils;
 import org.apache.hadoop.security.http.RestCsrfPreventionFilter;
 
-import com.sun.jersey.api.core.ResourceConfig;
 
 /**
  * Encapsulates the HTTP server started by the NameNode. 
@@ -101,7 +105,8 @@ public class NameNodeHttpServer {
 
     // add webhdfs packages
     final Map<String, String> params = new HashMap<>();
-    params.put(ResourceConfig.FEATURE_MATCH_MATRIX_PARAMS, "true");
+    // ToDo: find properties
+    //    params.put(ResourceConfig.FEATURE_MATCH_MATRIX_PARAMS, "true");
     httpServer2.addJerseyResourcePackage(
         jerseyResourcePackage + ";" + Param.class.getPackage().getName(),
         pathSpec, params);

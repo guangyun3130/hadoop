@@ -618,11 +618,11 @@
       </exclusions>
     </dependency>
     <!-- skipping jersey-server because it's above -->
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-      <optional>true</optional>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.glassfish.jersey.ext</groupId>-->
+<!--      <artifactId>jersey-guice</artifactId>-->
+<!--      <optional>true</optional>-->
+<!--    </dependency>-->
     <!-- skipping guice-servlet because it's above -->
     <!-- skipping avro because it is in client via hadoop-common -->
     <!-- skipping jersey-core because it's above -->

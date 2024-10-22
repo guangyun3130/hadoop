@@ -17,46 +17,38 @@
  */
 package org.apache.hadoop.hdfs.web;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.ws.rs.container.ContainerRequestContext;
+import jakarta.ws.rs.container.ContainerRequestFilter;
+import jakarta.ws.rs.container.PreMatching;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ext.Provider;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
-import com.sun.jersey.spi.container.ResourceFilter;
 import org.apache.hadoop.util.StringUtils;
+
+// ToDo: heavy changes
 
 /**
  * A filter to change parameter names to lower cases
  * so that parameter names are considered as case insensitive.
  */
-public class ParamFilter implements ResourceFilter {
-  private static final ContainerRequestFilter LOWER_CASE
-      = new ContainerRequestFilter() {
-    @Override
-    public ContainerRequest filter(final ContainerRequest request) {
-      final MultivaluedMap<String, String> parameters = request.getQueryParameters();
-      if (containsUpperCase(parameters.keySet())) {
-        //rebuild URI
-        final URI lower = rebuildQuery(request.getRequestUri(), parameters);
-        request.setUris(request.getBaseUri(), lower);
-      }
-      return request;
+@Provider
+@PreMatching
+public class ParamFilter implements ContainerRequestFilter  {
+
+  @Override
+  public void filter(ContainerRequestContext request) {
+    final MultivaluedMap<String, String> parameters = request.getUriInfo().getQueryParameters();
+    if (containsUpperCase(parameters.keySet())) {
+      //rebuild URI
+      final URI lower = rebuildQuery(request.getUriInfo().getRequestUri(), parameters);
+      request.setRequestUri(request.getUriInfo().getBaseUri(), lower);
     }
-  };
-
-  @Override
-  public ContainerRequestFilter getRequestFilter() {
-    return LOWER_CASE;
-  }
-
-  @Override
-  public ContainerResponseFilter getResponseFilter() {
-    return null;
   }
 
   /** Do the strings contain upper case letters? */

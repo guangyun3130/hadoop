@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -256,10 +256,10 @@ public class TestTimelineClientForATS1_5 {
           throws IOException {
         TimelineWriter timelineWriter =
             new FileSystemTimelineWriter(conf, authUgi, client, resURI) {
-              public ClientResponse doPostingObject(Object object, String path) {
-                ClientResponse response = mock(ClientResponse.class);
+              public Response doPostingObject(Object object, String path) {
+                Response response = mock(Response.class);
                 when(response.getStatusInfo()).thenReturn(
-                    ClientResponse.Status.OK);
+                    Response.Status.OK);
                 return response;
               }
             };

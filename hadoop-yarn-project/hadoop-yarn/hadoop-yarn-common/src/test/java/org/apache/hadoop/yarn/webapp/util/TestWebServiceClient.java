@@ -92,8 +92,7 @@ public class TestWebServiceClient {
     URL u = new URL(baseUrl, SERVLET_PATH_ECHO + "?a=b&c=d");
     WebServiceClient.initialize(sslConf);
     WebServiceClient client = WebServiceClient.getWebServiceClient();
-    HttpURLConnection conn = client.getHttpURLConnectionFactory()
-        .getHttpURLConnection(u);
+    HttpURLConnection conn = client.getHttpURLConnectionFactory().getConnection(u);
     assertEquals(HttpURLConnection.HTTP_OK, conn.getResponseCode());
     WebServiceClient.destroy();
     server.stop();

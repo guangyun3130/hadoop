@@ -147,8 +147,8 @@
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.glassfish.jersey.inject</groupId>
-          <artifactId>jersey-hk2</artifactId>
+          <groupId>org.glassfish.jersey.ext</groupId>
+          <artifactId>jersey-guice</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.google.inject.extensions</groupId>
@@ -255,8 +255,8 @@
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.glassfish.jersey.inject</groupId>
-          <artifactId>jersey-hk2</artifactId>
+          <groupId>org.glassfish.jersey.ext</groupId>
+          <artifactId>jersey-guice</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.avro</groupId>

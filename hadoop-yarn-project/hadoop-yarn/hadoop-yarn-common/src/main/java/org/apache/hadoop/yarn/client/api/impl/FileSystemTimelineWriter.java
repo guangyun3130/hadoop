@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
+import jakarta.ws.rs.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
@@ -66,8 +67,8 @@ import com.fasterxml.jackson.core.util.MinimalPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
-import com.sun.jersey.api.client.Client;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+
 
 /**
  * A simple writer class for storing Timeline data in any storage that
@@ -276,7 +277,7 @@ public class FileSystemTimelineWriter extends TimelineWriter{
   private ObjectMapper createObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
     mapper.setAnnotationIntrospector(
-        new JaxbAnnotationIntrospector(TypeFactory.defaultInstance()));
+        new JakartaXmlBindAnnotationIntrospector(TypeFactory.defaultInstance()));
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(SerializationFeature.FLUSH_AFTER_WRITE_VALUE, false);
     return mapper;

@@ -334,23 +334,16 @@ public class TimelineV2ClientImpl extends TimelineV2Client {
       LOG.error(msg);
       throw new YarnException(msg);
     } else if (resp.getStatusInfo().getStatusCode()
-            == ClientResponse.Status.OK.getStatusCode()) {
-      try {
-        resp.close();
-      } catch(ClientHandlerException che) {
-        LOG.warn("Error closing the HTTP response's inputstream. ", che);
-      }
+            == Response.Status.OK.getStatusCode()) {
+      resp.close();
     } else {
       String msg = "";
       try {
-        String stringType = resp.getEntity(String.class);
+        String stringType = resp.readEntity(String.class);
         msg = "Server response:\n" + stringType;
-      } catch (ClientHandlerException | UniformInterfaceException chuie) {
+      } catch (Exception e) {
         msg = "Error getting entity from the HTTP response."
-                + chuie.getLocalizedMessage();
-      } catch (Throwable t) {
-        msg = "Error getting entity from the HTTP response."
-                + t.getLocalizedMessage();
+                + e.getLocalizedMessage();
       } finally {
         msg = "Response from the timeline server is not successful"
                   + ", HTTP error code: " + resp.getStatus()
@@ -406,7 +399,7 @@ public class TimelineV2ClientImpl extends TimelineV2Client {
       super(new Callable<Void>() {
         // publishEntities()
         public Void call() throws Exception {
-          MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+          MultivaluedMap<String, String> params = new MultivaluedStringMap();
           params.add("appid", getContextAppId().toString());
           params.add("async", Boolean.toString(!isSync));
           params.add("subappwrite", Boolean.toString(subappwrite));

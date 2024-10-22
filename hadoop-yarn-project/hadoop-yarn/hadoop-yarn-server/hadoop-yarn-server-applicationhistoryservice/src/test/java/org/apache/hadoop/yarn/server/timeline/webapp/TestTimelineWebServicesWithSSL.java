@@ -128,7 +128,7 @@ public class TestTimelineWebServicesWithSSL {
 
   private static class TestTimelineClient extends TimelineClientImpl {
 
-    private ClientResponse resp;
+    private Response resp;
 
     @Override
     protected TimelineWriter createTimelineWriter(Configuration conf,
@@ -136,7 +136,7 @@ public class TestTimelineWebServicesWithSSL {
             throws IOException {
       return new DirectTimelineWriter(authUgi, client, resURI) {
         @Override
-        public ClientResponse doPostingObject(Object obj, String path) {
+        public Response doPostingObject(Object obj, String path) {
           resp = super.doPostingObject(obj, path);
           return resp;
         }

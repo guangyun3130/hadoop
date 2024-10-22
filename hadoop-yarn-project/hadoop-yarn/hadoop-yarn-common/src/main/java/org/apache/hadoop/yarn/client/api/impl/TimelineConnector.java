@@ -37,6 +37,13 @@ import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.hadoop.security.authentication.server.KerberosAuthenticationHandler;
 import org.apache.hadoop.security.authentication.server.PseudoAuthenticationHandler;
+
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.ClientRequestContext;
+import jakarta.ws.rs.client.ClientRequestFilter;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
@@ -58,15 +65,6 @@ import org.apache.hadoop.yarn.webapp.YarnJacksonJaxbJsonProvider;
 import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.thirdparty.com.google.common.base.Joiner;
 import org.apache.hadoop.util.Preconditions;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientRequest;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.ClientFilter;
-import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 /**
  * Utility Connector class which is used by timeline clients to securely get
@@ -105,7 +103,7 @@ public class TimelineConnector extends AbstractService {
   @Override
   protected void serviceInit(Configuration conf) throws Exception {
     super.serviceInit(conf);
-    ClientConfig cc = new DefaultClientConfig();
+    ClientConfig cc = new ClientConfig();
     cc.getClasses().add(YarnJacksonJaxbJsonProvider.class);
 
     if (YarnConfiguration.useHttps(conf)) {
@@ -127,16 +125,19 @@ public class TimelineConnector extends AbstractService {
     }
     authenticator.setConnectionConfigurator(connConfigurator);
 
+    cc.connectorProvider(
+        new HttpUrlConnectorProvider()
+            .connectionFactory(
+                new TimelineURLConnectionFactory(authUgi, authenticator, connConfigurator, token, doAsUser))
+    );
+
+    client = ClientBuilder.newClient(cc);
+
     connectionRetry = new TimelineClientConnectionRetry(conf);
-    client =
-        new Client(
-            new URLConnectionClientHandler(new TimelineURLConnectionFactory(
-                authUgi, authenticator, connConfigurator, token, doAsUser)),
-            cc);
     if (requireConnectionRetry) {
-      TimelineJerseyRetryFilter retryFilter =
-          new TimelineJerseyRetryFilter(connectionRetry);
-      client.addFilter(retryFilter);
+
+      ClientRequestFilter retryFilter = new TimelineJerseyRetryFilter(connectionRetry);
+      client.register(retryFilter);
     }
   }
 
@@ -204,7 +205,7 @@ public class TimelineConnector extends AbstractService {
 
   protected void serviceStop() {
     if (this.client != null) {
-      this.client.destroy();
+      this.client.close();
     }
     if (this.sslFactory != null) {
       this.sslFactory.destroy();
@@ -247,7 +248,7 @@ public class TimelineConnector extends AbstractService {
   }
 
   private static class TimelineURLConnectionFactory
-      implements HttpURLConnectionFactory {
+      implements HttpUrlConnectorProvider.ConnectionFactory {
     private DelegationTokenAuthenticator authenticator;
     private UserGroupInformation authUgi;
     private ConnectionConfigurator connConfigurator;
@@ -266,7 +267,7 @@ public class TimelineConnector extends AbstractService {
     }
 
     @Override
-    public HttpURLConnection getHttpURLConnection(final URL url)
+    public HttpURLConnection getConnection(final URL url)
         throws IOException {
       authUgi.checkTGTAndReloginFromKeytab();
       try {
@@ -380,7 +381,8 @@ public class TimelineConnector extends AbstractService {
     }
   }
 
-  private static class TimelineJerseyRetryFilter extends ClientFilter {
+  private static class TimelineJerseyRetryFilter
+      implements ClientRequestFilter {
     private TimelineClientConnectionRetry connectionRetry;
 
     public TimelineJerseyRetryFilter(
@@ -389,29 +391,29 @@ public class TimelineConnector extends AbstractService {
     }
 
     @Override
-    public ClientResponse handle(final ClientRequest cr)
-        throws ClientHandlerException {
+    public void filter(final ClientRequestContext cr)
+        throws IOException {
       // Set up the retry operation
       TimelineClientRetryOp jerseyRetryOp = new TimelineClientRetryOp() {
         @Override
         public Object run() {
           // Try pass the request, if fail, keep retrying
-          return getNext().handle(cr);
+          return cr.getClient().target(cr.getUri()).request().method(cr.getMethod());
         }
 
         @Override
         public boolean shouldRetryOn(Exception e) {
           // Only retry on connection exceptions
-          return (e instanceof ClientHandlerException)
+          return (e instanceof IOException)
               && (e.getCause() instanceof ConnectException
                   || e.getCause() instanceof SocketTimeoutException
                   || e.getCause() instanceof SocketException);
         }
       };
       try {
-        return (ClientResponse) connectionRetry.retryOn(jerseyRetryOp);
+        connectionRetry.retryOn(jerseyRetryOp);
       } catch (IOException e) {
-        throw new ClientHandlerException(
+        throw new IOException(
             "Jersey retry failed!\nMessage: " + e.getMessage());
       }
     }

@@ -25,8 +25,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 
@@ -34,14 +34,14 @@ import com.google.inject.Singleton;
 
 /**
  * YARN's implementation of JAX-RS abstractions based on
- * {@link JacksonJaxbJsonProvider} needed for deserialize JSON content to or
+ * {@link JacksonJsonProvider} needed for deserialize JSON content to or
  * serialize it from POJO objects.
  */
 @Singleton
 @Provider
 @Unstable
 @Private
-public class YarnJacksonJaxbJsonProvider extends JacksonJaxbJsonProvider {
+public class YarnJacksonJaxbJsonProvider extends JacksonJsonProvider {
 
   public YarnJacksonJaxbJsonProvider() {
     super();
@@ -56,7 +56,7 @@ public class YarnJacksonJaxbJsonProvider extends JacksonJaxbJsonProvider {
 
   public static void configObjectMapper(ObjectMapper mapper) {
     AnnotationIntrospector introspector =
-        new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        new JakartaXmlBindAnnotationIntrospector(TypeFactory.defaultInstance());
     mapper.setAnnotationIntrospector(introspector);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }

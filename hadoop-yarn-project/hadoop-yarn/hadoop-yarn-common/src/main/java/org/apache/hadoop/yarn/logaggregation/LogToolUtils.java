@@ -29,15 +29,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.webapp.util.WebAppUtils;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
+import org.glassfish.jersey.client.ClientResponse;
 
 /**
  * This class contains several utility function which could be used in different
@@ -203,13 +203,13 @@ public final class LogToolUtils {
    */
   public static ClientResponse getResponseFromNMWebService(Configuration conf,
       Client webServiceClient, ContainerLogsRequest request, String logFile) {
-    WebResource webResource =
-        webServiceClient.resource(WebAppUtils.getHttpSchemePrefix(conf)
+    WebTarget webTarget =
+        webServiceClient.target(WebAppUtils.getHttpSchemePrefix(conf)
             + request.getNodeHttpAddress());
-    return webResource.path("ws").path("v1").path("node")
+    return webTarget.path("ws").path("v1").path("node")
         .path("containers").path(request.getContainerId()).path("logs")
         .path(logFile)
         .queryParam("size", Long.toString(request.getBytes()))
-        .accept(MediaType.TEXT_PLAIN).get(ClientResponse.class);
+        .request(MediaType.TEXT_PLAIN).get(ClientResponse.class);
   }
 }

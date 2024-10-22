@@ -21,6 +21,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.HttpUrlConnectorProvider;
+
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.authentication.client.AuthenticatedURL;
 import org.apache.hadoop.security.authentication.client.AuthenticationException;
@@ -29,9 +34,6 @@ import org.apache.hadoop.security.ssl.SSLFactory;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 
 import org.apache.hadoop.classification.VisibleForTesting;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.client.urlconnection.HttpURLConnectionFactory;
-import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 
 /**
  * Utility for handling Web client.
@@ -92,32 +94,32 @@ public class WebServiceClient {
    * @return Client
    */
   public Client createClient() {
-    return new Client(
-        new URLConnectionClientHandler(getHttpURLConnectionFactory()));
+    ClientConfig clientConfig = new ClientConfig();
+    clientConfig.connectorProvider(
+        new HttpUrlConnectorProvider()
+            .connectionFactory( getHttpURLConnectionFactory()));
+
+    return ClientBuilder.newClient(clientConfig);
   }
 
   @VisibleForTesting
-  protected HttpURLConnectionFactory getHttpURLConnectionFactory() {
-    return new HttpURLConnectionFactory() {
-      @Override
-      public HttpURLConnection getHttpURLConnection(URL url)
-          throws IOException {
-        AuthenticatedURL.Token token = new AuthenticatedURL.Token();
-        HttpURLConnection conn = null;
-        try {
-          HttpURLConnection.setFollowRedirects(false);
-          // If https is chosen, configures SSL client.
-          if (isHttps) {
-            conn = new AuthenticatedURL(new KerberosAuthenticator(),
-                sslFactory).openConnection(url, token);
-          } else {
-            conn = new AuthenticatedURL().openConnection(url, token);
-          }
-        } catch (AuthenticationException e) {
-          throw new IOException(e);
+  protected HttpUrlConnectorProvider.ConnectionFactory getHttpURLConnectionFactory() {
+    return url -> {
+      AuthenticatedURL.Token token = new AuthenticatedURL.Token();
+      HttpURLConnection conn = null;
+      try {
+        HttpURLConnection.setFollowRedirects(false);
+        // If https is chosen, configures SSL client.
+        if (isHttps) {
+          conn = new AuthenticatedURL(new KerberosAuthenticator(),
+              sslFactory).openConnection(url, token);
+        } else {
+          conn = new AuthenticatedURL().openConnection(url, token);
         }
-        return conn;
+      } catch (AuthenticationException e) {
+        throw new IOException(e);
       }
+      return conn;
     };
   }
 

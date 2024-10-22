@@ -17,18 +17,19 @@
 */
 package org.apache.hadoop.yarn.webapp.util;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource.Builder;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MediaType;
 
 import com.sun.jersey.api.json.JSONJAXBContext;
 import com.sun.jersey.api.json.JSONMarshaller;
 import org.apache.hadoop.conf.Configuration;
+
+import jakarta.ws.rs.core.Response;
 import org.codehaus.jettison.json.JSONObject;
 
+import java.io.IOException;
 import java.io.StringWriter;
 
 /**
@@ -45,22 +46,17 @@ public final class YarnWebServiceUtils {
    * @param conf the configuration
    * @param nodeId the nodeId
    * @return a JSONObject which contains the NodeInfo
-   * @throws ClientHandlerException if there is an error
+   * @throws Exception if there is an error
    *         processing the response.
-   * @throws UniformInterfaceException if the response status
-   *         is 204 (No Content).
    */
   public static JSONObject getNodeInfoFromRMWebService(Configuration conf,
-      String nodeId) throws ClientHandlerException,
-      UniformInterfaceException {
+      String nodeId) throws Exception {
     try {
       return WebAppUtils.execOnActiveRM(conf,
           YarnWebServiceUtils::getNodeInfoFromRM, nodeId);
     } catch (Exception e) {
-      if (e instanceof ClientHandlerException) {
-        throw ((ClientHandlerException) e);
-      } else if (e instanceof UniformInterfaceException) {
-        throw ((UniformInterfaceException) e);
+      if (e instanceof IOException) {
+        throw (e);
       } else {
         throw new RuntimeException(e);
       }
@@ -68,20 +64,20 @@ public final class YarnWebServiceUtils {
   }
 
   private static JSONObject getNodeInfoFromRM(String webAppAddress,
-      String nodeId) throws ClientHandlerException, UniformInterfaceException {
-    Client webServiceClient = Client.create();
-    ClientResponse response = null;
+      String nodeId) throws Exception {
+    Client webServiceClient = ClientBuilder.newClient()  ;
+    Response response = null;
     try {
-      Builder builder = webServiceClient.resource(webAppAddress)
+      WebTarget webTarget = webServiceClient.target(webAppAddress)
           .path("ws").path("v1").path("cluster")
-          .path("nodes").path(nodeId).accept(MediaType.APPLICATION_JSON);
-      response = builder.get(ClientResponse.class);
-      return response.getEntity(JSONObject.class);
+          .path("nodes").path(nodeId);
+      response = webTarget.request(MediaType.APPLICATION_JSON).get(Response.class);
+      return response.readEntity(JSONObject.class);
     } finally {
       if (response != null) {
         response.close();
       }
-      webServiceClient.destroy();
+      webServiceClient.close();
     }
   }
 

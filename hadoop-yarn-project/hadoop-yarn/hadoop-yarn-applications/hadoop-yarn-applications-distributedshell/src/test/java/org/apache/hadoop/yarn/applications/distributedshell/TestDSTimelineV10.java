@@ -521,7 +521,7 @@ public class TestDSTimelineV10 extends DistributedShellBaseTest {
     TimelineClientImpl client = new TimelineClientImpl() {
       @Override
       protected TimelineWriter createTimelineWriter(Configuration conf,
-          UserGroupInformation authUgi, com.sun.jersey.api.client.Client client,
+          UserGroupInformation authUgi, Client client,
           URI resURI) throws IOException {
         TimelineWriter timelineWriter =
             new DirectTimelineWriter(authUgi, client, resURI);

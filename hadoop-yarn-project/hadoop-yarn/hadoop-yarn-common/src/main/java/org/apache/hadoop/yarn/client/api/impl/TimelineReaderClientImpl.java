@@ -18,7 +18,9 @@
 package org.apache.hadoop.yarn.client.api.impl;
 
 import org.apache.hadoop.classification.VisibleForTesting;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -31,7 +33,6 @@ import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ContainerId;
 import org.apache.hadoop.yarn.api.records.timelineservice.TimelineEntity;
 import org.apache.hadoop.yarn.client.api.TimelineReaderClient;
-import com.sun.jersey.api.client.ClientResponse;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.webapp.util.WebAppUtils;
 
@@ -111,12 +112,12 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     if (fields == null || fields.isEmpty()) {
       fields = "INFO";
     }
-    MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+    MultivaluedMap<String, String> params = new MultivaluedStringMap();
     params.add("fields", fields);
     mergeFilters(params, filters);
 
-    ClientResponse response = doGetUri(baseUri, path, params);
-    TimelineEntity entity = response.getEntity(TimelineEntity.class);
+    Response response = doGetUri(baseUri, path, params);
+    TimelineEntity entity = response.readEntity(TimelineEntity.class);
     return entity;
   }
 
@@ -131,12 +132,12 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     if (fields == null || fields.isEmpty()) {
       fields = "INFO";
     }
-    MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+    MultivaluedMap<String, String> params = new MultivaluedStringMap();
     params.add("fields", fields);
     mergeFilters(params, filters);
 
-    ClientResponse response = doGetUri(baseUri, path, params);
-    TimelineEntity entity = response.getEntity(TimelineEntity.class);
+    Response response = doGetUri(baseUri, path, params);
+    TimelineEntity entity = response.readEntity(TimelineEntity.class);
     return entity;
   }
 
@@ -150,7 +151,7 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     if (fields == null || fields.isEmpty()) {
       fields = "INFO";
     }
-    MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+    MultivaluedMap<String, String> params = new MultivaluedStringMap();
     params.add("fields", fields);
     if (limit > 0) {
       params.add("limit", Long.toString(limit));
@@ -160,8 +161,8 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     }
     mergeFilters(params, filters);
 
-    ClientResponse response = doGetUri(baseUri, path, params);
-    TimelineEntity[] entities = response.getEntity(TimelineEntity[].class);
+    Response response = doGetUri(baseUri, path, params);
+    TimelineEntity[] entities = response.readEntity(TimelineEntity[].class);
     return Arrays.asList(entities);
   }
 
@@ -176,12 +177,12 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     if (fields == null || fields.isEmpty()) {
       fields = "INFO";
     }
-    MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+    MultivaluedMap<String, String> params = new MultivaluedStringMap();
     params.add("fields", fields);
     mergeFilters(params, filters);
 
-    ClientResponse response = doGetUri(baseUri, path, params);
-    TimelineEntity entity = response.getEntity(TimelineEntity.class);
+    Response response = doGetUri(baseUri, path, params);
+    TimelineEntity entity = response.readEntity(TimelineEntity.class);
     return entity;
   }
 
@@ -196,7 +197,7 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     if (fields == null || fields.isEmpty()) {
       fields = "INFO";
     }
-    MultivaluedMap<String, String> params = new MultivaluedMapImpl();
+    MultivaluedMap<String, String> params = new MultivaluedStringMap();
     params.add("fields", fields);
     if (limit > 0) {
       params.add("limit", Long.toString(limit));
@@ -206,8 +207,8 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
     }
     mergeFilters(params, filters);
 
-    ClientResponse response = doGetUri(baseUri, path, params);
-    TimelineEntity[] entity = response.getEntity(TimelineEntity[].class);
+    Response response = doGetUri(baseUri, path, params);
+    TimelineEntity[] entity = response.readEntity(TimelineEntity[].class);
     return Arrays.asList(entity);
   }
 
@@ -232,19 +233,26 @@ public class TimelineReaderClientImpl extends TimelineReaderClient {
   }
 
   @VisibleForTesting
-  protected ClientResponse doGetUri(URI base, String path,
+  protected Response doGetUri(URI base, String path,
       MultivaluedMap<String, String> params) throws IOException {
-    ClientResponse resp = connector.getClient().resource(base).path(path)
-        .queryParams(params).accept(MediaType.APPLICATION_JSON)
-        .get(ClientResponse.class);
+
+    WebTarget webTarget = connector.getClient().target(base).path(path);
+    for (Map.Entry<String, List<String>> entry : params.entrySet()) {
+      for (String value : entry.getValue()) {
+        webTarget = webTarget.queryParam(entry.getKey(), value);
+      }
+    }
+
+    Response resp = webTarget.request(MediaType.APPLICATION_JSON).get();
+
     if (resp == null ||
-        resp.getStatusInfo().getStatusCode() != ClientResponse.Status.OK
+        resp.getStatusInfo().getStatusCode() != Response.Status.OK
         .getStatusCode()) {
       String msg =
           "Response from the timeline reader server is " +
               ((resp == null) ? "null" : "not successful," +
                   " HTTP error code: " + resp.getStatus() +
-                  ", Server response:\n" + resp.getEntity(String.class));
+                  ", Server response:\n" + resp.readEntity(String.class));
       LOG.error(msg);
       throw new IOException(msg);
     }

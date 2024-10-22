@@ -18,12 +18,6 @@
 
 package org.apache.hadoop.lib.wsrs;
 
-import com.sun.jersey.api.core.HttpContext;
-import com.sun.jersey.core.spi.component.ComponentContext;
-import com.sun.jersey.core.spi.component.ComponentScope;
-import com.sun.jersey.server.impl.inject.AbstractHttpContextInjectable;
-import com.sun.jersey.spi.inject.Injectable;
-import com.sun.jersey.spi.inject.InjectableProvider;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.util.Lists;
 import org.apache.hadoop.util.StringUtils;
@@ -38,18 +32,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// ToDo: heavy changes
+
 /**
  * Jersey provider that parses the request parameters based on the
  * given parameter definition. 
  */
 @InterfaceAudience.Private
-public class ParametersProvider
-  extends AbstractHttpContextInjectable<Parameters>
-  implements InjectableProvider<Context, Type> {
+public class ParametersProvider implements ContextResolver<Parameters> {
 
   private String driverParam;
+
   private Class<? extends Enum> enumClass;
   private Map<Enum, Class<Param<?>>[]> paramsDef;
+
+  @Context
+  UriInfo uriInfo;
 
   public ParametersProvider(String driverParam, Class<? extends Enum> enumClass,
                             Map<Enum, Class<Param<?>>[]> paramsDef) {
@@ -59,28 +57,27 @@ public class ParametersProvider
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public Parameters getValue(HttpContext httpContext) {
+  public Parameters getContext(Class<?> aClass) {
     Map<String, List<Param<?>>> map = new HashMap<String, List<Param<?>>>();
     Map<String, List<String>> queryString =
-      httpContext.getRequest().getQueryParameters();
+        uriInfo.getQueryParameters();
     String str = ((MultivaluedMap<String, String>) queryString).
         getFirst(driverParam);
     if (str == null) {
       throw new IllegalArgumentException(
-        MessageFormat.format("Missing Operation parameter [{0}]",
-                             driverParam));
+          MessageFormat.format("Missing Operation parameter [{0}]",
+              driverParam));
     }
     Enum op;
     try {
       op = Enum.valueOf(enumClass, StringUtils.toUpperCase(str));
     } catch (IllegalArgumentException ex) {
       throw new IllegalArgumentException(
-        MessageFormat.format("Invalid Operation [{0}]", str));
+          MessageFormat.format("Invalid Operation [{0}]", str));
     }
     if (!paramsDef.containsKey(op)) {
       throw new IllegalArgumentException(
-        MessageFormat.format("Unsupported Operation [{0}]", op));
+          MessageFormat.format("Unsupported Operation [{0}]", op));
     }
     for (Class<Param<?>> paramClass : paramsDef.get(op)) {
       Param<?> param = newParam(paramClass);
@@ -115,15 +112,5 @@ public class ParametersProvider
           "Param class [{0}] does not have default constructor",
           paramClass.getName()));
     }
-  }
-
-  @Override
-  public ComponentScope getScope() {
-    return ComponentScope.PerRequest;
-  }
-
-  @Override
-  public Injectable getInjectable(ComponentContext componentContext, Context context, Type type) {
-    return (type.equals(Parameters.class)) ? this : null;
   }
 }

@@ -499,11 +499,10 @@ CDDL 1.1 + GPLv2 with classpath exception
 -----------------------------------------
 
 com.github.pjfanning:jersey-json:1.22.0
-com.sun.jersey:jersey-client:1.19.4
-com.sun.jersey:jersey-core:1.19.4
+org.glassfish.jersey.core:jersey-client:3.0.16
 com.sun.jersey:jersey-guice:1.19.4
-com.sun.jersey:jersey-server:1.19.4
-com.sun.jersey:jersey-servlet:1.19.4
+org.glassfish.jersey.core:jersey-server:3.0.16
+org.glassfish.jersey.container:jersey-container-servlet:3.0.16
 com.sun.xml.bind:jaxb-impl:2.2.3-1
 javax.annotation:javax.annotation-api:1.3.2
 javax.cache:cache-api:1.1.1
