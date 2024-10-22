@@ -102,7 +102,7 @@ public class TestStartupProgressServlet {
           .build()))
       .build();
 
-    assertEquals(JSON.toString(expected), filterJson(respBody));
+    assertEquals(new JSON().toJSON(expected), filterJson(respBody));
   }
 
   @Test
@@ -160,7 +160,7 @@ public class TestStartupProgressServlet {
           .build()))
       .build();
 
-    assertEquals(JSON.toString(expected), filterJson(respBody));
+    assertEquals(new JSON().toJSON(expected), filterJson(respBody));
   }
 
   @Test
@@ -234,7 +234,7 @@ public class TestStartupProgressServlet {
           .build()))
       .build();
 
-    assertEquals(JSON.toString(expected), filterJson(respBody));
+    assertEquals(new JSON().toJSON(expected), filterJson(respBody));
   }
 
   /**

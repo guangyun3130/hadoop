@@ -402,7 +402,7 @@ public class JournalNode implements Tool, Configurable, JournalNodeMXBean {
       }
     }
 
-    return JSON.toString(status);
+    return new JSON().toJSON(status);
   }
 
   @Override // JournalNodeMXBean

@@ -194,7 +194,7 @@ public class TestWebHDFSForHA {
 
       // Mimic the client side logic by parsing the response from server
       //
-      Map<?, ?> m = (Map<?, ?>) JSON.parse(resp.getEntity().toString());
+      Map<?, ?> m = (Map<?, ?>) new JSON().parse(new JSON.StringSource(resp.getEntity().toString()));
       RemoteException re = JsonUtilClient.toRemoteException(m);
       Exception unwrapped = re.unwrapRemoteException(StandbyException.class);
       Assert.assertTrue(unwrapped instanceof StandbyException);

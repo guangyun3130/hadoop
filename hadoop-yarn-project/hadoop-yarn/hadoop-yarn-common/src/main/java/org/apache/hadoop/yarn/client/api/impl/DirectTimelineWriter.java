@@ -34,8 +34,6 @@ import org.apache.hadoop.yarn.api.records.timeline.TimelineEntityGroupId;
 import org.apache.hadoop.yarn.api.records.timeline.TimelinePutResponse;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 
-import com.sun.jersey.api.client.Client;
-
 /**
  * A simple writer class for storing Timeline data into Leveldb store.
  */

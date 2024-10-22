@@ -1144,7 +1144,7 @@ public class NNStorage extends Storage implements Closeable,
   }
 
   public String getNNDirectorySize() {
-    return JSON.toString(nameDirSizeMap);
+    return new JSON().toJSON(nameDirSizeMap);
   }
 
   public void updateNameDirSize() {

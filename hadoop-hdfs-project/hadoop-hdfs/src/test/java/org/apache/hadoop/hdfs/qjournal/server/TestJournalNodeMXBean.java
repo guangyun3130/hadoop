@@ -95,7 +95,7 @@ public class TestJournalNodeMXBean {
     Map<String, String> infoMap1 = new HashMap<>();
     infoMap1.put("Formatted", "false");
     jMap.put(MiniJournalCluster.CLUSTER_WAITACTIVE_URI, infoMap1);
-    assertEquals(JSON.toString(jMap), journalStatus);
+    assertEquals(new JSON().toJSON(jMap), journalStatus);
 
     // check attributes
     String hostAndPort = (String) mbs.getAttribute(mxbeanName, "HostAndPort");
@@ -123,6 +123,6 @@ public class TestJournalNodeMXBean {
     // re-check 
     journalStatus = (String) mbs.getAttribute(mxbeanName, "JournalsStatus");
     assertEquals(jn.getJournalsStatus(), journalStatus);
-    assertEquals(JSON.toString(jMap), journalStatus);
+    assertEquals(new JSON().toJSON(jMap), journalStatus);
   }
 }

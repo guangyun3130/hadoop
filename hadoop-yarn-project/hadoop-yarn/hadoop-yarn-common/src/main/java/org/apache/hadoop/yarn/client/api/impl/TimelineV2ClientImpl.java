@@ -24,6 +24,8 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.PrivilegedExceptionAction;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -34,9 +36,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.CancellationException;
 
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
 
+import jakarta.ws.rs.core.Response;
+import org.glassfish.jersey.internal.util.collection.MultivaluedStringMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
@@ -57,9 +63,6 @@ import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.hadoop.yarn.security.client.TimelineDelegationTokenIdentifier;
 
 import org.apache.hadoop.classification.VisibleForTesting;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.ClientHandlerException;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
 /**
@@ -288,21 +291,27 @@ public class TimelineV2ClientImpl extends TimelineV2Client {
     }
   }
 
-  private ClientResponse doPutObjects(URI base, String path,
+  private Response doPutObjects(URI base, String path,
       MultivaluedMap<String, String> params, Object obj) {
-    return connector.getClient().resource(base).path(path).queryParams(params)
-        .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
-        .put(ClientResponse.class, obj);
+    WebTarget webTarget = connector.getClient().target(base).path(path);
+    for (Map.Entry<String, List<String>> entry : params.entrySet()) {
+      for (String value : entry.getValue()) {
+        webTarget = webTarget.queryParam(entry.getKey(), value);
+      }
+    }
+    return webTarget
+        .request(MediaType.APPLICATION_JSON)
+        .put(Entity.entity(obj, MediaType.APPLICATION_JSON));
   }
 
   protected void putObjects(URI base, String path,
       MultivaluedMap<String, String> params, Object obj)
       throws IOException, YarnException {
-    ClientResponse resp = null;
+    Response resp = null;
     try {
-      resp = authUgi.doAs(new PrivilegedExceptionAction<ClientResponse>() {
+      resp = authUgi.doAs(new PrivilegedExceptionAction<Response>() {
         @Override
-        public ClientResponse run() throws Exception {
+        public Response run() throws Exception {
           return doPutObjects(base, path, params, obj);
         }
       });

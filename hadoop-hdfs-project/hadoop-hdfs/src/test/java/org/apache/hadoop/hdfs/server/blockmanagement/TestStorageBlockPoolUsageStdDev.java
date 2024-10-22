@@ -117,7 +117,7 @@ public class TestStorageBlockPoolUsageStdDev {
     // and Datanode are the same.
     String liveNodes = cluster.getNameNode().getNamesystem().getLiveNodes();
     Map<String, Map<String, Object>> info =
-        (Map<String, Map<String, Object>>) JSON.parse(liveNodes);
+        (Map<String, Map<String, Object>>) new JSON().parse(new JSON.StringSource(liveNodes));
 
     // Create storageReports for datanodes.
     FSNamesystem namesystem = cluster.getNamesystem();

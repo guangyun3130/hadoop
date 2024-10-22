@@ -263,7 +263,7 @@ public class TestDataNodeMXBean extends SaslDataTransferTestCase {
           throws Exception {
     int totalBlocks = 0;
     String volumeInfo = (String) mbs.getAttribute(mxbeanName, "VolumeInfo");
-    Map<?, ?> m = (Map<?, ?>) JSON.parse(volumeInfo);
+    Map<?, ?> m = (Map<?, ?>) new JSON().parse(new JSON.StringSource(volumeInfo));
     Collection<Map<String, Long>> values =
             (Collection<Map<String, Long>>) m.values();
     for (Map<String, Long> volumeInfoMap : values) {
