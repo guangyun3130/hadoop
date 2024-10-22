@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.util.functional;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.List;

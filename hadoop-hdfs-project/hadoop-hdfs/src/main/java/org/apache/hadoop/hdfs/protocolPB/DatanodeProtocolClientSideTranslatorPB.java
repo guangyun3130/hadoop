@@ -71,7 +71,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.thirdparty.protobuf.RpcController;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import static org.apache.hadoop.ipc.internal.ShadedProtobufHelper.ipc;
 

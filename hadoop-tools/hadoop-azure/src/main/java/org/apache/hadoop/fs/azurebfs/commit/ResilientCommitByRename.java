@@ -21,7 +21,7 @@ package org.apache.hadoop.fs.azurebfs.commit;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.Duration;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.hadoop.classification.InterfaceAudience;

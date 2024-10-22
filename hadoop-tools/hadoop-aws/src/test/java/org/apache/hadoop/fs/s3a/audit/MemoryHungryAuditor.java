@@ -19,7 +19,7 @@
 package org.apache.hadoop.fs.s3a.audit;
 
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

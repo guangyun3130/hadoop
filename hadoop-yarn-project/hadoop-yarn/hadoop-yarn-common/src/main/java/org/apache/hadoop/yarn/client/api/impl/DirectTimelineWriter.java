@@ -21,6 +21,7 @@ package org.apache.hadoop.yarn.client.api.impl;
 import java.io.IOException;
 import java.net.URI;
 
+import jakarta.ws.rs.client.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.hadoop.classification.InterfaceAudience.Private;

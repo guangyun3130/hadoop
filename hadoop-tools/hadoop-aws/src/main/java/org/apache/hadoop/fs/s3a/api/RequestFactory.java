@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.api;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.List;
 
 import software.amazon.awssdk.services.s3.model.AbortMultipartUploadRequest;

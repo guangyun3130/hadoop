@@ -20,7 +20,7 @@ package org.apache.hadoop.fs.s3a.impl;
 
 import java.net.URI;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.hadoop.fs.PathIOException;
 

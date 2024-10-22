@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.util.Optional;
 import java.util.concurrent.Future;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import software.amazon.awssdk.core.exception.SdkException;
 import org.slf4j.Logger;

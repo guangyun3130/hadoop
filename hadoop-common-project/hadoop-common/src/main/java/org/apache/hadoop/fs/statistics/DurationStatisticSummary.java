@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.statistics;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.Serializable;
 
 import org.apache.hadoop.classification.InterfaceAudience;

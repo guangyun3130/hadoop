@@ -186,7 +186,7 @@
                     </filter>
                     <!-- We rely on jersey for our web interfaces. We want to use its java services stuff only internal to jersey -->
                     <filter>
-                      <artifact>com.sun.jersey:*</artifact>
+                      <artifact>org.glassfish.jersey:*</artifact>
                       <excludes>
                         <exclude>META-INF/services/javax.*</exclude>
                       </excludes>

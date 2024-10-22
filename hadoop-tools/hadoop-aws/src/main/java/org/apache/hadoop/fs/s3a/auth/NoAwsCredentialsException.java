@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.auth;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * A special exception which declares that no credentials were found;

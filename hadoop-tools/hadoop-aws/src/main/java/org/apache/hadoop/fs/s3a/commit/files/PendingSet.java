@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.commit.files;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;

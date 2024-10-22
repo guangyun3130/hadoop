@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.statistics;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

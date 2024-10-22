@@ -22,7 +22,7 @@ package org.apache.hadoop.fs.s3a.prefetch;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.hadoop.fs.impl.prefetch.BlockManagerParameters;
 import org.apache.hadoop.fs.impl.prefetch.CachingBlockManager;

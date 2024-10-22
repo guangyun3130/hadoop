@@ -29,7 +29,7 @@ import org.apache.hadoop.hdfs.protocol.ProvidedStorageLocation;
 import org.apache.hadoop.hdfs.protocolPB.AliasMapProtocolPB;
 import org.apache.hadoop.hdfs.protocolPB.AliasMapProtocolServerSideTranslatorPB;
 import org.apache.hadoop.ipc.RPC;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;

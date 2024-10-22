@@ -20,7 +20,7 @@ package org.apache.hadoop.fs.store;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.junit.Test;
 

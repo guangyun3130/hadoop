@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.impl;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.hadoop.fs.store.audit.AuditSpan;
 

@@ -21,7 +21,7 @@ package org.apache.hadoop.fs.impl;
 import java.lang.ref.WeakReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.hadoop.util.WeakReferenceMap;
 

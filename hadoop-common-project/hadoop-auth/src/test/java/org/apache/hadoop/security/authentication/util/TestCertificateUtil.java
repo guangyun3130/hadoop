@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 
 import java.security.interfaces.RSAPublicKey;
 
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletException;
 
 import org.junit.Test;
 

@@ -21,9 +21,9 @@ package org.apache.hadoop.yarn.webapp;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.xml.bind.JAXBContext;
 
 import com.google.inject.Singleton;
 import com.sun.jersey.api.json.JSONConfiguration;

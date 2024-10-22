@@ -36,8 +36,8 @@ import org.apache.hadoop.net.SocketOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;

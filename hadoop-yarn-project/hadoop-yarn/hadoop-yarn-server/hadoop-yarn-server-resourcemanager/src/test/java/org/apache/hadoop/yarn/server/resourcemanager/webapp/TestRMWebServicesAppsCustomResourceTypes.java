@@ -52,7 +52,7 @@ import org.junit.Test;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import java.util.ArrayList;
 
 import static org.apache.hadoop.yarn.server.resourcemanager.webapp

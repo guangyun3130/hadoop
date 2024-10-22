@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.mapreduce.lib.output.committer.manifest.impl;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.Closeable;
 import java.io.FileNotFoundException;
 import java.io.IOException;

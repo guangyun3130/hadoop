@@ -32,7 +32,7 @@ import org.apache.hadoop.util.Preconditions;
 import static java.util.concurrent.atomic.AtomicReferenceFieldUpdater
     .newUpdater;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;

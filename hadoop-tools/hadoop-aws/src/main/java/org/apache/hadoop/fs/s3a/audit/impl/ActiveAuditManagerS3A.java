@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.audit.impl;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;

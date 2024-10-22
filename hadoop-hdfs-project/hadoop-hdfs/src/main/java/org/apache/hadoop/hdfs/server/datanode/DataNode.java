@@ -148,7 +148,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import javax.management.ObjectName;
 import javax.net.SocketFactory;
 

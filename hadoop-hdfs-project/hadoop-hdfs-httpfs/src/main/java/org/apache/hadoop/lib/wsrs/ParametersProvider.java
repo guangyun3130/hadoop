@@ -28,9 +28,11 @@ import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.util.Lists;
 import org.apache.hadoop.util.StringUtils;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
-import java.lang.reflect.Type;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.ContextResolver;
+
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;

@@ -115,8 +115,8 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.HttpMethod;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.hadoop.security.authentication.server.AuthenticationFilter;
 

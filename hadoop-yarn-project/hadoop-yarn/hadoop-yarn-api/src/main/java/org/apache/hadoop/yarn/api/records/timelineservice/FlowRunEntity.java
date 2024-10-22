@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.yarn.api.records.timelineservice;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;

@@ -34,7 +34,7 @@ import org.apache.hadoop.fs.FSInputStream;
 import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.thirdparty.com.google.common.net.HttpHeaders;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 /**
  * To support HTTP byte streams, a new connection to an HTTP server needs to be

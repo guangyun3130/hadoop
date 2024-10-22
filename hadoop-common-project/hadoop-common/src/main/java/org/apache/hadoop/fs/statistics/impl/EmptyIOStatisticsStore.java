@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.statistics.impl;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;

@@ -93,9 +93,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
       <scope>compile</scope>
+      <version>6.1.0</version>
     </dependency>
     <dependency>
       <groupId>jakarta.activation</groupId>
@@ -415,6 +416,10 @@
       <groupId>org.lz4</groupId>
       <artifactId>lz4-java</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
     </dependency>
   </dependencies>
 

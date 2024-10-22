@@ -91,7 +91,7 @@ import org.apache.hadoop.util.Time;
 
 import org.apache.hadoop.classification.VisibleForTesting;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import static org.apache.hadoop.hdfs.util.IOUtilsClient.updateReadStatistics;
 

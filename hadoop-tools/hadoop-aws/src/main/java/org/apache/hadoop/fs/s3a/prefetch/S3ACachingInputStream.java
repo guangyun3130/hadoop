@@ -21,7 +21,7 @@ package org.apache.hadoop.fs.s3a.prefetch;
 
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

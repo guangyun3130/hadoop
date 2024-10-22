@@ -164,9 +164,10 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
             <scope>compile</scope>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 

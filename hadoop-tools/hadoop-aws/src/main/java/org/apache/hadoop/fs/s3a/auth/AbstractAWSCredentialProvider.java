@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.auth;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.net.URI;
 
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;

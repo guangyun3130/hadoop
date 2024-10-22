@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import software.amazon.awssdk.arns.Arn;
 

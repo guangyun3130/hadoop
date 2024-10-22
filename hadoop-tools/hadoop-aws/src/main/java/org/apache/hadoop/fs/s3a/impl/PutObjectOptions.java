@@ -19,7 +19,7 @@
 package org.apache.hadoop.fs.s3a.impl;
 
 import java.util.Map;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Extensible structure for options when putting/writing objects.

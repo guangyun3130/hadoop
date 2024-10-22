@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.store.audit;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.util.concurrent.Callable;
 
 import org.apache.hadoop.classification.InterfaceAudience;

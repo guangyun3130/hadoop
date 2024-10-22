@@ -39,9 +39,9 @@ import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.Iterator;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 

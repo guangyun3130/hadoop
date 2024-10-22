@@ -20,7 +20,7 @@ package org.apache.hadoop.fs.s3a.impl;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

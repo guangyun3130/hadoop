@@ -20,7 +20,7 @@ package org.apache.hadoop.fs.s3a.adapter;
 
 import java.io.IOException;
 import java.net.URI;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

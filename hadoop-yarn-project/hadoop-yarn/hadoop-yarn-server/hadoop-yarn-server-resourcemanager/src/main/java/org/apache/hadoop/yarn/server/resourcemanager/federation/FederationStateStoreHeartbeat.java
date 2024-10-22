@@ -20,7 +20,7 @@ package org.apache.hadoop.yarn.server.resourcemanager.federation;
 
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.apache.hadoop.yarn.server.federation.store.FederationStateStore;
 import org.apache.hadoop.yarn.server.federation.store.records.SubClusterHeartbeatRequest;

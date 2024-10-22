@@ -38,8 +38,8 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
-          <groupId>javax.servlet</groupId>
-          <artifactId>javax.servlet-api</artifactId>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
         </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -62,10 +62,6 @@
           <artifactId>servlet-api-2.5</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-core</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>com.github.pjfanning</groupId>
           <artifactId>jersey-json</artifactId>
         </exclusion>
@@ -74,7 +70,7 @@
           <artifactId>jettison</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
+          <groupId>org.glassfish.jersey.core</groupId>
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
@@ -119,15 +115,11 @@
           <artifactId>jetty-server</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jersey</groupId>
+          <groupId>org.glassfish.jersey.core</groupId>
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>javax.servlet</groupId>
+          <groupId>jakarta.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
         </exclusion>
       </exclusions>
@@ -147,16 +139,16 @@
           <artifactId>guice</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey.jersey-test-framework</groupId>
-          <artifactId>jersey-test-framework-grizzly2</artifactId>
+          <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+          <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
+          <groupId>org.glassfish.jersey.core</groupId>
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey.contribs</groupId>
-          <artifactId>jersey-guice</artifactId>
+          <groupId>org.glassfish.jersey.inject</groupId>
+          <artifactId>jersey-hk2</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.google.inject.extensions</groupId>
@@ -165,10 +157,6 @@
         <exclusion>
           <groupId>org.apache.avro</groupId>
           <artifactId>avro</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-core</artifactId>
         </exclusion>
         <exclusion>
           <groupId>com.github.pjfanning</groupId>
@@ -218,11 +206,7 @@
           <artifactId>reload4j</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-core</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.sun.jersey</groupId>
+          <groupId>org.glassfish.jersey.core</groupId>
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
@@ -234,8 +218,8 @@
           <artifactId>jettison</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
-          <artifactId>jersey-servlet</artifactId>
+          <groupId>org.glassfish.jersey.containers</groupId>
+          <artifactId>jersey-container-servlet</artifactId>
         </exclusion>
         <exclusion>
           <groupId>io.netty</groupId>
@@ -263,16 +247,16 @@
           <artifactId>guice</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey.jersey-test-framework</groupId>
-          <artifactId>jersey-test-framework-grizzly2</artifactId>
+          <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+          <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey</groupId>
+          <groupId>org.glassfish.jersey.core</groupId>
           <artifactId>jersey-server</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.sun.jersey.contribs</groupId>
-          <artifactId>jersey-guice</artifactId>
+          <groupId>org.glassfish.jersey.inject</groupId>
+          <artifactId>jersey-hk2</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.avro</groupId>

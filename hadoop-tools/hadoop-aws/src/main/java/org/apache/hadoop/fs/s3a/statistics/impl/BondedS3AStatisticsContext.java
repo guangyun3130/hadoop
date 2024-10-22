@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.statistics.impl;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import java.time.Duration;
 

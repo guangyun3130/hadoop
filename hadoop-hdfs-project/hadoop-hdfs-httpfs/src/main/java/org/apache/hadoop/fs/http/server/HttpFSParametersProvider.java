@@ -34,7 +34,7 @@ import org.apache.hadoop.lib.wsrs.ParametersProvider;
 import org.apache.hadoop.lib.wsrs.ShortParam;
 import org.apache.hadoop.lib.wsrs.StringParam;
 import org.apache.hadoop.util.StringUtils;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Provider;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;

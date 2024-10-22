@@ -21,7 +21,7 @@ package org.apache.hadoop.fs.s3a.adapter;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URI;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;

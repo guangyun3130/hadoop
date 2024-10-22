@@ -21,7 +21,7 @@ package org.apache.hadoop.fs.s3a;
 import java.io.IOException;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListMultipartUploadsRequest;

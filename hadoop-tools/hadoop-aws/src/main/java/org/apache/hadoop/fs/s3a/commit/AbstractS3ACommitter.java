@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a.commit;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DateFormat;

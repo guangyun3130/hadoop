@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.s3a;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.hadoop.util.Preconditions;
 

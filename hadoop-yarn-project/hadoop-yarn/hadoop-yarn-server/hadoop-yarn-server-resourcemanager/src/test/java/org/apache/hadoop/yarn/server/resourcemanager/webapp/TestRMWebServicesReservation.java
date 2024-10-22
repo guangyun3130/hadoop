@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;

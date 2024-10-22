@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.fs.impl;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 /**
  * Holds reference to an object to be attached to a stream or store to avoid

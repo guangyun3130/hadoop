@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.security.PrivilegedExceptionAction;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.UriBuilder;
 
 import org.apache.hadoop.thirdparty.com.google.common.net.HttpHeaders;
 import org.apache.hadoop.util.Preconditions;

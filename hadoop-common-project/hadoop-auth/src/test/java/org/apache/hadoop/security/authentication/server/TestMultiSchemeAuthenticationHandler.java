@@ -27,8 +27,8 @@ import static org.apache.hadoop.security.authentication.server.HttpConstants.*;
 import java.io.File;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.directory.server.annotations.CreateLdapServer;

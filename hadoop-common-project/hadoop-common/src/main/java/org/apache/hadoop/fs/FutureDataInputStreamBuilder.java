@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.fs;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 

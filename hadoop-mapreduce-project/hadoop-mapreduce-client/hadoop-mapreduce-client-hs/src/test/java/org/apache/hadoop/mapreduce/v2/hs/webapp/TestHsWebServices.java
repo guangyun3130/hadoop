@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 
 import java.io.StringReader;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 

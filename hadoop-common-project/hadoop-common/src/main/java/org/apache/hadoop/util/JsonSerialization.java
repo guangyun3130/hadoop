@@ -18,7 +18,7 @@
 
 package org.apache.hadoop.util;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileNotFoundException;

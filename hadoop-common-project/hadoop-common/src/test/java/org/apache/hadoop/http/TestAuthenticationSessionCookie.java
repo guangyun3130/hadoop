@@ -24,8 +24,8 @@ import org.junit.After;
 import org.junit.Test;
 import org.eclipse.jetty.util.log.Log;
 
-import javax.servlet.*;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.File;
 import java.io.IOException;
