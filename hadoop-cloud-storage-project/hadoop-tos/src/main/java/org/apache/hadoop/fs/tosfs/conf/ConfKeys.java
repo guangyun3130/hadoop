@@ -117,6 +117,29 @@ public class ConfKeys {
   public static final String OBJECT_STREAM_RANGE_SIZE = "proton.objectstorage.stream.range-size";
   public static final long OBJECT_STREAM_RANGE_SIZE_DEFAULT = Long.MAX_VALUE;
 
+  /**
+   * The size of thread pool used for running tasks in parallel for the given object fs,
+   * e.g. delete objects, copy files. the key example: fs.tos.task.thread-pool-size.
+   */
+  public static final String TASK_THREAD_POOL_SIZE = "fs.tos.task.thread-pool-size";
+  public static final int TASK_THREAD_POOL_SIZE_DEFAULT =
+      Math.max(2, Runtime.getRuntime().availableProcessors());
+
+  /**
+   * The size of thread pool used for uploading multipart in parallel for the given object storage,
+   * e.g. fs.tos.multipart.thread-pool-size
+   */
+  public static final String MULTIPART_THREAD_POOL_SIZE = "fs.tos.multipart.thread-pool-size";
+  public static final int MULTIPART_THREAD_POOL_SIZE_DEFAULT =
+      Math.max(2, Runtime.getRuntime().availableProcessors());
+
+  /**
+   * The toggle indicates whether enable checksum during getting file status for the given object.
+   * E.g. fs.tos.checksum.enabled
+   */
+  public static final String CHECKSUM_ENABLED = "fs.tos.checksum.enabled";
+  public static final boolean CHECKSUM_ENABLED_DEFAULT = true;
+
   public static String defaultDir(String basename) {
     String tmpdir = System.getProperty("java.io.tmpdir");
     Preconditions.checkNotNull(tmpdir, "System property 'java.io.tmpdir' cannot be null");

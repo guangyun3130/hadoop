@@ -18,32 +18,8 @@
 
 package org.apache.hadoop.fs.tosfs;
 
-import io.proton.commit.MagicOutputStream;
-import io.proton.common.conf.Conf;
-import io.proton.common.conf.ConfKeys;
-import io.proton.common.object.DirectoryStorage;
-import io.proton.common.object.ObjectInfo;
-import io.proton.common.object.ObjectMultiRangeInputStream;
-import io.proton.common.object.ObjectOutputStream;
-import io.proton.common.object.ObjectRangeInputStream;
-import io.proton.common.object.ObjectStorage;
-import io.proton.common.object.ObjectStorageFactory;
-import io.proton.common.object.ObjectUtils;
-import io.proton.common.object.exceptions.InvalidObjectKeyException;
-import io.proton.common.util.Bytes;
-import io.proton.common.util.Constants;
-import io.proton.common.util.FSUtils;
-import io.proton.common.util.FuseUtils;
-import io.proton.common.util.HadoopUtil;
-import io.proton.common.util.Range;
-import io.proton.common.util.RemoteIterators;
-import io.proton.common.util.ThreadPools;
-import io.proton.fs.ops.DefaultFsOps;
-import io.proton.fs.ops.DirectoryFsOps;
-import io.proton.fs.ops.FsOps;
-import io.proton.shaded.com.google.common.annotations.VisibleForTesting;
-import io.proton.shaded.com.google.common.base.Preconditions;
-import io.proton.shaded.com.google.common.collect.Iterators;
+import com.google.common.collect.Iterators;
+import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.fs.CreateFlag;
@@ -62,7 +38,31 @@ import org.apache.hadoop.fs.PathIOException;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.hadoop.fs.XAttrSetFlag;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.fs.tosfs.commit.MagicOutputStream;
+import org.apache.hadoop.fs.tosfs.common.Bytes;
+import org.apache.hadoop.fs.tosfs.common.ThreadPools;
+import org.apache.hadoop.fs.tosfs.conf.ConfKeys;
+import org.apache.hadoop.fs.tosfs.object.ChecksumInfo;
+import org.apache.hadoop.fs.tosfs.object.Constants;
+import org.apache.hadoop.fs.tosfs.object.DirectoryStorage;
+import org.apache.hadoop.fs.tosfs.object.ObjectInfo;
+import org.apache.hadoop.fs.tosfs.object.ObjectMultiRangeInputStream;
+import org.apache.hadoop.fs.tosfs.object.ObjectOutputStream;
+import org.apache.hadoop.fs.tosfs.object.ObjectRangeInputStream;
+import org.apache.hadoop.fs.tosfs.object.ObjectStorage;
+import org.apache.hadoop.fs.tosfs.object.ObjectStorageFactory;
+import org.apache.hadoop.fs.tosfs.object.ObjectUtils;
+import org.apache.hadoop.fs.tosfs.object.exceptions.InvalidObjectKeyException;
+import org.apache.hadoop.fs.tosfs.ops.DefaultFsOps;
+import org.apache.hadoop.fs.tosfs.ops.DirectoryFsOps;
+import org.apache.hadoop.fs.tosfs.ops.FsOps;
+import org.apache.hadoop.fs.tosfs.util.FSUtils;
+import org.apache.hadoop.fs.tosfs.util.FuseUtils;
+import org.apache.hadoop.fs.tosfs.util.Range;
+import org.apache.hadoop.fs.tosfs.util.RemoteIterators;
 import org.apache.hadoop.security.UserGroupInformation;
+import org.apache.hadoop.thirdparty.com.google.common.base.Preconditions;
+import org.apache.hadoop.thirdparty.com.google.common.collect.Lists;
 import org.apache.hadoop.util.DataChecksum;
 import org.apache.hadoop.util.Progressable;
 import org.slf4j.Logger;
@@ -79,7 +79,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -99,7 +98,7 @@ public class RawFileSystem extends FileSystem {
   private static final long DFS_BLOCK_SIZE_DEFAULT = 128 << 20;
 
   private String scheme;
-  private Conf protonConf;
+  private Configuration protonConf;
   private String username;
   private Path workingDir;
   private URI uri;
@@ -134,35 +133,24 @@ public class RawFileSystem extends FileSystem {
   @Override
   public FSDataInputStream open(Path path, int bufferSize) throws IOException {
     LOG.debug("Opening '{}' for reading.", path);
-    FileStatus status = innerFileStatus(path);
+    RawFileStatus status = innerFileStatus(path);
     if (status.isDirectory()) {
       throw new FileNotFoundException(String.format("Can't open %s because it is a directory", path));
     }
 
     // Parse the range size from the hadoop conf.
     long rangeSize = getConf().getLong(
-        ConfKeys.OBJECT_STREAM_RANGE_SIZE.key(),
-        ConfKeys.OBJECT_STREAM_RANGE_SIZE.defaultValue());
+        ConfKeys.OBJECT_STREAM_RANGE_SIZE,
+        ConfKeys.OBJECT_STREAM_RANGE_SIZE_DEFAULT);
     Preconditions.checkArgument(rangeSize > 0, "Object storage range size must be positive.");
 
-    FSInputStream fsIn = new ObjectMultiRangeInputStream(taskThreadPool, storage, path, status.getLen(), rangeSize);
+    FSInputStream fsIn = new ObjectMultiRangeInputStream(taskThreadPool, storage, path,
+        status.getLen(), rangeSize, status.checksum());
     return new FSDataInputStream(fsIn);
   }
 
-  public FSDataInputStream open(Path path, String expectedChecksum, Range range) throws IOException {
-    LOG.debug("Opening '{}' for reading.", path);
-    RawFileStatus status = innerFileStatus(path);
-    if (status.isDirectory()) {
-      throw new FileNotFoundException(String.format("Can't open %s because it is a directory", path));
-    }
-
-    if (expectedChecksum != null && !Objects.equals(status.checksum(), expectedChecksum)) {
-      throw new ChecksumMismatchException(String.format("The requested file has been staled, " +
-          "request version's checksum is %s " +
-          "while current version's checksum is %s", expectedChecksum, status.checksum()));
-    }
-
-    return new FSDataInputStream(new ObjectRangeInputStream(storage, path, range));
+  public FSDataInputStream open(Path path, byte[] expectedChecksum, Range range) throws IOException {
+    return new FSDataInputStream(new ObjectRangeInputStream(storage, path, range, expectedChecksum));
   }
 
   @Override
@@ -547,7 +535,7 @@ public class RawFileSystem extends FileSystem {
 
     // Root directory always exists
     if (key.isEmpty()) {
-      return new RawFileStatus(0, true, 0, 0, qualifiedPath, username, Constants.EMPTY_CHECKSUM);
+      return new RawFileStatus(0, true, 0, 0, qualifiedPath, username, Constants.MAGIC_CHECKSUM);
     }
 
     try {
@@ -577,7 +565,7 @@ public class RawFileSystem extends FileSystem {
   }
 
   @Override
-  public FsServerDefaults getServerDefaults(Path p) throws IOException {
+  public FsServerDefaults getServerDefaults(Path p) {
     Configuration config = getConf();
     // CRC32 is chosen as default as it is available in all
     // releases that support checksum.
@@ -595,8 +583,8 @@ public class RawFileSystem extends FileSystem {
   }
 
   private void stopAllServices() {
-    HadoopUtil.shutdownHadoopExecutors(uploadThreadPool, LOG, 30, TimeUnit.SECONDS);
-    HadoopUtil.shutdownHadoopExecutors(taskThreadPool, LOG, 30, TimeUnit.SECONDS);
+    ThreadPools.shutdown(uploadThreadPool, 30, TimeUnit.SECONDS);
+    ThreadPools.shutdown(taskThreadPool, 30, TimeUnit.SECONDS);
   }
 
   @Override
@@ -604,10 +592,6 @@ public class RawFileSystem extends FileSystem {
     super.initialize(uri, conf);
     setConf(conf);
     this.scheme = FSUtils.scheme(conf, uri);
-
-    // Merge the deprecated configure keys with the new configure keys and convert hadoop conf to proton conf.
-    FSUtils.withCompatibleKeys(conf, scheme);
-    this.protonConf = Conf.copyOf(conf);
 
     // Username is the current user at the time the FS was instantiated.
     this.username = UserGroupInformation.getCurrentUser().getShortUserName();
@@ -619,14 +603,15 @@ public class RawFileSystem extends FileSystem {
       throw new FileNotFoundException(String.format("Bucket: %s not found.", uri.getAuthority()));
     }
 
-    int taskThreadPoolSize = protonConf.get(ConfKeys.TASK_THREAD_POOL_SIZE.format(scheme));
+    int taskThreadPoolSize =
+        protonConf.getInt(ConfKeys.TASK_THREAD_POOL_SIZE, ConfKeys.TASK_THREAD_POOL_SIZE_DEFAULT);
     this.taskThreadPool = ThreadPools.newWorkerPool(TASK_THREAD_POOL_PREFIX, taskThreadPoolSize);
 
-    int uploadThreadPoolSize = protonConf.get(ConfKeys.MULTIPART_THREAD_POOL_SIZE.format(scheme));
+    int uploadThreadPoolSize = protonConf.getInt(ConfKeys.MULTIPART_THREAD_POOL_SIZE,
+        ConfKeys.MULTIPART_THREAD_POOL_SIZE_DEFAULT);
     this.uploadThreadPool = ThreadPools.newWorkerPool(MULTIPART_THREAD_POOL_PREFIX, uploadThreadPoolSize);
 
     if (storage.bucket().isDirectory()) {
-
       fsOps = new DirectoryFsOps((DirectoryStorage) storage, this::objectToFileStatus);
     } else {
       fsOps = new DefaultFsOps(storage, protonConf, taskThreadPool, this::objectToFileStatus);
@@ -651,26 +636,24 @@ public class RawFileSystem extends FileSystem {
     return uploadThreadPool;
   }
 
-  String username() {
-    return username;
-  }
-
   /**
    * @return null if checksum is not supported.
    */
   @Override
   public FileChecksum getFileChecksum(Path f, long length) throws IOException {
     Preconditions.checkArgument(length >= 0);
+
     RawFileStatus fileStatus = innerFileStatus(f);
     if (fileStatus.isDirectory()) {
       // Compatible with HDFS
       throw new FileNotFoundException(String.format("Path is not a file, %s", f));
     }
-    if (!protonConf.get(ConfKeys.CHECKSUM_ENABLED.format(scheme))) {
+    if (!protonConf.getBoolean(ConfKeys.CHECKSUM_ENABLED, ConfKeys.CHECKSUM_ENABLED_DEFAULT)) {
       return null;
     }
 
-    return BaseChecksum.create(protonConf, fileStatus, length);
+    ChecksumInfo csInfo = storage.checksumInfo();
+    return new TosChecksum(csInfo.algorithm(), fileStatus.checksum());
   }
 
   @Override
@@ -708,7 +691,8 @@ public class RawFileSystem extends FileSystem {
       String key = ObjectUtils.pathToKey(qualifiedPath);
 
       Map<String, String> tags = storage.getTags(key);
-      return tags.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, t -> Bytes.toBytes(t.getValue())));
+      return tags.entrySet().stream()
+          .collect(Collectors.toMap(Map.Entry::getKey, t -> Bytes.toBytes(t.getValue())));
     }
   }
 
@@ -736,7 +720,7 @@ public class RawFileSystem extends FileSystem {
 
   @Override
   public List<String> listXAttrs(Path path) throws IOException {
-    return getXAttrs(path).keySet().stream().collect(Collectors.toList());
+    return Lists.newArrayList(getXAttrs(path).keySet());
   }
 
   @Override

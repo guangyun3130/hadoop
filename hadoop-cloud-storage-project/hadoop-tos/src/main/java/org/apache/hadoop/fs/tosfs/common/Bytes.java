@@ -19,6 +19,7 @@ package org.apache.hadoop.fs.tosfs.common;
 import org.apache.hadoop.util.Preconditions;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Bytes {
   private Bytes() {
@@ -61,6 +62,10 @@ public class Bytes {
       val >>>= 8;
     }
     return b;
+  }
+
+  public static byte[] toBytes(String s) {
+    return s.getBytes(StandardCharsets.UTF_8);
   }
 
   // Decode big-endian binaries into basic Java types.
@@ -165,5 +170,13 @@ public class Bytes {
     byte[] data = new byte[len];
     System.arraycopy(b, off, data, 0, len);
     return data;
+  }
+
+  public static String toString(byte[] b) {
+    return new String(b, StandardCharsets.UTF_8);
+  }
+
+  public static String toString(byte[] b, int off, int len) {
+    return new String(b, off, len, StandardCharsets.UTF_8);
   }
 }
