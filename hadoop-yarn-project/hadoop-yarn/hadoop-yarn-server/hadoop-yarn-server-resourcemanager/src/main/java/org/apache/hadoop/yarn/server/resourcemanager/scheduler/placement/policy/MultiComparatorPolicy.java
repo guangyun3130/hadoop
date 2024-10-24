@@ -220,9 +220,8 @@ public class MultiComparatorPolicy<N extends SchedulerNode>
   @Override
   public void addAndRefreshNodesSet(Collection<N> nodes,
       String partition) {
-    List<LookupNode<N>> lookupNodes = new ArrayList<>();
+    List<LookupNode<N>> lookupNodes = new ArrayList<>(nodes.size());
     for (N node : nodes) {
-      // stream
       List<Comparable> values = this.comparators.stream()
           .map(comparator -> comparator.calculator.apply(node))
           .collect(Collectors.toList());
