@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -485,5 +486,27 @@ public class TestUtils {
 
     cs.submitResourceCommitRequest(clusterResource,
         csAssignment);
+  }
+
+  /**
+   * Wait until the condition is met or timeout.
+   * @param condition condition to check
+   * @param intervalMs interval to check the condition
+   * @param timeoutMs timeout
+   * @return true if the condition is met before timeout, false otherwise
+   * @throws InterruptedException
+   */
+  public static boolean waitForUntilTimeout(Supplier<Boolean> condition,
+      long intervalMs, long timeoutMs) throws InterruptedException {
+    long startTime = System.currentTimeMillis();
+    while (!condition.get()) {
+      long elapsedTime = System.currentTimeMillis() - startTime;
+      if (elapsedTime > timeoutMs) {
+        return false;
+      }
+      long remainingTime = timeoutMs - elapsedTime;
+      Thread.sleep(Math.min(intervalMs, remainingTime > 0 ? remainingTime : 0));
+    }
+    return true;
   }
 }
