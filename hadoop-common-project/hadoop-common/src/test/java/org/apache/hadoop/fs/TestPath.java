@@ -17,6 +17,7 @@
  */
 
 package org.apache.hadoop.fs;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -405,7 +406,7 @@ public class TestPath {
   @Test (timeout = 30000)
   public void testAvroReflect() throws Exception {
     // Avro expects explicitely stated, trusted packages used for (de-)serialization
-    System.setProperty("org.apache.avro.SERIALIZABLE_PACKAGES", "org.apache.hadoop.fs.Path");
+    System.setProperty(Constants.CONFIG_AVRO_SERIALIZABLE_PACKAGES, "org.apache.hadoop.fs");
     AvroTestUtil.testReflect
       (new Path("foo"),
        "{\"type\":\"string\",\"java-class\":\"org.apache.hadoop.fs.Path\"}");
