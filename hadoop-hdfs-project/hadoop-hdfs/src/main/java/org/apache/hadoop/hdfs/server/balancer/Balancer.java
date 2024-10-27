@@ -1100,6 +1100,8 @@ public class Balancer {
               Preconditions.checkArgument(++i < args.length,
                   "limitOverUtilizedNum value is missing: args = " + Arrays.toString(args));
               int limitNum = Integer.parseInt(args[i]);
+              Preconditions.checkArgument(limitNum >= 0,
+                  "limitOverUtilizedNum must be non-negative");
               LOG.info("Using a limitOverUtilizedNum of {}", limitNum);
               b.setLimitOverUtilizedNum(limitNum);
             } else {

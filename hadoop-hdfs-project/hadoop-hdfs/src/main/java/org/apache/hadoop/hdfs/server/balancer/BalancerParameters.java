@@ -127,7 +127,7 @@ final class BalancerParameters {
         + " max idle iteration = %s," + " #excluded nodes = %s,"
         + " #included nodes = %s," + " #source nodes = %s,"
         + " #blockpools = %s," + " run during upgrade = %s,"
-        + " sort top nodes = %s," + " limit overUtilized nodes num = %s"
+        + " sort top nodes = %s," + " limit overUtilized nodes num = %s,"
         + " hot block time interval = %s]",
         Balancer.class.getSimpleName(), getClass().getSimpleName(), policy,
         threshold, maxIdleIteration, excludedNodes.size(),
