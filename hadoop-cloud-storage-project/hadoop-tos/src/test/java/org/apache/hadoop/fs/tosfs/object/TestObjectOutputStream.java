@@ -172,7 +172,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
 
   public void testWrite(int uploadPartSize, int len) throws IOException {
     Configuration newConf = new Configuration(protonConf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.format(FSUtils.scheme(conf, testDir.toUri())),
+    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
         uploadPartSize);
 
     Path outPath = path(len + ".txt");
@@ -208,7 +208,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   public void testParallelWriteOneOutPutStreamImpl(int partSize, int epochs, int batchSize)
       throws IOException, ExecutionException, InterruptedException {
     Configuration newConf = new Configuration(protonConf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.format(FSUtils.scheme(conf, testDir.toUri())),
+    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
         partSize);
 
     String file = String.format("%d-%d-%d-testParallelWriteOneOutPutStream.txt", partSize, epochs, batchSize);
@@ -284,8 +284,8 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
 
   private void testMultipartThreshold(int partSize, int multipartThreshold, int dataSize) throws IOException {
     Configuration newConf = new Configuration(protonConf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.format(scheme), partSize);
-    newConf.setLong(ConfKeys.MULTIPART_THRESHOLD.format(scheme), multipartThreshold);
+    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(scheme), partSize);
+    newConf.setLong(ConfKeys.MULTIPART_THRESHOLD.key(scheme), multipartThreshold);
     Path outPath = path(String.format("threshold-%d-%d-%d.txt", partSize, multipartThreshold, dataSize));
 
     byte[] data = TestUtility.rand(dataSize);

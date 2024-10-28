@@ -39,8 +39,6 @@ import java.util.Random;
 public class TestUtility {
   private static final String ENV_TOS_BUCKET = "TOS_BUCKET";
   private static final String ENV_TEST_SCHEME = "TEST_SCHEME";
-  private static final String ENV_DIRECTORY_BUCKET = "DIRECTORY_BUCKET";
-  private static final String ENV_DIRECTORY_BUCKET_ENDPOINT = "DIRECTORY_BUCKET_ENDPOINT";
   private static final Random RND = new Random(System.currentTimeMillis());
 
   private TestUtility() {
@@ -152,20 +150,6 @@ public class TestUtility {
         String.format("%s-%s/", scheme(), UUIDUtils.random()), scheme(), bucket(), conf);
   }
 
-  public static ObjectStorage directoryBucketObjectStorage(Configuration conf) {
-    String bucket = ParseUtils.envAsString(ENV_DIRECTORY_BUCKET);
-    if (StringUtils.isEmpty(bucket)) {
-      return null;
-    } else {
-      String endpoint = ParseUtils.envAsString(ENV_DIRECTORY_BUCKET_ENDPOINT, "");
-      if (!StringUtils.isEmpty(endpoint)) {
-        conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(scheme()), endpoint);
-      }
-      return ObjectStorageFactory.createWithPrefix(
-          String.format("%s-%s/", scheme(), UUIDUtils.random()), scheme(), bucket, conf);
-    }
-  }
-
   public static List<ObjectStorage> createTestObjectStorage(String fileStoreRoot) {
     List<ObjectStorage> storages = new ArrayList<>();
 
@@ -176,12 +160,6 @@ public class TestUtility {
 
     // 2. General Bucket
     storages.add(generalBucketObjectStorage());
-
-    // 3. Directory Bucket is optional
-    ObjectStorage directoryObjectStorage = directoryBucketObjectStorage(new Configuration());
-    if (directoryObjectStorage != null) {
-      storages.add(directoryObjectStorage);
-    }
 
     return storages;
   }

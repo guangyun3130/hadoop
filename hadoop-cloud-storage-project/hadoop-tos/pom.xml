@@ -34,7 +34,7 @@
 
   <properties>
     <file.encoding>UTF-8</file.encoding>
-    <ve-tos-java-sdk.version>2.8.2</ve-tos-java-sdk.version>
+    <ve-tos-java-sdk.version>2.8.6</ve-tos-java-sdk.version>
   </properties>
 
   <dependencies>
@@ -87,6 +87,19 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-distcp</artifactId>
+      <version>${hadoop.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hadoop</groupId>
+      <artifactId>hadoop-distcp</artifactId>
+      <version>${hadoop.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
     </dependency>
   </dependencies>
 

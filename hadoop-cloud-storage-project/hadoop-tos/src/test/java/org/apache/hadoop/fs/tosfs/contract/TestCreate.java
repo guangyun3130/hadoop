@@ -16,17 +16,15 @@
  * limitations under the License.
  */
 
-package org.apache.hadoop.fs.tosfs.object;
+package org.apache.hadoop.fs.tosfs.contract;
 
-public class Constants {
-  private Constants() {
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.contract.AbstractContractCreateTest;
+import org.apache.hadoop.fs.contract.AbstractFSContract;
+
+public class TestCreate extends AbstractContractCreateTest {
+  @Override
+  protected AbstractFSContract createContract(Configuration conf) {
+    return new TosContract(conf);
   }
-
-  public static final String TOS_FS = "TOS_FS";
-
-  // Magic checksum means doesn't support checksum, if the file type is dir or the filesystem/object
-  // storage doesn't implement checksum algorithm will use magic checksum as the file checksum.
-  public static final byte[] MAGIC_CHECKSUM = new byte[] { 'M' };
-
-  public static final String SLASH = "/";
 }

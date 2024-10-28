@@ -98,7 +98,6 @@ public class RawFileSystem extends FileSystem {
   private static final long DFS_BLOCK_SIZE_DEFAULT = 128 << 20;
 
   private String scheme;
-  private Configuration protonConf;
   private String username;
   private Path workingDir;
   private URI uri;
@@ -171,17 +170,17 @@ public class RawFileSystem extends FileSystem {
 
     if (MagicOutputStream.isMagic(path)) {
       return new FSDataOutputStream(
-          new MagicOutputStream(this, storage, uploadThreadPool, protonConf, makeQualified(path)), null);
+          new MagicOutputStream(this, storage, uploadThreadPool, getConf(), makeQualified(path)), null);
     } else {
       ObjectOutputStream out =
-          new ObjectOutputStream(storage, uploadThreadPool, protonConf, makeQualified(path), true);
+          new ObjectOutputStream(storage, uploadThreadPool, getConf(), makeQualified(path), true);
 
       if (fileStatus == null && FuseUtils.fuseEnabled()) {
         // The fuse requires the file to be visible when accessing getFileStatus once we created the file, so here we
         // close and commit the file to be visible explicitly for fuse, and then reopen the file output stream for
         // further data bytes writing. For more details please see: https://code.byted.org/emr/proton/issues/825
         out.close();
-        out = new ObjectOutputStream(storage, uploadThreadPool, protonConf, makeQualified(path), true);
+        out = new ObjectOutputStream(storage, uploadThreadPool, getConf(), makeQualified(path), true);
       }
 
       return new FSDataOutputStream(out, null);
@@ -598,23 +597,23 @@ public class RawFileSystem extends FileSystem {
     this.workingDir = new Path("/user", username).makeQualified(uri, null);
     this.uri = URI.create(scheme + "://" + uri.getAuthority());
     this.bucket = this.uri.getAuthority();
-    this.storage = ObjectStorageFactory.create(scheme, bucket, protonConf);
+    this.storage = ObjectStorageFactory.create(scheme, bucket, getConf());
     if (storage.bucket() == null) {
       throw new FileNotFoundException(String.format("Bucket: %s not found.", uri.getAuthority()));
     }
 
     int taskThreadPoolSize =
-        protonConf.getInt(ConfKeys.TASK_THREAD_POOL_SIZE, ConfKeys.TASK_THREAD_POOL_SIZE_DEFAULT);
+        getConf().getInt(ConfKeys.TASK_THREAD_POOL_SIZE, ConfKeys.TASK_THREAD_POOL_SIZE_DEFAULT);
     this.taskThreadPool = ThreadPools.newWorkerPool(TASK_THREAD_POOL_PREFIX, taskThreadPoolSize);
 
-    int uploadThreadPoolSize = protonConf.getInt(ConfKeys.MULTIPART_THREAD_POOL_SIZE,
+    int uploadThreadPoolSize = getConf().getInt(ConfKeys.MULTIPART_THREAD_POOL_SIZE,
         ConfKeys.MULTIPART_THREAD_POOL_SIZE_DEFAULT);
     this.uploadThreadPool = ThreadPools.newWorkerPool(MULTIPART_THREAD_POOL_PREFIX, uploadThreadPoolSize);
 
     if (storage.bucket().isDirectory()) {
       fsOps = new DirectoryFsOps((DirectoryStorage) storage, this::objectToFileStatus);
     } else {
-      fsOps = new DefaultFsOps(storage, protonConf, taskThreadPool, this::objectToFileStatus);
+      fsOps = new DefaultFsOps(storage, getConf(), taskThreadPool, this::objectToFileStatus);
     }
   }
 
@@ -648,7 +647,8 @@ public class RawFileSystem extends FileSystem {
       // Compatible with HDFS
       throw new FileNotFoundException(String.format("Path is not a file, %s", f));
     }
-    if (!protonConf.getBoolean(ConfKeys.CHECKSUM_ENABLED, ConfKeys.CHECKSUM_ENABLED_DEFAULT)) {
+    if (!getConf().getBoolean(ConfKeys.CHECKSUM_ENABLED.key(storage.scheme()),
+        ConfKeys.CHECKSUM_ENABLED_DEFAULT)) {
       return null;
     }
 

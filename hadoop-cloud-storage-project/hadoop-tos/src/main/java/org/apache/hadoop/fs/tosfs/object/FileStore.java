@@ -62,6 +62,7 @@ import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_BATCH_D
 import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_BATCH_DELETE_SIZE_DEFAULT;
 import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_CHECKSUM_ALGORITHM;
 import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE;
+import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE_DEFAULT;
 import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_ENDPOINT;
 
 public class FileStore implements ObjectStorage {
@@ -112,8 +113,8 @@ public class FileStore implements ObjectStorage {
     LOG.debug("the root path is: {}", this.root);
 
     String algorithm = conf.get(FS_FILESTORE_CHECKSUM_ALGORITHM);
-    ChecksumType checksumType =
-        ChecksumType.valueOf(conf.get(FS_FILESTORE_CHECKSUM_TYPE).toUpperCase());
+    ChecksumType checksumType = ChecksumType.valueOf(
+        conf.get(FS_FILESTORE_CHECKSUM_TYPE, FS_FILESTORE_CHECKSUM_TYPE_DEFAULT).toUpperCase());
     Preconditions.checkArgument(checksumType == ChecksumType.MD5,
         "Checksum type %s is not supported by FileStore.", checksumType.name());
     checksumInfo = new ChecksumInfo(algorithm, checksumType);

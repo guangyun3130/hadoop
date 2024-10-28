@@ -88,7 +88,7 @@ public class DelegationClientBuilder {
         .transportConfig(createTransportConfig(conf))
         .userAgentProductName(conf.get(
             TosKeys.FS_TOS_USER_AGENT_PREFIX, TosKeys.FS_TOS_USER_AGENT_PREFIX_DEFAULT))
-        .userAgentSoftName(Constants.PROTON)
+        .userAgentSoftName(Constants.TOS_FS)
         .userAgentSoftVersion(VersionInfo.getVersion())
         .build();
 

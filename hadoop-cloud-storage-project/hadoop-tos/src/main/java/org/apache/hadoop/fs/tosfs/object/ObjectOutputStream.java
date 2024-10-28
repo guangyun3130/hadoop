@@ -73,9 +73,10 @@ public class ObjectOutputStream extends OutputStream {
     this.destScheme = dest.toUri().getScheme();
     this.totalWroteSize = 0;
     this.destKey = createDestKey(dest);
-    this.multiUploadThreshold =
-        conf.getLong(ConfKeys.MULTIPART_THRESHOLD, ConfKeys.MULTIPART_THRESHOLD_DEFAULT);
-    this.byteSizePerPart = conf.getLong(ConfKeys.MULTIPART_SIZE, ConfKeys.MULTIPART_SIZE_DEFAULT);
+    this.multiUploadThreshold = conf.getLong(ConfKeys.MULTIPART_THRESHOLD.key(destScheme),
+        ConfKeys.MULTIPART_THRESHOLD_DEFAULT);
+    this.byteSizePerPart =
+        conf.getLong(ConfKeys.MULTIPART_SIZE.key(destScheme), ConfKeys.MULTIPART_SIZE_DEFAULT);
     this.stagingBufferSize = conf.getInt(ConfKeys.MULTIPART_STAGING_BUFFER_SIZE,
         ConfKeys.MULTIPART_STAGING_BUFFER_SIZE_DEFAULT);
     this.allowPut = allowPut;
@@ -172,8 +173,8 @@ public class ObjectOutputStream extends OutputStream {
         multipartUpload = storage.createMultipartUpload(destKey);
         Preconditions.checkState(byteSizePerPart >= multipartUpload.minPartSize(),
             "Configured upload part size %s must be greater than or equals to the minimal part size %s,"
-                + " please check configure key %s.",
-            byteSizePerPart, multipartUpload.minPartSize(), ConfKeys.MULTIPART_THRESHOLD.format(destScheme));
+                + " please check configure key %s.", byteSizePerPart, multipartUpload.minPartSize(),
+            ConfKeys.MULTIPART_THRESHOLD.key(destScheme));
 
         // Upload the accumulated staging files whose length >= byteSizePerPart.
         for (StagingPart stagingPart : stagingParts) {

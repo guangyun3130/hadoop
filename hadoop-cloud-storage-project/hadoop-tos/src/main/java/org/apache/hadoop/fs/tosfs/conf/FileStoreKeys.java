@@ -18,6 +18,8 @@
 
 package org.apache.hadoop.fs.tosfs.conf;
 
+import org.apache.hadoop.fs.tosfs.object.ChecksumType;
+
 public class FileStoreKeys {
 
   /**
@@ -37,6 +39,7 @@ public class FileStoreKeys {
    * configured checksum type is not supported. The supported checksum type is: MD5.
    */
   public static final String FS_FILESTORE_CHECKSUM_TYPE = "fs.filestore.checksum-type";
+  public static final String FS_FILESTORE_CHECKSUM_TYPE_DEFAULT = ChecksumType.MD5.name();
 
   /**
    * The batch size of deleting multiple objects per request for the given object storage.
