@@ -17,20 +17,16 @@
 */
 package org.apache.hadoop.yarn.webapp.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-
-import com.sun.jersey.api.json.JSONJAXBContext;
-import com.sun.jersey.api.json.JSONMarshaller;
-import org.apache.hadoop.conf.Configuration;
-
 import jakarta.ws.rs.core.Response;
+import org.apache.hadoop.conf.Configuration;
 import org.codehaus.jettison.json.JSONObject;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
 /**
  * This class contains several utility function which could be used to generate
@@ -38,6 +34,8 @@ import java.io.StringWriter;
  *
  */
 public final class YarnWebServiceUtils {
+
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   private YarnWebServiceUtils() {}
 
@@ -63,8 +61,7 @@ public final class YarnWebServiceUtils {
     }
   }
 
-  private static JSONObject getNodeInfoFromRM(String webAppAddress,
-      String nodeId) throws Exception {
+  private static JSONObject getNodeInfoFromRM(String webAppAddress, String nodeId) {
     Client webServiceClient = ClientBuilder.newClient()  ;
     Response response = null;
     try {
@@ -83,10 +80,6 @@ public final class YarnWebServiceUtils {
 
   @SuppressWarnings("rawtypes")
   public static String toJson(Object nsli, Class klass) throws Exception {
-    StringWriter sw = new StringWriter();
-    JSONJAXBContext ctx = new JSONJAXBContext(klass);
-    JSONMarshaller jm = ctx.createJSONMarshaller();
-    jm.marshallToJSON(nsli, sw);
-    return sw.toString();
+   return mapper.writerFor(klass).writeValueAsString(nsli);
   }
 }

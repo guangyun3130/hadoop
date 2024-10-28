@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.yarn.webapp;
 
+import com.fasterxml.jackson.jakarta.rs.json.JacksonXmlBindJsonProvider;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.ext.Provider;
 
@@ -41,7 +42,9 @@ import com.google.inject.Singleton;
 @Provider
 @Unstable
 @Private
-public class YarnJacksonJaxbJsonProvider extends JacksonJsonProvider {
+// ToDo: ensure this change
+// https://stackoverflow.com/questions/79047696/what-happened-to-jacksonjaxbjsonprovider-class-in-2-16-x-onwards
+public class YarnJacksonJaxbJsonProvider extends JacksonXmlBindJsonProvider {
 
   public YarnJacksonJaxbJsonProvider() {
     super();
