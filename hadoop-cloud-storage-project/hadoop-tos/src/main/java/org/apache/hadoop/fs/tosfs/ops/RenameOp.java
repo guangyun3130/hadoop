@@ -56,8 +56,8 @@ public class RenameOp {
     this.conf = conf;
     this.storage = storage;
     this.renamePool = taskThreadPool;
-    this.renameObjectEnabled = conf.getBoolean(ConfKeys.OBJECT_RENAME_ENABLED.key(storage.scheme()),
-        ConfKeys.OBJECT_RENAME_ENABLED_DEFAULT);
+    this.renameObjectEnabled = conf.getBoolean(ConfKeys.FS_OBJECT_RENAME_ENABLED.key(storage.scheme()),
+        ConfKeys.FS_OBJECT_RENAME_ENABLED_DEFAULT);
   }
 
   public void renameDir(Path src, Path dst) {
@@ -155,11 +155,11 @@ public class RenameOp {
   }
 
   private void copyFile(String srcKey, String dstKey, long srcSize) throws IOException {
-    long byteSizePerPart = conf.getLong(ConfKeys.MULTIPART_SIZE.key(storage.scheme()),
-        ConfKeys.MULTIPART_SIZE_DEFAULT);
+    long byteSizePerPart = conf.getLong(ConfKeys.FS_MULTIPART_SIZE.key(storage.scheme()),
+        ConfKeys.FS_MULTIPART_SIZE_DEFAULT);
     long multiPartCopyThreshold =
-        conf.getLong(ConfKeys.MULTIPART_COPY_THRESHOLD.key(storage.scheme()),
-            ConfKeys.MULTIPART_COPY_THRESHOLD_DEFAULT);
+        conf.getLong(ConfKeys.FS_MULTIPART_COPY_THRESHOLD.key(storage.scheme()),
+            ConfKeys.FS_MULTIPART_COPY_THRESHOLD_DEFAULT);
     if (srcSize > multiPartCopyThreshold) {
       uploadPartCopy(srcKey, srcSize, dstKey, byteSizePerPart);
     } else {
@@ -173,7 +173,7 @@ public class RenameOp {
       Preconditions.checkState(byteSizePerPart >= multipartUpload.minPartSize(),
           "Configured upload part size %s must be greater than or equals to the minimal part size %s,"
               + " please check configure key %s.", byteSizePerPart, multipartUpload.minPartSize(),
-          ConfKeys.MULTIPART_SIZE.key(storage.scheme()));
+          ConfKeys.FS_MULTIPART_SIZE.key(storage.scheme()));
 
       AtomicInteger partNumGetter = new AtomicInteger(0);
       List<CompletableFuture<Part>> results = Lists.newArrayList();

@@ -101,7 +101,7 @@ public class TestChecksum extends AbstractFSContractTestBase {
 
     // disable checksum
     Configuration newConf = new Configuration(getFileSystem().getConf());
-    newConf.setBoolean(ConfKeys.CHECKSUM_ENABLED.key("tos"), false);
+    newConf.setBoolean(ConfKeys.FS_CHECKSUM_ENABLED.key("tos"), false);
     FileSystem newFS = FileSystem.get(newConf);
 
     assertEquals(newFS.getFileChecksum(path1), newFS.getFileChecksum(path2));

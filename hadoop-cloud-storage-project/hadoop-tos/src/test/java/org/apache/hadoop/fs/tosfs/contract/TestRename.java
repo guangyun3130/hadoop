@@ -40,9 +40,9 @@ public class TestRename extends AbstractContractRenameTest {
     // Add follow two keys into hadoop configuration.
     String defaultScheme = FileSystem.getDefaultUri(conf).getScheme();
     Configuration newConf = new Configuration(conf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(defaultScheme), ConfKeys.MULTIPART_SIZE_DEFAULT);
-    newConf.setLong(ConfKeys.MULTIPART_THRESHOLD.key(defaultScheme),
-        ConfKeys.MULTIPART_THRESHOLD_DEFAULT);
+    newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(defaultScheme), ConfKeys.FS_MULTIPART_SIZE_DEFAULT);
+    newConf.setLong(ConfKeys.FS_MULTIPART_THRESHOLD.key(defaultScheme),
+        ConfKeys.FS_MULTIPART_THRESHOLD_DEFAULT);
 
     return new TosContract(newConf);
   }

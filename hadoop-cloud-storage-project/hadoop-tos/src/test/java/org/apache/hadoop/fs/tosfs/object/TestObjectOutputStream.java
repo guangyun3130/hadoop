@@ -74,7 +74,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
         tmpDirs.add(tmp.newDir());
       }
       Configuration newConf = new Configuration(protonConf);
-      newConf.set(ConfKeys.MULTIPART_STAGING_DIR.format("filestore"), Joiner.on(",").join(tmpDirs));
+      newConf.set(ConfKeys.FS_MULTIPART_STAGING_DIR.key("filestore"), Joiner.on(",").join(tmpDirs));
 
       // Start multiple threads to open streams to create staging dir.
       List<Future<ObjectOutputStream>> futures = Collections.synchronizedList(new ArrayList<>());
@@ -117,7 +117,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   public void testDeleteStagingFileWhenUploadPartsOK() throws IOException {
     Path path = path("data.txt");
     ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, path, true);
-    byte[] data = TestUtility.rand((int) (ConfKeys.MULTIPART_SIZE_DEFAULT * 2));
+    byte[] data = TestUtility.rand((int) (ConfKeys.FS_MULTIPART_SIZE_DEFAULT * 2));
     out.write(data);
     out.waitForPartsUpload();
     for (StagingPart part : out.stagingParts()) {
@@ -133,7 +133,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   public void testDeleteStagingFileWithClose() throws IOException {
     Path path = path("data.txt");
     ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, path, true);
-    byte[] data = TestUtility.rand((int) (ConfKeys.MULTIPART_SIZE_DEFAULT * 2));
+    byte[] data = TestUtility.rand((int) (ConfKeys.FS_MULTIPART_SIZE_DEFAULT * 2));
     out.write(data);
     out.close();
     for (StagingPart part : out.stagingParts()) {
@@ -172,7 +172,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
 
   public void testWrite(int uploadPartSize, int len) throws IOException {
     Configuration newConf = new Configuration(protonConf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
+    newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
         uploadPartSize);
 
     Path outPath = path(len + ".txt");
@@ -208,7 +208,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   public void testParallelWriteOneOutPutStreamImpl(int partSize, int epochs, int batchSize)
       throws IOException, ExecutionException, InterruptedException {
     Configuration newConf = new Configuration(protonConf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
+    newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
         partSize);
 
     String file = String.format("%d-%d-%d-testParallelWriteOneOutPutStream.txt", partSize, epochs, batchSize);
@@ -284,8 +284,8 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
 
   private void testMultipartThreshold(int partSize, int multipartThreshold, int dataSize) throws IOException {
     Configuration newConf = new Configuration(protonConf);
-    newConf.setLong(ConfKeys.MULTIPART_SIZE.key(scheme), partSize);
-    newConf.setLong(ConfKeys.MULTIPART_THRESHOLD.key(scheme), multipartThreshold);
+    newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(scheme), partSize);
+    newConf.setLong(ConfKeys.FS_MULTIPART_THRESHOLD.key(scheme), multipartThreshold);
     Path outPath = path(String.format("threshold-%d-%d-%d.txt", partSize, multipartThreshold, dataSize));
 
     byte[] data = TestUtility.rand(dataSize);

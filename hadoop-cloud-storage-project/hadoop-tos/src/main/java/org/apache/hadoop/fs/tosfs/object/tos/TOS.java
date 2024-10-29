@@ -184,9 +184,9 @@ public class TOS implements DirectoryStorage {
     defaultAcl = TypeConverter.convertACLType(conf.get(TosKeys.FS_TOS_ACL_DEFAULT));
 
     String algorithm =
-        conf.get(ConfKeys.TOS_CHECKSUM_ALGORITHM, ConfKeys.TOS_CHECKSUM_ALGORITHM_DEFAULT);
+        conf.get(TosKeys.FS_TOS_CHECKSUM_ALGORITHM, TosKeys.FS_TOS_CHECKSUM_ALGORITHM_DEFAULT);
     ChecksumType checksumType = ChecksumType.valueOf(
-        conf.get(ConfKeys.TOS_CHECKSUM_TYPE, ConfKeys.TOS_CHECKSUM_TYPE_DEFAULT).toUpperCase());
+        conf.get(TosKeys.FS_TOS_CHECKSUM_TYPE, TosKeys.FS_TOS_CHECKSUM_TYPE_DEFAULT).toUpperCase());
     Preconditions.checkArgument(CHECKSUM_HEADER.containsKey(checksumType),
         "Checksum type %s is not supported by TOS.", checksumType.name());
     checksumInfo = new ChecksumInfo(algorithm, checksumType);
@@ -1005,8 +1005,8 @@ public class TOS implements DirectoryStorage {
   public ObjectInfo objectStatus(String key) {
     if (bucket().isDirectory()) {
       return head(key);
-    } else if (conf.getBoolean(ConfKeys.TOS_GET_FILE_STATUS_ENABLED,
-        ConfKeys.TOS_GET_FILE_STATUS_ENABLED_DEFAULT)) {
+    } else if (conf.getBoolean(TosKeys.FS_TOS_GET_FILE_STATUS_ENABLED,
+        TosKeys.FS_TOS_GET_FILE_STATUS_ENABLED_DEFAULT)) {
       return getFileStatus(key);
     } else {
       ObjectInfo obj = head(key);

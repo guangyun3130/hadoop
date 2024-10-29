@@ -139,8 +139,8 @@ public class RawFileSystem extends FileSystem {
 
     // Parse the range size from the hadoop conf.
     long rangeSize = getConf().getLong(
-        ConfKeys.OBJECT_STREAM_RANGE_SIZE,
-        ConfKeys.OBJECT_STREAM_RANGE_SIZE_DEFAULT);
+        ConfKeys.FS_OBJECT_STREAM_RANGE_SIZE,
+        ConfKeys.FS_OBJECT_STREAM_RANGE_SIZE_DEFAULT);
     Preconditions.checkArgument(rangeSize > 0, "Object storage range size must be positive.");
 
     FSInputStream fsIn = new ObjectMultiRangeInputStream(taskThreadPool, storage, path,
@@ -602,12 +602,13 @@ public class RawFileSystem extends FileSystem {
       throw new FileNotFoundException(String.format("Bucket: %s not found.", uri.getAuthority()));
     }
 
-    int taskThreadPoolSize =
-        getConf().getInt(ConfKeys.TASK_THREAD_POOL_SIZE, ConfKeys.TASK_THREAD_POOL_SIZE_DEFAULT);
+    int taskThreadPoolSize = getConf().getInt(ConfKeys.FS_TASK_THREAD_POOL_SIZE.key(storage.scheme()),
+        ConfKeys.FS_TASK_THREAD_POOL_SIZE_DEFAULT);
     this.taskThreadPool = ThreadPools.newWorkerPool(TASK_THREAD_POOL_PREFIX, taskThreadPoolSize);
 
-    int uploadThreadPoolSize = getConf().getInt(ConfKeys.MULTIPART_THREAD_POOL_SIZE,
-        ConfKeys.MULTIPART_THREAD_POOL_SIZE_DEFAULT);
+    int uploadThreadPoolSize =
+        getConf().getInt(ConfKeys.FS_MULTIPART_THREAD_POOL_SIZE.key(storage.scheme()),
+            ConfKeys.FS_MULTIPART_THREAD_POOL_SIZE_DEFAULT);
     this.uploadThreadPool = ThreadPools.newWorkerPool(MULTIPART_THREAD_POOL_PREFIX, uploadThreadPoolSize);
 
     if (storage.bucket().isDirectory()) {
@@ -647,8 +648,8 @@ public class RawFileSystem extends FileSystem {
       // Compatible with HDFS
       throw new FileNotFoundException(String.format("Path is not a file, %s", f));
     }
-    if (!getConf().getBoolean(ConfKeys.CHECKSUM_ENABLED.key(storage.scheme()),
-        ConfKeys.CHECKSUM_ENABLED_DEFAULT)) {
+    if (!getConf().getBoolean(ConfKeys.FS_CHECKSUM_ENABLED.key(storage.scheme()),
+        ConfKeys.FS_CHECKSUM_ENABLED_DEFAULT)) {
       return null;
     }
 

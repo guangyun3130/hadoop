@@ -26,6 +26,7 @@ import org.apache.hadoop.fs.contract.AbstractContractGetFileStatusTest;
 import org.apache.hadoop.fs.contract.AbstractFSContract;
 import org.apache.hadoop.fs.tosfs.RawFileStatus;
 import org.apache.hadoop.fs.tosfs.conf.ConfKeys;
+import org.apache.hadoop.fs.tosfs.conf.TosKeys;
 import org.apache.hadoop.fs.tosfs.object.Constants;
 import org.apache.hadoop.fs.tosfs.util.UUIDUtils;
 import org.junit.Assert;
@@ -58,8 +59,8 @@ public class TestGetFileStatus extends AbstractContractGetFileStatusTest {
 
   @Override
   protected AbstractFSContract createContract(Configuration conf) {
-    conf.setBoolean(ConfKeys.TOS_GET_FILE_STATUS_ENABLED, getFileStatusEnabled);
-    conf.setBoolean(ConfKeys.ASYNC_CREATE_MISSED_PARENT.key("tos"), false);
+    conf.setBoolean(TosKeys.FS_TOS_GET_FILE_STATUS_ENABLED, getFileStatusEnabled);
+    conf.setBoolean(ConfKeys.FS_ASYNC_CREATE_MISSED_PARENT.key("tos"), false);
     return new TosContract(conf);
   }
 

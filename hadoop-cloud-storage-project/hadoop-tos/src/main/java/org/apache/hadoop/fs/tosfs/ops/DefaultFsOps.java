@@ -63,8 +63,8 @@ public class DefaultFsOps implements FsOps {
     this.objMapper = objMapper;
     this.renameOp = new RenameOp(conf, storage, taskThreadPool);
     this.asyncCreateParentDir =
-        conf.getBoolean(ConfKeys.ASYNC_CREATE_MISSED_PARENT.key(storage.scheme()),
-            ConfKeys.ASYNC_CREATE_MISSED_PARENT_DEFAULT);
+        conf.getBoolean(ConfKeys.FS_ASYNC_CREATE_MISSED_PARENT.key(storage.scheme()),
+            ConfKeys.FS_ASYNC_CREATE_MISSED_PARENT_DEFAULT);
   }
 
   @Override

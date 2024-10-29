@@ -23,16 +23,12 @@ import org.apache.hadoop.fs.tosfs.object.ChecksumType;
 public class FileStoreKeys {
 
   /**
-   * File store object storage endpoint to connect to.
-   */
-  public static final String FS_FILESTORE_ENDPOINT = "fs.filestore.endpoint";
-
-  /**
    * The key indicates the name of the filestore checksum algorithm. Specify the algorithm name to
    * satisfy different storage systems. For example, the hdfs style name is COMPOSITE-CRC32 and
    * COMPOSITE-CRC32C.
    */
   public static final String FS_FILESTORE_CHECKSUM_ALGORITHM = "fs.filestore.checksum-algorithm";
+  public static final String FS_FILESTORE_CHECKSUM_ALGORITHM_DEFAULT = "TOS-CHECKSUM";
 
   /**
    * The key indicates how to retrieve file checksum from filestore, error will be thrown if the
@@ -40,10 +36,4 @@ public class FileStoreKeys {
    */
   public static final String FS_FILESTORE_CHECKSUM_TYPE = "fs.filestore.checksum-type";
   public static final String FS_FILESTORE_CHECKSUM_TYPE_DEFAULT = ChecksumType.MD5.name();
-
-  /**
-   * The batch size of deleting multiple objects per request for the given object storage.
-   */
-  public static final String FS_FILESTORE_BATCH_DELETE_SIZE = "fs.filestore.delete.batch-size";
-  public static final int FS_FILESTORE_BATCH_DELETE_SIZE_DEFAULT = 250;
 }

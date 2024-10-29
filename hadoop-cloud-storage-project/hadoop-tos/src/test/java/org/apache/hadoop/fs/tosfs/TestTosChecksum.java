@@ -63,7 +63,7 @@ public class TestTosChecksum {
     Configuration fileStoreConf = new Configuration();
     fileStoreConf.set(FileStoreKeys.FS_FILESTORE_CHECKSUM_ALGORITHM, ALGORITHM_NAME);
     fileStoreConf.set(FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE, ChecksumType.MD5.name());
-    fileStoreConf.set(FileStoreKeys.FS_FILESTORE_ENDPOINT, fileStoreRoot);
+    fileStoreConf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key("filestore"), fileStoreRoot);
 
     URI uri0 = new URI("filestore://" + TestUtility.bucket() + "/");
     Object[] objs = new Object[] { ChecksumType.MD5, fileStoreConf, uri0,
@@ -72,8 +72,8 @@ public class TestTosChecksum {
 
     // The 2nd argument.
     Configuration tosConf = new Configuration();
-    tosConf.set(ConfKeys.TOS_CHECKSUM_ALGORITHM, ALGORITHM_NAME);
-    tosConf.set(ConfKeys.TOS_CHECKSUM_TYPE, ChecksumType.CRC32C.name());
+    tosConf.set(TosKeys.FS_TOS_CHECKSUM_ALGORITHM, ALGORITHM_NAME);
+    tosConf.set(TosKeys.FS_TOS_CHECKSUM_TYPE, ChecksumType.CRC32C.name());
 
     URI uri1 = new URI(TOS_SCHEME + "://" + TestUtility.bucket() + "/");
     objs = new Object[] { ChecksumType.CRC32C, tosConf, uri1,

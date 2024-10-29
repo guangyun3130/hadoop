@@ -21,7 +21,6 @@ package org.apache.hadoop.fs.tosfs.object.tos;
 import com.volcengine.tos.internal.model.CRC64Checksum;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.tosfs.common.Bytes;
-import org.apache.hadoop.fs.tosfs.conf.ConfKeys;
 import org.apache.hadoop.fs.tosfs.conf.TosKeys;
 import org.apache.hadoop.fs.tosfs.object.ChecksumType;
 import org.apache.hadoop.fs.tosfs.object.Constants;
@@ -72,13 +71,13 @@ public class TestTOSObjectStorage {
     List<Object[]> values = new ArrayList<>();
 
     Configuration conf = new Configuration();
-    conf.set(ConfKeys.TOS_CHECKSUM_TYPE, ChecksumType.CRC64ECMA.name());
+    conf.set(TosKeys.FS_TOS_CHECKSUM_TYPE, ChecksumType.CRC64ECMA.name());
     values.add(new Object[] {
         ObjectStorageFactory.createWithPrefix(String.format("tos-%s/", UUIDUtils.random()),
             TOS_SCHEME, TestUtility.bucket(), conf), new CRC64Checksum(), ChecksumType.CRC64ECMA });
 
     conf = new Configuration();
-    conf.set(ConfKeys.TOS_CHECKSUM_TYPE, ChecksumType.CRC32C.name());
+    conf.set(TosKeys.FS_TOS_CHECKSUM_TYPE, ChecksumType.CRC32C.name());
     values.add(new Object[] {
         ObjectStorageFactory.createWithPrefix(String.format("tos-%s/", UUIDUtils.random()),
             TOS_SCHEME, TestUtility.bucket(), conf), new PureJavaCrc32C(), ChecksumType.CRC32C });
@@ -113,7 +112,7 @@ public class TestTOSObjectStorage {
     Assume.assumeFalse(tos.bucket().isDirectory());
 
     Configuration conf = new Configuration(tos.conf());
-    conf.setBoolean(ConfKeys.TOS_GET_FILE_STATUS_ENABLED, true);
+    conf.setBoolean(TosKeys.FS_TOS_GET_FILE_STATUS_ENABLED, true);
     tos.initialize(conf, tos.bucket().name());
 
     String key = "testFileStatus";

@@ -79,7 +79,7 @@ public class TestRenameOp extends TestBaseOps {
   @Test
   public void testRenameFileDirectly() throws IOException {
     Configuration conf = new Configuration();
-    conf.setLong(ConfKeys.MULTIPART_COPY_THRESHOLD.key(storage.scheme()), 1L << 20);
+    conf.setLong(ConfKeys.FS_MULTIPART_COPY_THRESHOLD.key(storage.scheme()), 1L << 20);
     operation = new ExtendedRenameOp(conf, storage, renamePool);
 
     Path renameSrc = path("renameSrc");
@@ -111,7 +111,7 @@ public class TestRenameOp extends TestBaseOps {
   public void testRenameFileByUploadParts() throws IOException {
     Assume.assumeFalse(storage.bucket().isDirectory());
     Configuration conf = new Configuration();
-    conf.setLong(ConfKeys.MULTIPART_COPY_THRESHOLD.key(storage.scheme()), 1L << 20);
+    conf.setLong(ConfKeys.FS_MULTIPART_COPY_THRESHOLD.key(storage.scheme()), 1L << 20);
     operation = new ExtendedRenameOp(conf, storage, renamePool);
 
     Path renameSrc = path("renameSrc");

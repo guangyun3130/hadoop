@@ -73,12 +73,12 @@ public class ObjectOutputStream extends OutputStream {
     this.destScheme = dest.toUri().getScheme();
     this.totalWroteSize = 0;
     this.destKey = createDestKey(dest);
-    this.multiUploadThreshold = conf.getLong(ConfKeys.MULTIPART_THRESHOLD.key(destScheme),
-        ConfKeys.MULTIPART_THRESHOLD_DEFAULT);
+    this.multiUploadThreshold = conf.getLong(ConfKeys.FS_MULTIPART_THRESHOLD.key(destScheme),
+        ConfKeys.FS_MULTIPART_THRESHOLD_DEFAULT);
     this.byteSizePerPart =
-        conf.getLong(ConfKeys.MULTIPART_SIZE.key(destScheme), ConfKeys.MULTIPART_SIZE_DEFAULT);
-    this.stagingBufferSize = conf.getInt(ConfKeys.MULTIPART_STAGING_BUFFER_SIZE,
-        ConfKeys.MULTIPART_STAGING_BUFFER_SIZE_DEFAULT);
+        conf.getLong(ConfKeys.FS_MULTIPART_SIZE.key(destScheme), ConfKeys.FS_MULTIPART_SIZE_DEFAULT);
+    this.stagingBufferSize = conf.getInt(ConfKeys.FS_MULTIPART_STAGING_BUFFER_SIZE.key(destScheme),
+        ConfKeys.FS_MULTIPART_STAGING_BUFFER_SIZE_DEFAULT);
     this.allowPut = allowPut;
     this.stagingDirs = createStagingDirs(conf, destScheme);
 
@@ -88,10 +88,10 @@ public class ObjectOutputStream extends OutputStream {
   }
 
   private static List<File> createStagingDirs(Configuration conf, String scheme) {
-    String[] dirs =
-        conf.getStrings(ConfKeys.MULTIPART_STAGING_DIR, ConfKeys.MULTIPART_STAGING_DIR_DEFAULT);
+    String[] dirs = conf.getStrings(ConfKeys.FS_MULTIPART_STAGING_DIR.key(scheme),
+        ConfKeys.FS_MULTIPART_STAGING_DIR_DEFAULT);
     Preconditions.checkArgument(dirs != null && dirs.length > 0, "'%s' cannot be an empty list",
-        ConfKeys.MULTIPART_STAGING_DIR);
+        ConfKeys.FS_MULTIPART_STAGING_DIR.key(scheme));
 
     List<File> stagingDirs = new ArrayList<>();
     for (String dir : dirs) {
@@ -99,14 +99,18 @@ public class ObjectOutputStream extends OutputStream {
       File stagingDir = new File(dir);
       if (!stagingDir.exists() && stagingDir.mkdirs()) {
         Preconditions.checkArgument(stagingDir.setWritable(true, false),
-            "Failed to change staging dir permission to writable, please check %s with value %s", ConfKeys.MULTIPART_STAGING_DIR, dir);
+            "Failed to change staging dir permission to writable, please check %s with value %s",
+            ConfKeys.FS_MULTIPART_STAGING_DIR.key(scheme), dir);
         Preconditions.checkArgument(stagingDir.setReadable(true, false),
-            "Failed to change staging dir permission to readable, please check %s with value %s", ConfKeys.MULTIPART_STAGING_DIR, dir);
+            "Failed to change staging dir permission to readable, please check %s with value %s",
+            ConfKeys.FS_MULTIPART_STAGING_DIR.key(scheme), dir);
       } else {
         Preconditions.checkArgument(stagingDir.exists(),
-            "Failed to create staging dir, please check %s with value %s", ConfKeys.MULTIPART_STAGING_DIR, dir);
+            "Failed to create staging dir, please check %s with value %s",
+            ConfKeys.FS_MULTIPART_STAGING_DIR.key(scheme), dir);
         Preconditions.checkArgument(stagingDir.isDirectory(),
-            "Staging dir should be a directory, please check %s with value %s", ConfKeys.MULTIPART_STAGING_DIR, dir);
+            "Staging dir should be a directory, please check %s with value %s",
+            ConfKeys.FS_MULTIPART_STAGING_DIR.key(scheme), dir);
       }
       stagingDirs.add(stagingDir);
     }
@@ -174,7 +178,7 @@ public class ObjectOutputStream extends OutputStream {
         Preconditions.checkState(byteSizePerPart >= multipartUpload.minPartSize(),
             "Configured upload part size %s must be greater than or equals to the minimal part size %s,"
                 + " please check configure key %s.", byteSizePerPart, multipartUpload.minPartSize(),
-            ConfKeys.MULTIPART_THRESHOLD.key(destScheme));
+            ConfKeys.FS_MULTIPART_THRESHOLD.key(destScheme));
 
         // Upload the accumulated staging files whose length >= byteSizePerPart.
         for (StagingPart stagingPart : stagingParts) {

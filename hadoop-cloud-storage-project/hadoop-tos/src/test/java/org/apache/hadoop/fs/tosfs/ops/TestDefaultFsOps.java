@@ -50,12 +50,12 @@ public class TestDefaultFsOps extends TestBaseFsOps {
   @Parameterized.Parameters(name = "conf = {0}")
   public static List<Configuration> createConf() {
     Configuration directRenameConf = new Configuration();
-    directRenameConf.setBoolean(ConfKeys.OBJECT_RENAME_ENABLED.key("tos"), true);
-    directRenameConf.setBoolean(ConfKeys.ASYNC_CREATE_MISSED_PARENT.key("tos"), false);
+    directRenameConf.setBoolean(ConfKeys.FS_OBJECT_RENAME_ENABLED.key("tos"), true);
+    directRenameConf.setBoolean(ConfKeys.FS_ASYNC_CREATE_MISSED_PARENT.key("tos"), false);
 
     Configuration copiedRenameConf = new Configuration();
-    copiedRenameConf.setLong(ConfKeys.MULTIPART_COPY_THRESHOLD.key("tos"), 1L << 20);
-    copiedRenameConf.setBoolean(ConfKeys.ASYNC_CREATE_MISSED_PARENT.key("tos"), false);
+    copiedRenameConf.setLong(ConfKeys.FS_MULTIPART_COPY_THRESHOLD.key("tos"), 1L << 20);
+    copiedRenameConf.setBoolean(ConfKeys.FS_ASYNC_CREATE_MISSED_PARENT.key("tos"), false);
     return Lists.newArrayList(directRenameConf, copiedRenameConf);
   }
 

@@ -22,6 +22,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.tosfs.conf.ConfKeys;
+import org.apache.hadoop.fs.tosfs.conf.FileStoreKeys;
 import org.apache.hadoop.fs.tosfs.object.exceptions.NotAppendableException;
 import org.apache.hadoop.fs.tosfs.object.request.ListObjectsRequest;
 import org.apache.hadoop.fs.tosfs.object.response.ListObjectsResponse;
@@ -58,13 +60,6 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_BATCH_DELETE_SIZE;
-import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_BATCH_DELETE_SIZE_DEFAULT;
-import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_CHECKSUM_ALGORITHM;
-import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE;
-import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE_DEFAULT;
-import static org.apache.hadoop.fs.tosfs.conf.FileStoreKeys.FS_FILESTORE_ENDPOINT;
-
 public class FileStore implements ObjectStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(FileStore.class);
@@ -99,11 +94,12 @@ public class FileStore implements ObjectStorage {
   public void initialize(Configuration conf, String bucket) {
     this.bucket = bucket;
     this.conf = conf;
-    String endpoint = conf.get(FS_FILESTORE_ENDPOINT);
+    String endpoint = conf.get(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(NAME));
     if (endpoint == null || endpoint.isEmpty()) {
       endpoint = System.getenv(ENV_FILE_STORAGE_ROOT);
     }
-    Preconditions.checkNotNull(endpoint, "%s cannot be null", FS_FILESTORE_ENDPOINT);
+    Preconditions.checkNotNull(endpoint, "%s cannot be null",
+        ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key(NAME));
 
     if (endpoint.endsWith(SLASH)) {
       this.root = endpoint;
@@ -112,9 +108,10 @@ public class FileStore implements ObjectStorage {
     }
     LOG.debug("the root path is: {}", this.root);
 
-    String algorithm = conf.get(FS_FILESTORE_CHECKSUM_ALGORITHM);
-    ChecksumType checksumType = ChecksumType.valueOf(
-        conf.get(FS_FILESTORE_CHECKSUM_TYPE, FS_FILESTORE_CHECKSUM_TYPE_DEFAULT).toUpperCase());
+    String algorithm = conf.get(FileStoreKeys.FS_FILESTORE_CHECKSUM_ALGORITHM,
+        FileStoreKeys.FS_FILESTORE_CHECKSUM_ALGORITHM_DEFAULT);
+    ChecksumType checksumType = ChecksumType.valueOf(conf.get(FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE,
+        FileStoreKeys.FS_FILESTORE_CHECKSUM_TYPE_DEFAULT).toUpperCase());
     Preconditions.checkArgument(checksumType == ChecksumType.MD5,
         "Checksum type %s is not supported by FileStore.", checksumType.name());
     checksumInfo = new ChecksumInfo(algorithm, checksumType);
@@ -241,8 +238,8 @@ public class FileStore implements ObjectStorage {
   @Override
   public void deleteAll(String prefix) {
     Iterable<ObjectInfo> objects = listAll(prefix, "");
-    ObjectUtils.deleteAllObjects(this, objects,
-        conf.getInt(FS_FILESTORE_BATCH_DELETE_SIZE, FS_FILESTORE_BATCH_DELETE_SIZE_DEFAULT));
+    ObjectUtils.deleteAllObjects(this, objects, conf.getInt(ConfKeys.FS_BATCH_DELETE_SIZE.key(NAME),
+        ConfKeys.FS_BATCH_DELETE_SIZE_DEFAULT));
   }
 
   @Override
