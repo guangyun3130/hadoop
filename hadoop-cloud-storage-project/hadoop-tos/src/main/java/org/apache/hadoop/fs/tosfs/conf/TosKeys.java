@@ -109,15 +109,15 @@ public class TosKeys {
   public static final int FS_TOS_HTTP_CONNECT_TIMEOUT_MILLS_DEFAULT = 10000;
 
   /**
-   * The reading timeout when reading data from tos. Note that it is configured for the tos client,
-   * not proton.
+   * The reading timeout when reading data from tos. Note that it is configured for the tos client
+   * sdk, not hadoop-tos.
    */
   public static final String FS_TOS_HTTP_READ_TIMEOUT_MILLS = "fs.tos.http.readTimeoutMills";
   public static final int FS_TOS_HTTP_READ_TIMEOUT_MILLS_DEFAULT = 30000;
 
   /**
-   * The writing timeout when uploading data to tos. Note that it is configured for the tos client,
-   * not proton.
+   * The writing timeout when uploading data to tos. Note that it is configured for the tos client
+   * sdk, not hadoop-tos.
    */
   public static final String FS_TOS_HTTP_WRITE_TIMEOUT_MILLS = "fs.tos.http.writeTimeoutMills";
   public static final int FS_TOS_HTTP_WRITE_TIMEOUT_MILLS_DEFAULT = 30000;
@@ -152,11 +152,10 @@ public class TosKeys {
 
   /**
    * The prefix will be used as the product name in TOS SDK. The final user agent pattern is
-   * '{prefix}/Proton/{proton version}'.
-   * TODO: review it.
+   * '{prefix}/TOS_FS/{hadoop tos version}'.
    */
   public static final String FS_TOS_USER_AGENT_PREFIX = "fs.tos.user.agent.prefix";
-  public static final String FS_TOS_USER_AGENT_PREFIX_DEFAULT = "EMR";
+  public static final String FS_TOS_USER_AGENT_PREFIX_DEFAULT = "HADOOP-TOS";
 
   // TOS common keys.
   /**
@@ -187,7 +186,7 @@ public class TosKeys {
   public static final int FS_TOS_BATCH_DELETE_MAX_RETRIES_DEFAULT = 20;
 
   /**
-   * The codes from TOS deleteMultiObjects response, Proton will resend the batch delete request to
+   * The codes from TOS deleteMultiObjects response, client will resend the batch delete request to
    * delete the failed keys again if the response only contains these codes, otherwise won't send
    * request anymore.
    */
@@ -213,7 +212,7 @@ public class TosKeys {
   public static final int FS_TOS_LIST_OBJECTS_COUNT_DEFAULT = 1000;
 
   /**
-   * The maximum retry times of sending request via TOS client, Proton will resend the request if
+   * The maximum retry times of sending request via TOS client, client will resend the request if
    * got retryable exceptions, e.g. SocketException, UnknownHostException, SSLException,
    * InterruptedException, SocketTimeoutException, or got TOO_MANY_REQUESTS, INTERNAL_SERVER_ERROR
    * http codes.
@@ -232,7 +231,7 @@ public class TosKeys {
       TOSErrorCodes.FAST_FAILURE_CONFLICT_ERROR_CODES;
 
   /**
-   * The maximum retry times of reading object content via TOS client, Proton will resend the
+   * The maximum retry times of reading object content via TOS client, client will resend the
    * request to create a new input stream if getting unexpected end of stream error during reading
    * the input stream.
    */

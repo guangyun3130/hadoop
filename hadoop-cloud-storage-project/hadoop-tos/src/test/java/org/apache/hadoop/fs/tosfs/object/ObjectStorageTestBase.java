@@ -38,7 +38,7 @@ import java.io.IOException;
 public class ObjectStorageTestBase {
   private static final Logger LOG = LoggerFactory.getLogger(ObjectStorageTestBase.class);
   protected Configuration conf;
-  protected Configuration protonConf;
+  protected Configuration tosConf;
   protected Path testDir;
   protected FileSystem fs;
   protected String scheme;
@@ -55,14 +55,14 @@ public class ObjectStorageTestBase {
     conf = new Configuration();
     conf.set(ConfKeys.FS_OBJECT_STORAGE_ENDPOINT.key("filestore"), tempDirPath);
     conf.set("fs.filestore.impl", LocalFileSystem.class.getName());
-    protonConf = new Configuration(conf);
+    tosConf = new Configuration(conf);
     // Set the environment variable for ObjectTestUtils#assertObject
     TestUtility.setSystemEnv(FileStore.ENV_FILE_STORAGE_ROOT, tempDirPath);
 
     testDir = new Path("filestore://" + FileStore.DEFAULT_BUCKET + "/", UUIDUtils.random());
     fs = testDir.getFileSystem(conf);
     scheme = testDir.toUri().getScheme();
-    storage = ObjectStorageFactory.create(scheme, testDir.toUri().getAuthority(), protonConf);
+    storage = ObjectStorageFactory.create(scheme, testDir.toUri().getAuthority(), tosConf);
   }
 
   @After

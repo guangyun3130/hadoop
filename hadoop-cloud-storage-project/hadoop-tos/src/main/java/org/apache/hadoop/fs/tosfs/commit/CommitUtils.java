@@ -329,7 +329,7 @@ public class CommitUtils {
     void visit(FileStatus f);
   }
 
-  public static boolean supportProtonCommit(Configuration conf, Path outputPath) {
+  public static boolean supportObjectStorageCommit(Configuration conf, Path outputPath) {
     return supportSchemes(conf).contains(outputPath.toUri().getScheme());
   }
 

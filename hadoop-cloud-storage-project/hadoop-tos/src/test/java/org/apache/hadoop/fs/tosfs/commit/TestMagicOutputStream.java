@@ -186,7 +186,7 @@ public class TestMagicOutputStream extends ObjectStorageTestBase {
   private class TestingMagicOutputStream extends MagicOutputStream {
 
     TestingMagicOutputStream(Path magic) {
-      super(fs, storage, threadPool, protonConf, magic);
+      super(fs, storage, threadPool, tosConf, magic);
     }
 
     protected void persist(Path p, byte[] data) {

@@ -178,7 +178,7 @@ public class RawFileSystem extends FileSystem {
       if (fileStatus == null && FuseUtils.fuseEnabled()) {
         // The fuse requires the file to be visible when accessing getFileStatus once we created the file, so here we
         // close and commit the file to be visible explicitly for fuse, and then reopen the file output stream for
-        // further data bytes writing. For more details please see: https://code.byted.org/emr/proton/issues/825
+        // further data bytes writing.
         out.close();
         out = new ObjectOutputStream(storage, uploadThreadPool, getConf(), makeQualified(path), true);
       }

@@ -73,7 +73,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
       for (int i = 0; i < 3; i++) {
         tmpDirs.add(tmp.newDir());
       }
-      Configuration newConf = new Configuration(protonConf);
+      Configuration newConf = new Configuration(tosConf);
       newConf.set(ConfKeys.FS_MULTIPART_STAGING_DIR.key("filestore"), Joiner.on(",").join(tmpDirs));
 
       // Start multiple threads to open streams to create staging dir.
@@ -91,7 +91,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   @Test
   public void testWriteZeroByte() throws IOException {
     Path zeroByteTxt = path("zero-byte.txt");
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, zeroByteTxt, true);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, zeroByteTxt, true);
     // write zero-byte and close.
     out.write(new byte[0], 0, 0);
     out.close();
@@ -104,7 +104,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   @Test
   public void testWriteZeroByteWithoutAllowPut() throws IOException {
     Path zeroByteTxt = path("zero-byte-without-allow-put.txt");
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, zeroByteTxt, false);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, zeroByteTxt, false);
     // write zero-byte and close.
     out.close();
     assertStagingPart(0, out.stagingParts());
@@ -116,7 +116,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   @Test
   public void testDeleteStagingFileWhenUploadPartsOK() throws IOException {
     Path path = path("data.txt");
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, path, true);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, path, true);
     byte[] data = TestUtility.rand((int) (ConfKeys.FS_MULTIPART_SIZE_DEFAULT * 2));
     out.write(data);
     out.waitForPartsUpload();
@@ -132,7 +132,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   @Test
   public void testDeleteStagingFileWithClose() throws IOException {
     Path path = path("data.txt");
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, path, true);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, path, true);
     byte[] data = TestUtility.rand((int) (ConfKeys.FS_MULTIPART_SIZE_DEFAULT * 2));
     out.write(data);
     out.close();
@@ -144,7 +144,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   @Test
   public void testDeleteSimplePutStagingFile() throws IOException {
     Path smallTxt = path("small.txt");
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, smallTxt, true);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, smallTxt, true);
     byte[] data = TestUtility.rand(4 << 20);
     out.write(data);
     for (StagingPart part : out.stagingParts()) {
@@ -159,7 +159,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   @Test
   public void testSimplePut() throws IOException {
     Path smallTxt = path("small.txt");
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, smallTxt, true);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, smallTxt, true);
     byte[] data = TestUtility.rand(4 << 20);
     out.write(data);
     out.close();
@@ -171,7 +171,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   }
 
   public void testWrite(int uploadPartSize, int len) throws IOException {
-    Configuration newConf = new Configuration(protonConf);
+    Configuration newConf = new Configuration(tosConf);
     newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
         uploadPartSize);
 
@@ -207,7 +207,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
 
   public void testParallelWriteOneOutPutStreamImpl(int partSize, int epochs, int batchSize)
       throws IOException, ExecutionException, InterruptedException {
-    Configuration newConf = new Configuration(protonConf);
+    Configuration newConf = new Configuration(tosConf);
     newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(FSUtils.scheme(conf, testDir.toUri())),
         partSize);
 
@@ -283,7 +283,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   }
 
   private void testMultipartThreshold(int partSize, int multipartThreshold, int dataSize) throws IOException {
-    Configuration newConf = new Configuration(protonConf);
+    Configuration newConf = new Configuration(tosConf);
     newConf.setLong(ConfKeys.FS_MULTIPART_SIZE.key(scheme), partSize);
     newConf.setLong(ConfKeys.FS_MULTIPART_THRESHOLD.key(scheme), multipartThreshold);
     Path outPath = path(String.format("threshold-%d-%d-%d.txt", partSize, multipartThreshold, dataSize));
@@ -370,7 +370,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
     int partNum = 1;
 
     byte[] data = TestUtility.rand(len);
-    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, outPath, true);
+    ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, outPath, true);
     try {
       out.write(data);
       out.close();
@@ -386,7 +386,7 @@ public class TestObjectOutputStream extends ObjectStorageTestBase {
   public void testWriteClosedStream() throws IOException {
     byte[] data = TestUtility.rand(10);
     Path outPath = path("testWriteClosedStream.txt");
-    try (ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, protonConf, outPath, true)) {
+    try (ObjectOutputStream out = new ObjectOutputStream(storage, threadPool, tosConf, outPath, true)) {
       out.close();
       out.write(data);
     } catch (IllegalStateException e) {

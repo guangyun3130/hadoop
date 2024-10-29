@@ -154,10 +154,10 @@ public class TOS implements DirectoryStorage {
   private BucketInfo bucketInfo;
 
   static {
-    org.apache.log4j.Logger logger = LogManager.getLogger("io.proton.shaded.com.volcengine.tos");
+    org.apache.log4j.Logger logger = LogManager.getLogger("com.volcengine.tos");
     String logLevel = System.getProperty("tos.log.level", "WARN");
 
-    LOG.debug("Reset the log level of io.proton.shaded.com.volcengine.tos with {} ", logLevel);
+    LOG.debug("Reset the log level of com.volcengine.tos with {} ", logLevel);
     logger.setLevel(Level.toLevel(logLevel.toUpperCase(), Level.WARN));
   }
 

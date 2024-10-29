@@ -47,7 +47,7 @@ public class Committer extends FileOutputCommitter {
 
   private org.apache.hadoop.mapreduce.OutputCommitter getWrapped(JobContext context) throws IOException {
     if(wrapped == null) {
-      wrapped = CommitUtils.supportProtonCommit(context.getConfiguration(), getOutputPath(context))
+      wrapped = CommitUtils.supportObjectStorageCommit(context.getConfiguration(), getOutputPath(context))
           ? new org.apache.hadoop.fs.tosfs.commit.Committer(getOutputPath(context), context)
           : new org.apache.hadoop.mapred.FileOutputCommitter();
       LOG.debug("Using OutputCommitter implementation {}", wrapped.getClass().getName());
@@ -64,7 +64,7 @@ public class Committer extends FileOutputCommitter {
 
   private org.apache.hadoop.mapreduce.OutputCommitter getWrapped(TaskAttemptContext context) throws IOException {
     if(wrapped == null) {
-      wrapped = CommitUtils.supportProtonCommit(context.getConfiguration(), getOutputPath(context))
+      wrapped = CommitUtils.supportObjectStorageCommit(context.getConfiguration(), getOutputPath(context))
           ? new org.apache.hadoop.fs.tosfs.commit.Committer(getOutputPath(context), context)
           : new org.apache.hadoop.mapred.FileOutputCommitter();
     }

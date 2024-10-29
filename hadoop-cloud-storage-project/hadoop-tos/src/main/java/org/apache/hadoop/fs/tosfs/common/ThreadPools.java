@@ -41,12 +41,12 @@ public class ThreadPools {
   private ThreadPools() {
   }
 
-  public static final String WORKER_THREAD_POOL_SIZE_PROP = "proton.worker.num-threads";
+  public static final String WORKER_THREAD_POOL_SIZE_PROP = "tos.worker.num-threads";
 
   public static final int WORKER_THREAD_POOL_SIZE =
       poolSize(Math.max(2, Runtime.getRuntime().availableProcessors()));
 
-  private static final ExecutorService WORKER_POOL = newWorkerPool("proton-default-worker-pool");
+  private static final ExecutorService WORKER_POOL = newWorkerPool("tos-default-worker-pool");
 
   public static ExecutorService defaultWorkerPool() {
     return WORKER_POOL;

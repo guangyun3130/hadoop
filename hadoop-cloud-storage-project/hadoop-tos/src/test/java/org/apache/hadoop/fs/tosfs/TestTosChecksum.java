@@ -46,7 +46,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class TestTosChecksum {
-  private static final String FILE_STORE_ROOT = TempFiles.newTempDir("TestProtonChecksum");
+  private static final String FILE_STORE_ROOT = TempFiles.newTempDir("TestTosChecksum");
   private static final String ALGORITHM_NAME = "mock-algorithm";
   private static final String PREFIX = UUIDUtils.random();
 
