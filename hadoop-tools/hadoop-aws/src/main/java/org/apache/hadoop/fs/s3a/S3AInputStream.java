@@ -41,7 +41,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.hadoop.fs.impl.BufferManagerFromVectorArgs;
+import org.apache.hadoop.fs.impl.VectorIOBufferPool;
 import org.apache.hadoop.io.ByteBufferPool;
 import org.apache.hadoop.util.Preconditions;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -937,7 +937,7 @@ public class S3AInputStream extends FSInputStream implements  CanSetReadahead,
     requireNonNull(allocate , "Null allocator");
     requireNonNull(release, "Null releaser");
 
-    ByteBufferPool bufferPool = new BufferManagerFromVectorArgs(allocate, release);
+    ByteBufferPool bufferPool = new VectorIOBufferPool(allocate, release);
     // prepare to read
     List<? extends FileRange> sortedRanges = validateAndSortRanges(ranges,
         fileLength);
@@ -955,6 +955,8 @@ public class S3AInputStream extends FSInputStream implements  CanSetReadahead,
       LOG.debug("Not merging the ranges as they are disjoint");
       streamStatistics.readVectoredOperationStarted(sortedRanges.size(), sortedRanges.size());
       for (FileRange range: sortedRanges) {
+        // submit the read operation to the threadpool
+        // TODO: track wait time.
         boundedThreadPool.submit(() -> readSingleRange(range, bufferPool));
       }
     } else {
@@ -997,7 +999,7 @@ public class S3AInputStream extends FSInputStream implements  CanSetReadahead,
     } catch (IOException ex) {
       // any exception here means that repeated HEAD requests have failed;
       // consider the request unrecoverable.
-      LOG.debug("Failed to initiating GET request to {} ", pathStr, ex);
+      LOG.debug("Failed initiating GET request to {}; failing all ranges", pathStr, ex);
       combinedFileRange.getUnderlying().stream()
           .map(FileRange::getData)
           .forEach(f -> f.completeExceptionally(ex));
@@ -1010,25 +1012,18 @@ public class S3AInputStream extends FSInputStream implements  CanSetReadahead,
     } catch (IOException ex) {
       LOG.debug("Exception while reading {} from path {} ", combinedFileRange, pathStr, ex);
 
-      // close the ongoing read.
+      // close the ongoing read. No attempt is made to train the stream.
       IOUtils.cleanupWithLogger(LOG, rangeContent);
       rangeContent = null;
-      // complete exception all the underlying ranges which have not already
-      // finished.
 
       // get all the incomplete reads.
-      final List<FileRange> incomplete = combinedFileRange.getUnderlying().stream()
+      final List<FileRange> unreadRanges = combinedFileRange.getUnderlying().stream()
           .filter(f -> !f.getData().isDone())
           .collect(Collectors.toList());
-      // previously these were completed exceptionally; now they are
-      // recovered from.
-      // while rebuilding a new combined range is possible, if there are problems
-      // we just fall back to each range being read individually,
-      // in sequence. Suboptimal, but simple -especially as this is
-      // already happening in a worker thread.
 
-      for (FileRange child : incomplete) {
-        // failure reporting is already handed internally.
+      // Attempt to recover from the failure by reading each range individually.
+      // Suboptimal, but pragmatic.
+      for (FileRange child : unreadRanges) {
         readSingleRange(child, bufferPool);
       }
 
@@ -1165,16 +1160,18 @@ public class S3AInputStream extends FSInputStream implements  CanSetReadahead,
     try {
       long position = range.getOffset();
       int length = range.getLength();
+      // a GET request, which has risk of failing if the file is gone, changed etc.
       objectRange = getS3Object("readSingleRange", position, length, true);
       buffer = bufferPool.getBuffer(false, range.getLength());
 
-      // TODO: error handling if the read fails.
+      // read in the data and declare this range successfully read.
       populateBuffer(range, buffer, objectRange);
       range.getData().complete(buffer);
-      LOG.debug("Finished reading range {} from path {} ", range, pathStr);
+      LOG.debug("Finished reading range {} from path {}", range, pathStr);
     } catch (IOException ex) {
-      LOG.debug("Exception while reading a range {} from path {} ", range, pathStr, ex);
+      LOG.debug("Exception while reading a range {} from path {}", range, pathStr, ex);
       if (buffer != null) {
+        // return any buffer to the pool
         bufferPool.putBuffer(buffer);
       }
       range.getData().completeExceptionally(ex);
@@ -1201,6 +1198,7 @@ public class S3AInputStream extends FSInputStream implements  CanSetReadahead,
 
     int length = range.getLength();
     if (buffer.isDirect()) {
+      // direct buffer so copy the data into the buffer from the stream.
       VectoredReadUtils.readInDirectBuffer(range, buffer,
           (position, tmp, offset, currentLength) -> {
             readByteArray(objectContent, range, tmp, offset, currentLength);

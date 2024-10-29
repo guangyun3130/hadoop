@@ -24,13 +24,18 @@ import java.util.function.IntFunction;
 
 import org.apache.hadoop.io.ByteBufferPool;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * A ByteBufferPool implementation that uses a pair of functions to allocate
  * and release ByteBuffers; intended for use implementing the VectorIO API
  * as it makes the pair of functions easier to pass around and use in
  * existing code.
+ * <p>
+ * No matter what kind of buffer is requested, the allocation function
+ * is invoked; that is: the direct flag is ignored.
  */
-public final class BufferManagerFromVectorArgs implements ByteBufferPool {
+public final class VectorIOBufferPool implements ByteBufferPool {
 
   /** The function to allocate a buffer. */
   private final IntFunction<ByteBuffer> allocate;
@@ -42,10 +47,11 @@ public final class BufferManagerFromVectorArgs implements ByteBufferPool {
    * @param allocate the function to allocate ByteBuffer
    * @param release the function to release a ByteBuffer.
    */
-  public BufferManagerFromVectorArgs(IntFunction<ByteBuffer> allocate,
-        Consumer<ByteBuffer> release) {
-    this.allocate = allocate;
-    this.release = release;
+  public VectorIOBufferPool(
+      IntFunction<ByteBuffer> allocate,
+      Consumer<ByteBuffer> release) {
+    this.allocate = requireNonNull(allocate);
+    this.release = requireNonNull(release);
   }
 
   /**
