@@ -900,7 +900,7 @@ public class RouterRpcServer extends AbstractService implements ClientProtocol,
       asyncTry(() -> {
         getRPCClient().invokeSingle(nsId, method, clazz);
         asyncApply(result -> {
-          if (result != null && isExpectedClass(clazz, result)) {
+          if (result != null) {
             foreach.breakNow();
             return result;
           }
