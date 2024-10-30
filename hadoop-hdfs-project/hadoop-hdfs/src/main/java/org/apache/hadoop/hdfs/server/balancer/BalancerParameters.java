@@ -209,8 +209,8 @@ final class BalancerParameters {
       return this;
     }
 
-    Builder setLimitOverUtilizedNum(int limitOverUtilizedNum) {
-      this.limitOverUtilizedNum = limitOverUtilizedNum;
+    Builder setLimitOverUtilizedNum(int overUtilizedNum) {
+      this.limitOverUtilizedNum = overUtilizedNum;
       return this;
     }
 
