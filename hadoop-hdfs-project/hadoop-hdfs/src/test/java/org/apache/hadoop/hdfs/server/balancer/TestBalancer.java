@@ -473,7 +473,7 @@ public class TestBalancer {
   static void waitForBalancer(long totalUsedSpace, long totalCapacity,
       ClientProtocol client, MiniDFSCluster cluster, BalancerParameters p,
       int expectedExcludedNodes) throws IOException, TimeoutException {
-    waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p, expectedExcludedNodes, true);
+    waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p, expectedExcludedNodes, true, 0, 0);
   }
 
   /**
@@ -484,7 +484,8 @@ public class TestBalancer {
    */
   static void waitForBalancer(long totalUsedSpace, long totalCapacity,
       ClientProtocol client, MiniDFSCluster cluster, BalancerParameters p,
-      int expectedExcludedNodes, boolean checkExcludeNodesUtilization)
+      int expectedExcludedNodes, boolean checkExcludeNodesUtilization,
+      int expectedExcludedSourceNodes, int expectedExcludedTargetNodes)
       throws IOException, TimeoutException {
     long timeout = TIMEOUT;
     long failtime = (timeout <= 0L) ? Long.MAX_VALUE
@@ -495,6 +496,9 @@ public class TestBalancer {
     if (!p.getExcludedNodes().isEmpty()) {
       totalCapacity -= p.getExcludedNodes().size() * CAPACITY;
     }
+    if (!p.getExcludedTargetNodes().isEmpty()) {
+      totalCapacity -= p.getExcludedTargetNodes().size() * CAPACITY;
+    }
     final double avgUtilization = ((double)totalUsedSpace) / totalCapacity;
     boolean balanced;
     do {
@@ -503,6 +507,8 @@ public class TestBalancer {
       assertEquals(datanodeReport.length, cluster.getDataNodes().size());
       balanced = true;
       int actualExcludedNodeCount = 0;
+      int actualExcludedSourceNodeCount = 0;
+      int actualExcludedTargetNodeCount = 0;
       for (DatanodeInfo datanode : datanodeReport) {
         double nodeUtilization =
             ((double) datanode.getDfsUsed() + datanode.getNonDfsUsed()) /
@@ -517,6 +523,16 @@ public class TestBalancer {
         if (!Dispatcher.Util.isIncluded(p.getIncludedNodes(), datanode)) {
           assertTrue(nodeUtilization == 0);
           actualExcludedNodeCount++;
+          continue;
+        }
+        if(Dispatcher.Util.isExcluded(p.getExcludedTargetNodes(), datanode) ||
+           !Dispatcher.Util.isIncluded(p.getTargetNodes(), datanode)) {
+          actualExcludedTargetNodeCount++;
+          continue;
+        }
+        if(Dispatcher.Util.isExcluded(p.getExcludedSourceNodes(), datanode) ||
+           !Dispatcher.Util.isIncluded(p.getSourceNodes(), datanode)) {
+          actualExcludedSourceNodeCount++;
           continue;
         }
         if (Math.abs(avgUtilization - nodeUtilization) > BALANCE_ALLOWED_VARIANCE) {
@@ -536,6 +552,8 @@ public class TestBalancer {
         }
       }
       assertEquals(expectedExcludedNodes,actualExcludedNodeCount);
+      assertEquals(expectedExcludedSourceNodes, actualExcludedSourceNodeCount);
+      assertEquals(expectedExcludedTargetNodes, actualExcludedTargetNodeCount);
     } while (!balanced);
   }
 
@@ -637,6 +655,13 @@ public class TestBalancer {
   }
 
   private void doTest(Configuration conf, long[] capacities, String[] racks,
+      long newCapacity, String newRack, NewNodeInfo nodes,
+      boolean useTool, boolean useFile, BalancerParameters p) throws Exception {
+    doTest(conf, capacities, racks, newCapacity, 0L, newRack, nodes,
+        useTool, useFile, false, 0.3, p);
+  }
+
+  private void doTest(Configuration conf, long[] capacities, String[] racks,
       long newCapacity, String newRack, boolean useTool) throws Exception {
     doTest(conf, capacities, racks, newCapacity, newRack, null, useTool, false);
   }
@@ -645,7 +670,7 @@ public class TestBalancer {
       long newCapacity, String newRack, NewNodeInfo nodes,
       boolean useTool, boolean useFile) throws Exception {
     doTest(conf, capacities, racks, newCapacity, 0L, newRack, nodes,
-        useTool, useFile, false, 0.3);
+        useTool, useFile, false, 0.3, null);
   }
 
   /** This test start a cluster with specified number of nodes,
@@ -671,7 +696,7 @@ public class TestBalancer {
   private void doTest(Configuration conf, long[] capacities,
       String[] racks, long newCapacity, long newNonDfsUsed, String newRack,
       NewNodeInfo nodes, boolean useTool, boolean useFile,
-      boolean useNamesystemSpy, double clusterUtilization) throws Exception {
+      boolean useNamesystemSpy, double clusterUtilization, BalancerParameters p) throws Exception {
     LOG.info("capacities = " +  long2String(capacities));
     LOG.info("racks      = " +  Arrays.asList(racks));
     LOG.info("newCapacity= " +  newCapacity);
@@ -746,7 +771,7 @@ public class TestBalancer {
                   totalNodes-1-i).getDatanodeId().getXferAddr());
             }
           }
-          //polulate the exclude nodes
+          //populate the exclude nodes
           if (nodes.getNumberofExcludeNodes() > 0) {
             int totalNodes = cluster.getDataNodes().size();
             for (int i=0; i < nodes.getNumberofExcludeNodes(); i++) {
@@ -756,16 +781,16 @@ public class TestBalancer {
           }
         }
       }
-      // run balancer and validate results
-      BalancerParameters.Builder pBuilder =
-          new BalancerParameters.Builder();
-      if (nodes != null) {
-        pBuilder.setExcludedNodes(nodes.getNodesToBeExcluded());
-        pBuilder.setIncludedNodes(nodes.getNodesToBeIncluded());
-        pBuilder.setRunDuringUpgrade(false);
+      if(p == null) {
+        // run balancer and validate results
+        BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
+        if (nodes != null) {
+          pBuilder.setExcludedNodes(nodes.getNodesToBeExcluded());
+          pBuilder.setIncludedNodes(nodes.getNodesToBeIncluded());
+          pBuilder.setRunDuringUpgrade(false);
+        }
+        p = pBuilder.build();
       }
-      BalancerParameters p = pBuilder.build();
-
       int expectedExcludedNodes = 0;
       if (nodes != null) {
         if (!nodes.getNodesToBeExcluded().isEmpty()) {
@@ -828,8 +853,16 @@ public class TestBalancer {
       LOG.info("  .");
       try {
         long totalUsedSpace = totalDfsUsedSpace + totalNonDfsUsedSpace;
+        int expectedExcludedSourceNodes = 0;
+        int expectedExcludedTargetNodes = 0;
+        if(!p.getExcludedSourceNodes().isEmpty()) {
+          expectedExcludedSourceNodes = p.getExcludedSourceNodes().size();
+        }
+        if(!p.getExcludedTargetNodes().isEmpty()) {
+          expectedExcludedTargetNodes = p.getExcludedTargetNodes().size();
+        }
         waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p,
-            excludedNodes, checkExcludeNodesUtilization);
+            excludedNodes, checkExcludeNodesUtilization, expectedExcludedSourceNodes, expectedExcludedTargetNodes);
       } catch (TimeoutException e) {
         // See HDFS-11682. NN may not get heartbeat to reflect the newest
         // block changes.
@@ -1129,7 +1162,7 @@ public class TestBalancer {
     Configuration conf = new HdfsConfiguration();
     initConf(conf);
     doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1},
-        CAPACITY, 1000L, RACK2, null, false, false, false, 0.3);
+        CAPACITY, 1000L, RACK2, null, false, false, false, 0.3, null);
   }
 
   private void testBalancerDefaultConstructor(Configuration conf,
@@ -1961,7 +1994,7 @@ public class TestBalancer {
         // all get block calls, so if two iterations are performed, the duration
         // also includes the time it took to perform the block move ops in the
         // first iteration
-        new PortNumberBasedNodes(1, 0, 0), false, false, true, 0.5);
+        new PortNumberBasedNodes(1, 0, 0), false, false, true, 0.5, null);
     assertTrue("Number of getBlocks should be not less than " +
         getBlocksMaxQps, numGetBlocksCalls.get() >= getBlocksMaxQps);
     long durationMs = 1 + endGetBlocksTime.get() - startGetBlocksTime.get();
@@ -1972,6 +2005,25 @@ public class TestBalancer {
     assertTrue("Expected balancer getBlocks calls per second <= " +
         getBlocksMaxQps, getBlockCallsPerSecond <= getBlocksMaxQps);
   }
+
+  /**
+   * Test balancer with excluded target nodes.
+   */
+  @Test(timeout=100000)
+  public void testBalancerExcludeTargetNodes() throws Exception {
+    final Configuration conf = new HdfsConfiguration();
+    initConf(conf);
+    Set<String> excludeTargetNodes = new HashSet<>();
+    excludeTargetNodes.add("datanodeX");
+    BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
+    pBuilder.setExcludedTargetNodes(excludeTargetNodes);
+    BalancerParameters p = pBuilder.build();
+    doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+        new HostNameBasedNodes(new String[] {"datanodeX", "datanodeY", "datanodeZ"},
+            BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()),
+        false, false, p);
+  }
+
 
   /**
    * @param args
