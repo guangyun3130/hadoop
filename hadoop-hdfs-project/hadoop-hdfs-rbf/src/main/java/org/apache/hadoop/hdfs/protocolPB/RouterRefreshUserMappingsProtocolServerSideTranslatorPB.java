@@ -20,6 +20,10 @@ package org.apache.hadoop.hdfs.protocolPB;
 import org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer;
 import org.apache.hadoop.security.RefreshUserMappingsProtocol;
 import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos;
+import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshSuperUserGroupsConfigurationRequestProto;
+import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshSuperUserGroupsConfigurationResponseProto;
+import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshUserToGroupsMappingsRequestProto;
+import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshUserToGroupsMappingsResponseProto;
 import org.apache.hadoop.security.protocolPB.RefreshUserMappingsProtocolServerSideTranslatorPB;
 import org.apache.hadoop.thirdparty.protobuf.RpcController;
 import org.apache.hadoop.thirdparty.protobuf.ServiceException;
@@ -40,8 +44,8 @@ public class RouterRefreshUserMappingsProtocolServerSideTranslatorPB
   }
 
   @Override
-  public RefreshUserMappingsProtocolProtos.RefreshUserToGroupsMappingsResponseProto refreshUserToGroupsMappings(
-      RpcController controller, RefreshUserMappingsProtocolProtos.RefreshUserToGroupsMappingsRequestProto request)
+  public RefreshUserToGroupsMappingsResponseProto refreshUserToGroupsMappings(
+      RpcController controller, RefreshUserToGroupsMappingsRequestProto request)
       throws ServiceException {
     if (!isAsyncRpc) {
       return super.refreshUserToGroupsMappings(controller, request);
@@ -55,10 +59,10 @@ public class RouterRefreshUserMappingsProtocolServerSideTranslatorPB
   }
 
   @Override
-  public RefreshUserMappingsProtocolProtos.RefreshSuperUserGroupsConfigurationResponseProto
+  public RefreshSuperUserGroupsConfigurationResponseProto
   refreshSuperUserGroupsConfiguration(
       RpcController controller,
-      RefreshUserMappingsProtocolProtos.RefreshSuperUserGroupsConfigurationRequestProto request) throws ServiceException {
+      RefreshSuperUserGroupsConfigurationRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
       return super.refreshSuperUserGroupsConfiguration(controller, request);
     }

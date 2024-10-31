@@ -36,16 +36,238 @@ import org.apache.hadoop.hdfs.protocol.HdfsPartialListing;
 import org.apache.hadoop.hdfs.protocol.LocatedBlock;
 import org.apache.hadoop.hdfs.protocol.OpenFilesIterator;
 import org.apache.hadoop.hdfs.protocol.proto.AclProtos;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.GetAclStatusRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.GetAclStatusResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.ModifyAclEntriesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.ModifyAclEntriesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.RemoveAclEntriesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.RemoveAclEntriesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.RemoveAclRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.RemoveAclResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.RemoveDefaultAclRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.RemoveDefaultAclResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.SetAclRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.AclProtos.SetAclResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AbandonBlockRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AbandonBlockResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AddBlockRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AddBlockResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AddCacheDirectiveRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AddCacheDirectiveResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AddCachePoolRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AddCachePoolResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AllowSnapshotRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AllowSnapshotResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AppendRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.AppendResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CheckAccessRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CheckAccessResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CompleteRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CompleteResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ConcatRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ConcatResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateSnapshotRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateSnapshotResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateSymlinkRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.CreateSymlinkResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DeleteRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DeleteResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DeleteSnapshotRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DeleteSnapshotResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DisallowSnapshotRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.DisallowSnapshotResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.FinalizeUpgradeRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.FinalizeUpgradeResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.FsyncRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.FsyncResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetAdditionalDatanodeRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetAdditionalDatanodeResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetBatchedListingRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetBatchedListingResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetBlockLocationsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetBlockLocationsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetContentSummaryRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetContentSummaryResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetCurrentEditLogTxidRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetCurrentEditLogTxidResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetDataEncryptionKeyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetDataEncryptionKeyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetDatanodeReportRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetDatanodeReportResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetDatanodeStorageReportRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetDatanodeStorageReportResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetEditsFromTxidRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetEditsFromTxidResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetEnclosingRootRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetEnclosingRootResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFileInfoRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFileInfoResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFileLinkInfoRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFileLinkInfoResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsECBlockGroupStatsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsECBlockGroupStatsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsReplicatedBlockStatsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsReplicatedBlockStatsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsStatsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetFsStatusRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetLinkTargetRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetLinkTargetResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetListingRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetListingResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetLocatedFileInfoRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetLocatedFileInfoResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetPreferredBlockSizeRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetPreferredBlockSizeResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetQuotaUsageRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetQuotaUsageResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetServerDefaultsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetServerDefaultsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSlowDatanodeReportRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSlowDatanodeReportResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshotDiffReportListingRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshotDiffReportListingResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshotDiffReportRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshotDiffReportResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshotListingRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshotListingResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshottableDirListingRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetSnapshottableDirListingResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetStoragePoliciesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetStoragePoliciesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetStoragePolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.GetStoragePolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.HAServiceStateRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.HAServiceStateResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.IsFileClosedRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.IsFileClosedResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListCacheDirectivesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListCacheDirectivesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListCachePoolsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListCachePoolsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListCorruptFileBlocksRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListCorruptFileBlocksResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListOpenFilesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ListOpenFilesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.MetaSaveRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.MetaSaveResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.MkdirsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.MkdirsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ModifyCacheDirectiveRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ModifyCacheDirectiveResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ModifyCachePoolRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ModifyCachePoolResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.MsyncRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.MsyncResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RecoverLeaseRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RecoverLeaseResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RefreshNodesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RefreshNodesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RemoveCacheDirectiveRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RemoveCacheDirectiveResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RemoveCachePoolRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RemoveCachePoolResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.Rename2RequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.Rename2ResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RenameRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RenameResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RenameSnapshotRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RenameSnapshotResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RenewLeaseRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RenewLeaseResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ReportBadBlocksRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.ReportBadBlocksResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RestoreFailedStorageRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RestoreFailedStorageResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RollEditsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RollEditsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RollingUpgradeRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.RollingUpgradeResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SatisfyStoragePolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SatisfyStoragePolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SaveNamespaceRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SaveNamespaceResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetBalancerBandwidthRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetBalancerBandwidthResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetOwnerRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetOwnerResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetPermissionRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetPermissionResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetQuotaRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetQuotaResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetReplicationRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetReplicationResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetSafeModeRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetSafeModeResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetStoragePolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetStoragePolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetTimesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.SetTimesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.TruncateRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.TruncateResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UnsetStoragePolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UnsetStoragePolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpdateBlockForPipelineRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpdateBlockForPipelineResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpdatePipelineRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpdatePipelineResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpgradeStatusRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ClientNamenodeProtocolProtos.UpgradeStatusResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.CreateEncryptionZoneRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.CreateEncryptionZoneResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.GetEZForPathRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.GetEZForPathResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.ListEncryptionZonesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.ListEncryptionZonesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.ListReencryptionStatusRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.ListReencryptionStatusResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.ReencryptEncryptionZoneRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.EncryptionZonesProtos.ReencryptEncryptionZoneResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.AddErasureCodingPoliciesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.AddErasureCodingPoliciesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.DisableErasureCodingPolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.DisableErasureCodingPolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.EnableErasureCodingPolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.EnableErasureCodingPolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetECTopologyResultForPoliciesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetECTopologyResultForPoliciesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetErasureCodingCodecsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetErasureCodingCodecsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetErasureCodingPoliciesRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetErasureCodingPoliciesResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetErasureCodingPolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.GetErasureCodingPolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.RemoveErasureCodingPolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.RemoveErasureCodingPolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.SetErasureCodingPolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.SetErasureCodingPolicyResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.UnsetErasureCodingPolicyRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.ErasureCodingProtos.UnsetErasureCodingPolicyResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.HdfsProtos;
 import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.GetXAttrsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.GetXAttrsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.ListXAttrsRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.ListXAttrsResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.RemoveXAttrRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.RemoveXAttrResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.SetXAttrRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.XAttrProtos.SetXAttrResponseProto;
 import org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer;
 import org.apache.hadoop.io.EnumSetWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.ipc.RemoteException;
 import org.apache.hadoop.security.proto.SecurityProtos;
+import org.apache.hadoop.security.proto.SecurityProtos.CancelDelegationTokenRequestProto;
+import org.apache.hadoop.security.proto.SecurityProtos.CancelDelegationTokenResponseProto;
+import org.apache.hadoop.security.proto.SecurityProtos.GetDelegationTokenRequestProto;
+import org.apache.hadoop.security.proto.SecurityProtos.GetDelegationTokenResponseProto;
+import org.apache.hadoop.security.proto.SecurityProtos.RenewDelegationTokenRequestProto;
+import org.apache.hadoop.security.proto.SecurityProtos.RenewDelegationTokenResponseProto;
 import org.apache.hadoop.thirdparty.protobuf.ByteString;
 import org.apache.hadoop.thirdparty.protobuf.ProtocolStringList;
 import org.apache.hadoop.thirdparty.protobuf.RpcController;
@@ -74,13 +296,13 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetBlockLocationsResponseProto getBlockLocations(
-      RpcController controller, ClientNamenodeProtocolProtos.GetBlockLocationsRequestProto req) {
+  public GetBlockLocationsResponseProto getBlockLocations(
+      RpcController controller, GetBlockLocationsRequestProto req) {
     asyncRouterServer(() -> server.getBlockLocations(req.getSrc(), req.getOffset(),
         req.getLength()),
         b -> {
-          ClientNamenodeProtocolProtos.GetBlockLocationsResponseProto.Builder builder
-              = ClientNamenodeProtocolProtos.GetBlockLocationsResponseProto
+          GetBlockLocationsResponseProto.Builder builder
+              = GetBlockLocationsResponseProto
               .newBuilder();
           if (b != null) {
             builder.setLocations(PBHelperClient.convert(b)).build();
@@ -91,10 +313,10 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetServerDefaultsResponseProto getServerDefaults(
-      RpcController controller, ClientNamenodeProtocolProtos.GetServerDefaultsRequestProto req) {
+  public GetServerDefaultsResponseProto getServerDefaults(
+      RpcController controller, GetServerDefaultsRequestProto req) {
     asyncRouterServer(server::getServerDefaults,
-        result -> ClientNamenodeProtocolProtos.GetServerDefaultsResponseProto.newBuilder()
+        result -> GetServerDefaultsResponseProto.newBuilder()
             .setServerDefaults(PBHelperClient.convert(result))
             .build());
     return null;
@@ -102,9 +324,7 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
 
 
   @Override
-  public ClientNamenodeProtocolProtos.CreateResponseProto create(
-      RpcController controller,
-      ClientNamenodeProtocolProtos.CreateRequestProto req) {
+  public CreateResponseProto create(RpcController controller, CreateRequestProto req) {
     asyncRouterServer(() -> {
       FsPermission masked = req.hasUnmasked() ?
           FsCreateModes.create(PBHelperClient.convert(req.getMasked()),
@@ -119,8 +339,7 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
           req.getEcPolicyName(), req.getStoragePolicy());
     }, result -> {
       if (result != null) {
-        return ClientNamenodeProtocolProtos
-            .CreateResponseProto.newBuilder().setFs(PBHelperClient.convert(result))
+        return CreateResponseProto.newBuilder().setFs(PBHelperClient.convert(result))
             .build();
       }
       return VOID_CREATE_RESPONSE;
@@ -129,9 +348,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.AppendResponseProto append(
-      RpcController controller,
-      ClientNamenodeProtocolProtos.AppendRequestProto req) {
+  public AppendResponseProto append(RpcController controller,
+      AppendRequestProto req) {
     asyncRouterServer(() -> {
       EnumSetWritable<CreateFlag> flags = req.hasFlag() ?
           PBHelperClient.convertCreateFlag(req.getFlag()) :
@@ -139,8 +357,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
       return server.append(req.getSrc(),
           req.getClientName(), flags);
     }, result -> {
-      ClientNamenodeProtocolProtos.AppendResponseProto.Builder builder =
-          ClientNamenodeProtocolProtos.AppendResponseProto.newBuilder();
+      AppendResponseProto.Builder builder =
+          AppendResponseProto.newBuilder();
       if (result.getLastBlock() != null) {
         builder.setBlock(PBHelperClient.convertLocatedBlock(
             result.getLastBlock()));
@@ -154,21 +372,20 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetReplicationResponseProto setReplication(
+  public SetReplicationResponseProto setReplication(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SetReplicationRequestProto req) {
+      SetReplicationRequestProto req) {
     asyncRouterServer(() ->
             server.setReplication(req.getSrc(), (short) req.getReplication()),
-        result -> ClientNamenodeProtocolProtos
-            .SetReplicationResponseProto.newBuilder().setResult(result).build());
+        result -> SetReplicationResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
 
   @Override
-  public ClientNamenodeProtocolProtos.SetPermissionResponseProto setPermission(
+  public SetPermissionResponseProto setPermission(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SetPermissionRequestProto req) {
+      SetPermissionRequestProto req) {
     asyncRouterServer(() -> {
       server.setPermission(req.getSrc(), PBHelperClient.convert(req.getPermission()));
       return null;
@@ -177,9 +394,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetOwnerResponseProto setOwner(
+  public SetOwnerResponseProto setOwner(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SetOwnerRequestProto req) {
+      SetOwnerRequestProto req) {
     asyncRouterServer(() -> {
       server.setOwner(req.getSrc(),
           req.hasUsername() ? req.getUsername() : null,
@@ -190,9 +407,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.AbandonBlockResponseProto abandonBlock(
+  public AbandonBlockResponseProto abandonBlock(
       RpcController controller,
-      ClientNamenodeProtocolProtos.AbandonBlockRequestProto req) {
+      AbandonBlockRequestProto req) {
     asyncRouterServer(() -> {
       server.abandonBlock(PBHelperClient.convert(req.getB()), req.getFileId(),
           req.getSrc(), req.getHolder());
@@ -202,9 +419,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.AddBlockResponseProto addBlock(
+  public AddBlockResponseProto addBlock(
       RpcController controller,
-      ClientNamenodeProtocolProtos.AddBlockRequestProto req) {
+      AddBlockRequestProto req) {
     asyncRouterServer(() -> {
       List<HdfsProtos.DatanodeInfoProto> excl = req.getExcludeNodesList();
       List<String> favor = req.getFavoredNodesList();
@@ -219,14 +436,14 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
           (favor == null || favor.size() == 0) ? null : favor
               .toArray(new String[favor.size()]),
           flags);
-    }, result -> ClientNamenodeProtocolProtos.AddBlockResponseProto.newBuilder()
+    }, result -> AddBlockResponseProto.newBuilder()
         .setBlock(PBHelperClient.convertLocatedBlock(result)).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetAdditionalDatanodeResponseProto getAdditionalDatanode(
-      RpcController controller, ClientNamenodeProtocolProtos.GetAdditionalDatanodeRequestProto req) {
+  public GetAdditionalDatanodeResponseProto getAdditionalDatanode(
+      RpcController controller, GetAdditionalDatanodeRequestProto req) {
     asyncRouterServer(() -> {
       List<HdfsProtos.DatanodeInfoProto> existingList = req.getExistingsList();
       List<String> existingStorageIDsList = req.getExistingStorageUuidsList();
@@ -241,8 +458,7 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
               new HdfsProtos.DatanodeInfoProto[excludesList.size()])),
           req.getNumAdditionalNodes(), req.getClientName());
       return result;
-    }, result -> ClientNamenodeProtocolProtos
-        .GetAdditionalDatanodeResponseProto.newBuilder()
+    }, result -> GetAdditionalDatanodeResponseProto.newBuilder()
         .setBlock(
             PBHelperClient.convertLocatedBlock(result))
         .build());
@@ -250,24 +466,23 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.CompleteResponseProto complete(
+  public CompleteResponseProto complete(
       RpcController controller,
-      ClientNamenodeProtocolProtos.CompleteRequestProto req) {
+      CompleteRequestProto req) {
     asyncRouterServer(() -> {
       boolean result =
           server.complete(req.getSrc(), req.getClientName(),
               req.hasLast() ? PBHelperClient.convert(req.getLast()) : null,
               req.hasFileId() ? req.getFileId() : HdfsConstants.GRANDFATHER_INODE_ID);
       return result;
-    }, result -> ClientNamenodeProtocolProtos
-        .CompleteResponseProto.newBuilder().setResult(result).build());
+    }, result -> CompleteResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ReportBadBlocksResponseProto reportBadBlocks(
+  public ReportBadBlocksResponseProto reportBadBlocks(
       RpcController controller,
-      ClientNamenodeProtocolProtos.ReportBadBlocksRequestProto req) {
+      ReportBadBlocksRequestProto req) {
     asyncRouterServer(() -> {
       List<HdfsProtos.LocatedBlockProto> bl = req.getBlocksList();
       server.reportBadBlocks(PBHelperClient.convertLocatedBlocks(
@@ -278,9 +493,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ConcatResponseProto concat(
+  public ConcatResponseProto concat(
       RpcController controller,
-      ClientNamenodeProtocolProtos.ConcatRequestProto req) {
+      ConcatRequestProto req) {
     asyncRouterServer(() -> {
       List<String> srcs = req.getSrcsList();
       server.concat(req.getTrg(), srcs.toArray(new String[srcs.size()]));
@@ -290,20 +505,19 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RenameResponseProto rename(
+  public RenameResponseProto rename(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RenameRequestProto req) {
+      RenameRequestProto req) {
     asyncRouterServer(() -> {
       return server.rename(req.getSrc(), req.getDst());
-    }, result -> ClientNamenodeProtocolProtos
-        .RenameResponseProto.newBuilder().setResult(result).build());
+    }, result -> RenameResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.Rename2ResponseProto rename2(
+  public Rename2ResponseProto rename2(
       RpcController controller,
-      ClientNamenodeProtocolProtos.Rename2RequestProto req) {
+      Rename2RequestProto req) {
     asyncRouterServer(() -> {
       // resolve rename options
       ArrayList<Options.Rename> optionList = new ArrayList<Options.Rename>();
@@ -325,29 +539,27 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.TruncateResponseProto truncate(
+  public TruncateResponseProto truncate(
       RpcController controller,
-      ClientNamenodeProtocolProtos.TruncateRequestProto req) {
+      TruncateRequestProto req) {
     asyncRouterServer(() -> server.truncate(req.getSrc(), req.getNewLength(),
-        req.getClientName()), result -> ClientNamenodeProtocolProtos
-        .TruncateResponseProto.newBuilder().setResult(result).build());
+        req.getClientName()), result -> TruncateResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.DeleteResponseProto delete(
+  public DeleteResponseProto delete(
       RpcController controller,
-      ClientNamenodeProtocolProtos.DeleteRequestProto req) {
+      DeleteRequestProto req) {
     asyncRouterServer(() -> server.delete(req.getSrc(), req.getRecursive()),
-        result -> ClientNamenodeProtocolProtos
-            .DeleteResponseProto.newBuilder().setResult(result).build());
+        result -> DeleteResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.MkdirsResponseProto mkdirs(
+  public MkdirsResponseProto mkdirs(
       RpcController controller,
-      ClientNamenodeProtocolProtos.MkdirsRequestProto req) {
+      MkdirsRequestProto req) {
     asyncRouterServer(() -> {
       FsPermission masked = req.hasUnmasked() ?
           FsCreateModes.create(PBHelperClient.convert(req.getMasked()),
@@ -356,15 +568,14 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
       boolean result = server.mkdirs(req.getSrc(), masked,
           req.getCreateParent());
       return result;
-    }, result -> ClientNamenodeProtocolProtos
-        .MkdirsResponseProto.newBuilder().setResult(result).build());
+    }, result -> MkdirsResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetListingResponseProto getListing(
+  public GetListingResponseProto getListing(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetListingRequestProto req) {
+      GetListingRequestProto req) {
     asyncRouterServer(() -> {
       DirectoryListing result = server.getListing(
           req.getSrc(), req.getStartAfter().toByteArray(),
@@ -372,8 +583,7 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
       return result;
     }, result -> {
       if (result != null) {
-        return ClientNamenodeProtocolProtos
-            .GetListingResponseProto.newBuilder().setDirList(
+        return GetListingResponseProto.newBuilder().setDirList(
                 PBHelperClient.convert(result)).build();
       } else {
         return VOID_GETLISTING_RESPONSE;
@@ -383,9 +593,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetBatchedListingResponseProto getBatchedListing(
+  public GetBatchedListingResponseProto getBatchedListing(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetBatchedListingRequestProto request) {
+      GetBatchedListingRequestProto request) {
     asyncRouterServer(() -> {
       BatchedDirectoryListing result = server.getBatchedListing(
           request.getPathsList().toArray(new String[]{}),
@@ -394,8 +604,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
       return result;
     }, result -> {
       if (result != null) {
-        ClientNamenodeProtocolProtos.GetBatchedListingResponseProto.Builder builder =
-            ClientNamenodeProtocolProtos.GetBatchedListingResponseProto.newBuilder();
+        GetBatchedListingResponseProto.Builder builder =
+            GetBatchedListingResponseProto.newBuilder();
         for (HdfsPartialListing partialListing : result.getListings()) {
           HdfsProtos.BatchedDirectoryListingProto.Builder listingBuilder =
               HdfsProtos.BatchedDirectoryListingProto.newBuilder();
@@ -427,9 +637,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RenewLeaseResponseProto renewLease(
+  public RenewLeaseResponseProto renewLease(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RenewLeaseRequestProto req) {
+      RenewLeaseRequestProto req) {
     asyncRouterServer(() -> {
       server.renewLease(req.getClientName(), req.getNamespacesList());
       return null;
@@ -438,68 +648,66 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RecoverLeaseResponseProto recoverLease(
+  public RecoverLeaseResponseProto recoverLease(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RecoverLeaseRequestProto req) {
+      RecoverLeaseRequestProto req) {
     asyncRouterServer(() -> server.recoverLease(req.getSrc(), req.getClientName()),
-        result -> ClientNamenodeProtocolProtos
-            .RecoverLeaseResponseProto.newBuilder()
+        result -> RecoverLeaseResponseProto.newBuilder()
             .setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RestoreFailedStorageResponseProto restoreFailedStorage(
-      RpcController controller, ClientNamenodeProtocolProtos.RestoreFailedStorageRequestProto req) {
+  public RestoreFailedStorageResponseProto restoreFailedStorage(
+      RpcController controller, RestoreFailedStorageRequestProto req) {
     asyncRouterServer(() -> server.restoreFailedStorage(req.getArg()),
-        result -> ClientNamenodeProtocolProtos
-            .RestoreFailedStorageResponseProto.newBuilder().setResult(result)
+        result -> RestoreFailedStorageResponseProto.newBuilder().setResult(result)
             .build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetFsStatsResponseProto getFsStats(
+  public GetFsStatsResponseProto getFsStats(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetFsStatusRequestProto req) {
+      GetFsStatusRequestProto req) {
     asyncRouterServer(server::getStats, PBHelperClient::convert);
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetFsReplicatedBlockStatsResponseProto getFsReplicatedBlockStats(
-      RpcController controller, ClientNamenodeProtocolProtos.GetFsReplicatedBlockStatsRequestProto request) {
+  public GetFsReplicatedBlockStatsResponseProto getFsReplicatedBlockStats(
+      RpcController controller, GetFsReplicatedBlockStatsRequestProto request) {
     asyncRouterServer(server::getReplicatedBlockStats, PBHelperClient::convert);
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetFsECBlockGroupStatsResponseProto getFsECBlockGroupStats(
-      RpcController controller, ClientNamenodeProtocolProtos.GetFsECBlockGroupStatsRequestProto request) {
+  public GetFsECBlockGroupStatsResponseProto getFsECBlockGroupStats(
+      RpcController controller, GetFsECBlockGroupStatsRequestProto request) {
     asyncRouterServer(server::getECBlockGroupStats, PBHelperClient::convert);
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetDatanodeReportResponseProto getDatanodeReport(
-      RpcController controller, ClientNamenodeProtocolProtos.GetDatanodeReportRequestProto req) {
+  public GetDatanodeReportResponseProto getDatanodeReport(
+      RpcController controller, GetDatanodeReportRequestProto req) {
     asyncRouterServer(() -> server.getDatanodeReport(PBHelperClient.convert(req.getType())),
         result -> {
           List<? extends HdfsProtos.DatanodeInfoProto> re = PBHelperClient.convert(result);
-          return ClientNamenodeProtocolProtos.GetDatanodeReportResponseProto.newBuilder()
+          return GetDatanodeReportResponseProto.newBuilder()
               .addAllDi(re).build();
         });
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetDatanodeStorageReportResponseProto getDatanodeStorageReport(
-      RpcController controller, ClientNamenodeProtocolProtos.GetDatanodeStorageReportRequestProto req) {
+  public GetDatanodeStorageReportResponseProto getDatanodeStorageReport(
+      RpcController controller, GetDatanodeStorageReportRequestProto req) {
     asyncRouterServer(() -> server.getDatanodeStorageReport(PBHelperClient.convert(req.getType())),
         result -> {
           List<ClientNamenodeProtocolProtos.DatanodeStorageReportProto> reports =
               PBHelperClient.convertDatanodeStorageReports(result);
-          return ClientNamenodeProtocolProtos.GetDatanodeStorageReportResponseProto.newBuilder()
+          return GetDatanodeStorageReportResponseProto.newBuilder()
               .addAllDatanodeStorageReports(reports)
               .build();
         });
@@ -507,45 +715,42 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetPreferredBlockSizeResponseProto getPreferredBlockSize(
-      RpcController controller, ClientNamenodeProtocolProtos.GetPreferredBlockSizeRequestProto req) {
+  public GetPreferredBlockSizeResponseProto getPreferredBlockSize(
+      RpcController controller, GetPreferredBlockSizeRequestProto req) {
     asyncRouterServer(() -> server.getPreferredBlockSize(req.getFilename()),
-        result -> ClientNamenodeProtocolProtos
-            .GetPreferredBlockSizeResponseProto.newBuilder().setBsize(result)
+        result -> GetPreferredBlockSizeResponseProto.newBuilder().setBsize(result)
             .build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetSafeModeResponseProto setSafeMode(
+  public SetSafeModeResponseProto setSafeMode(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SetSafeModeRequestProto req) {
+      SetSafeModeRequestProto req) {
     asyncRouterServer(() -> server.setSafeMode(PBHelperClient.convert(req.getAction()),
         req.getChecked()),
-        result -> ClientNamenodeProtocolProtos
-            .SetSafeModeResponseProto.newBuilder().setResult(result).build());
+        result -> SetSafeModeResponseProto.newBuilder().setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SaveNamespaceResponseProto saveNamespace(
+  public SaveNamespaceResponseProto saveNamespace(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SaveNamespaceRequestProto req) {
+      SaveNamespaceRequestProto req) {
     asyncRouterServer(() -> {
       final long timeWindow = req.hasTimeWindow() ? req.getTimeWindow() : 0;
       final long txGap = req.hasTxGap() ? req.getTxGap() : 0;
       return server.saveNamespace(timeWindow, txGap);
-    }, result -> ClientNamenodeProtocolProtos
-        .SaveNamespaceResponseProto.newBuilder().setSaved(result).build());
+    }, result -> SaveNamespaceResponseProto.newBuilder().setSaved(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RollEditsResponseProto rollEdits(
+  public RollEditsResponseProto rollEdits(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RollEditsRequestProto request) {
+      RollEditsRequestProto request) {
     asyncRouterServer(server::rollEdits,
-        txid -> ClientNamenodeProtocolProtos.RollEditsResponseProto.newBuilder()
+        txid -> RollEditsResponseProto.newBuilder()
             .setNewSegmentTxId(txid)
             .build());
     return null;
@@ -553,9 +758,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
 
 
   @Override
-  public ClientNamenodeProtocolProtos.RefreshNodesResponseProto refreshNodes(
+  public RefreshNodesResponseProto refreshNodes(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RefreshNodesRequestProto req) {
+      RefreshNodesRequestProto req) {
     asyncRouterServer(() -> {
       server.refreshNodes();
       return null;
@@ -564,9 +769,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.FinalizeUpgradeResponseProto finalizeUpgrade(
+  public FinalizeUpgradeResponseProto finalizeUpgrade(
       RpcController controller,
-      ClientNamenodeProtocolProtos.FinalizeUpgradeRequestProto req) {
+      FinalizeUpgradeRequestProto req) {
     asyncRouterServer(() -> {
       server.finalizeUpgrade();
       return null;
@@ -575,12 +780,12 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.UpgradeStatusResponseProto upgradeStatus(
-      RpcController controller, ClientNamenodeProtocolProtos.UpgradeStatusRequestProto req) {
+  public UpgradeStatusResponseProto upgradeStatus(
+      RpcController controller, UpgradeStatusRequestProto req) {
     asyncRouterServer(server::upgradeStatus,
         result -> {
-          ClientNamenodeProtocolProtos.UpgradeStatusResponseProto.Builder b =
-              ClientNamenodeProtocolProtos.UpgradeStatusResponseProto.newBuilder();
+          UpgradeStatusResponseProto.Builder b =
+              UpgradeStatusResponseProto.newBuilder();
           b.setUpgradeFinalized(result);
           return b.build();
         });
@@ -588,14 +793,14 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RollingUpgradeResponseProto rollingUpgrade(
+  public RollingUpgradeResponseProto rollingUpgrade(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RollingUpgradeRequestProto req) {
+      RollingUpgradeRequestProto req) {
     asyncRouterServer(() ->
             server.rollingUpgrade(PBHelperClient.convert(req.getAction())),
         info -> {
-          final ClientNamenodeProtocolProtos.RollingUpgradeResponseProto.Builder b =
-              ClientNamenodeProtocolProtos.RollingUpgradeResponseProto.newBuilder();
+          final RollingUpgradeResponseProto.Builder b =
+              RollingUpgradeResponseProto.newBuilder();
           if (info != null) {
             b.setRollingUpgradeInfo(PBHelperClient.convert(info));
           }
@@ -605,20 +810,20 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ListCorruptFileBlocksResponseProto listCorruptFileBlocks(
-      RpcController controller, ClientNamenodeProtocolProtos.ListCorruptFileBlocksRequestProto req) {
+  public ListCorruptFileBlocksResponseProto listCorruptFileBlocks(
+      RpcController controller, ListCorruptFileBlocksRequestProto req) {
     asyncRouterServer(() -> server.listCorruptFileBlocks(
         req.getPath(), req.hasCookie() ? req.getCookie(): null),
-        result -> ClientNamenodeProtocolProtos.ListCorruptFileBlocksResponseProto.newBuilder()
+        result -> ListCorruptFileBlocksResponseProto.newBuilder()
             .setCorrupt(PBHelperClient.convert(result))
             .build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.MetaSaveResponseProto metaSave(
+  public MetaSaveResponseProto metaSave(
       RpcController controller,
-      ClientNamenodeProtocolProtos.MetaSaveRequestProto req) {
+      MetaSaveRequestProto req) {
     asyncRouterServer(() -> {
       server.metaSave(req.getFilename());
       return null;
@@ -627,14 +832,14 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetFileInfoResponseProto getFileInfo(
+  public GetFileInfoResponseProto getFileInfo(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetFileInfoRequestProto req) {
+      GetFileInfoRequestProto req) {
     LOG.info("[ZHB]RouterClientNamenodeProtocolServerSideTranslatorPB#getFileInfo");
     asyncRouterServer(() -> server.getFileInfo(req.getSrc()),
         result -> {
           if (result != null) {
-            return ClientNamenodeProtocolProtos.GetFileInfoResponseProto.newBuilder().setFs(
+            return GetFileInfoResponseProto.newBuilder().setFs(
                 PBHelperClient.convert(result)).build();
           }
           return VOID_GETFILEINFO_RESPONSE;
@@ -643,13 +848,13 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetLocatedFileInfoResponseProto getLocatedFileInfo(
-      RpcController controller, ClientNamenodeProtocolProtos.GetLocatedFileInfoRequestProto req) {
+  public GetLocatedFileInfoResponseProto getLocatedFileInfo(
+      RpcController controller, GetLocatedFileInfoRequestProto req) {
     asyncRouterServer(() -> server.getLocatedFileInfo(req.getSrc(),
         req.getNeedBlockToken()),
         result -> {
           if (result != null) {
-            return ClientNamenodeProtocolProtos.GetLocatedFileInfoResponseProto.newBuilder().setFs(
+            return GetLocatedFileInfoResponseProto.newBuilder().setFs(
                 PBHelperClient.convert(result)).build();
           }
           return VOID_GETLOCATEDFILEINFO_RESPONSE;
@@ -658,13 +863,13 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetFileLinkInfoResponseProto getFileLinkInfo(
+  public GetFileLinkInfoResponseProto getFileLinkInfo(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetFileLinkInfoRequestProto req) {
+      GetFileLinkInfoRequestProto req) {
     asyncRouterServer(() -> server.getFileLinkInfo(req.getSrc()),
         result -> {
           if (result != null) {
-            return ClientNamenodeProtocolProtos.GetFileLinkInfoResponseProto.newBuilder().setFs(
+            return GetFileLinkInfoResponseProto.newBuilder().setFs(
                 PBHelperClient.convert(result)).build();
           } else {
             return VOID_GETFILELINKINFO_RESPONSE;
@@ -674,18 +879,18 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetContentSummaryResponseProto getContentSummary(
-      RpcController controller, ClientNamenodeProtocolProtos.GetContentSummaryRequestProto req) {
+  public GetContentSummaryResponseProto getContentSummary(
+      RpcController controller, GetContentSummaryRequestProto req) {
     asyncRouterServer(() -> server.getContentSummary(req.getPath()),
-        result -> ClientNamenodeProtocolProtos.GetContentSummaryResponseProto.newBuilder()
+        result -> GetContentSummaryResponseProto.newBuilder()
             .setSummary(PBHelperClient.convert(result)).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetQuotaResponseProto setQuota(
+  public SetQuotaResponseProto setQuota(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SetQuotaRequestProto req) throws ServiceException {
+      SetQuotaRequestProto req) {
     asyncRouterServer(() -> {
       server.setQuota(req.getPath(), req.getNamespaceQuota(),
           req.getStoragespaceQuota(),
@@ -697,9 +902,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.FsyncResponseProto fsync(
+  public FsyncResponseProto fsync(
       RpcController controller,
-      ClientNamenodeProtocolProtos.FsyncRequestProto req) {
+      FsyncRequestProto req) {
     asyncRouterServer(() -> {
       server.fsync(req.getSrc(), req.getFileId(),
           req.getClient(), req.getLastBlockLength());
@@ -709,9 +914,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetTimesResponseProto setTimes(
+  public SetTimesResponseProto setTimes(
       RpcController controller,
-      ClientNamenodeProtocolProtos.SetTimesRequestProto req) {
+      SetTimesRequestProto req) {
     asyncRouterServer(() -> {
       server.setTimes(req.getSrc(), req.getMtime(), req.getAtime());
       return null;
@@ -720,9 +925,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.CreateSymlinkResponseProto createSymlink(
+  public CreateSymlinkResponseProto createSymlink(
       RpcController controller,
-      ClientNamenodeProtocolProtos.CreateSymlinkRequestProto req) {
+      CreateSymlinkRequestProto req) {
     asyncRouterServer(() -> {
       server.createSymlink(req.getTarget(), req.getLink(),
           PBHelperClient.convert(req.getDirPerm()), req.getCreateParent());
@@ -732,13 +937,13 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetLinkTargetResponseProto getLinkTarget(
+  public GetLinkTargetResponseProto getLinkTarget(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetLinkTargetRequestProto req) {
+      GetLinkTargetRequestProto req) {
     asyncRouterServer(() -> server.getLinkTarget(req.getPath()),
         result -> {
-          ClientNamenodeProtocolProtos.GetLinkTargetResponseProto.Builder builder =
-              ClientNamenodeProtocolProtos.GetLinkTargetResponseProto
+          GetLinkTargetResponseProto.Builder builder =
+              GetLinkTargetResponseProto
                   .newBuilder();
           if (result != null) {
             builder.setTargetPath(result);
@@ -749,23 +954,22 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.UpdateBlockForPipelineResponseProto updateBlockForPipeline(
-      RpcController controller, ClientNamenodeProtocolProtos.UpdateBlockForPipelineRequestProto req) {
+  public UpdateBlockForPipelineResponseProto updateBlockForPipeline(
+      RpcController controller, UpdateBlockForPipelineRequestProto req) {
     asyncRouterServer(() -> server.updateBlockForPipeline(PBHelperClient.convert(req.getBlock()),
         req.getClientName()),
         result -> {
           HdfsProtos.LocatedBlockProto res = PBHelperClient.convertLocatedBlock(result);
-          return ClientNamenodeProtocolProtos
-              .UpdateBlockForPipelineResponseProto.newBuilder().setBlock(res)
+          return UpdateBlockForPipelineResponseProto.newBuilder().setBlock(res)
               .build();
         });
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.UpdatePipelineResponseProto updatePipeline(
+  public UpdatePipelineResponseProto updatePipeline(
       RpcController controller,
-      ClientNamenodeProtocolProtos.UpdatePipelineRequestProto req) {
+      UpdatePipelineRequestProto req) {
     asyncRouterServer(() -> {
       List<HdfsProtos.DatanodeIDProto> newNodes = req.getNewNodesList();
       List<String> newStorageIDs = req.getStorageIDsList();
@@ -780,13 +984,13 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public SecurityProtos.GetDelegationTokenResponseProto getDelegationToken(
-      RpcController controller, SecurityProtos.GetDelegationTokenRequestProto req) {
+  public GetDelegationTokenResponseProto getDelegationToken(
+      RpcController controller, GetDelegationTokenRequestProto req) {
     asyncRouterServer(() -> server
             .getDelegationToken(new Text(req.getRenewer())),
         token -> {
-          SecurityProtos.GetDelegationTokenResponseProto.Builder rspBuilder =
-              SecurityProtos.GetDelegationTokenResponseProto.newBuilder();
+          GetDelegationTokenResponseProto.Builder rspBuilder =
+              GetDelegationTokenResponseProto.newBuilder();
           if (token != null) {
             rspBuilder.setToken(PBHelperClient.convert(token));
           }
@@ -796,18 +1000,18 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public SecurityProtos.RenewDelegationTokenResponseProto renewDelegationToken(
-      RpcController controller, SecurityProtos.RenewDelegationTokenRequestProto req) {
+  public RenewDelegationTokenResponseProto renewDelegationToken(
+      RpcController controller, RenewDelegationTokenRequestProto req) {
     asyncRouterServer(() -> server.renewDelegationToken(PBHelperClient
             .convertDelegationToken(req.getToken())),
-        result -> SecurityProtos.RenewDelegationTokenResponseProto.newBuilder()
+        result -> RenewDelegationTokenResponseProto.newBuilder()
             .setNewExpiryTime(result).build());
     return null;
   }
 
   @Override
-  public SecurityProtos.CancelDelegationTokenResponseProto cancelDelegationToken(
-      RpcController controller, SecurityProtos.CancelDelegationTokenRequestProto req) {
+  public CancelDelegationTokenResponseProto cancelDelegationToken(
+      RpcController controller, CancelDelegationTokenRequestProto req) {
     asyncRouterServer(() -> {
       server.cancelDelegationToken(PBHelperClient.convertDelegationToken(req
           .getToken()));
@@ -817,8 +1021,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetBalancerBandwidthResponseProto setBalancerBandwidth(
-      RpcController controller, ClientNamenodeProtocolProtos.SetBalancerBandwidthRequestProto req) {
+  public SetBalancerBandwidthResponseProto setBalancerBandwidth(
+      RpcController controller, SetBalancerBandwidthRequestProto req) {
     asyncRouterServer(() -> {
       server.setBalancerBandwidth(req.getBandwidth());
       return null;
@@ -827,11 +1031,11 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetDataEncryptionKeyResponseProto getDataEncryptionKey(
-      RpcController controller, ClientNamenodeProtocolProtos.GetDataEncryptionKeyRequestProto request) {
+  public GetDataEncryptionKeyResponseProto getDataEncryptionKey(
+      RpcController controller, GetDataEncryptionKeyRequestProto request) {
     asyncRouterServer(server::getDataEncryptionKey, encryptionKey -> {
-      ClientNamenodeProtocolProtos.GetDataEncryptionKeyResponseProto.Builder builder =
-          ClientNamenodeProtocolProtos.GetDataEncryptionKeyResponseProto.newBuilder();
+      GetDataEncryptionKeyResponseProto.Builder builder =
+          GetDataEncryptionKeyResponseProto.newBuilder();
       if (encryptionKey != null) {
         builder.setDataEncryptionKey(PBHelperClient.convert(encryptionKey));
       }
@@ -841,14 +1045,14 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.CreateSnapshotResponseProto createSnapshot(
+  public CreateSnapshotResponseProto createSnapshot(
       RpcController controller,
-      ClientNamenodeProtocolProtos.CreateSnapshotRequestProto req) throws ServiceException {
+      CreateSnapshotRequestProto req) throws ServiceException {
     asyncRouterServer(() -> server.createSnapshot(req.getSnapshotRoot(),
         req.hasSnapshotName()? req.getSnapshotName(): null),
         snapshotPath -> {
-          final ClientNamenodeProtocolProtos.CreateSnapshotResponseProto.Builder builder
-              = ClientNamenodeProtocolProtos.CreateSnapshotResponseProto.newBuilder();
+          final CreateSnapshotResponseProto.Builder builder
+              = CreateSnapshotResponseProto.newBuilder();
           if (snapshotPath != null) {
             builder.setSnapshotPath(snapshotPath);
           }
@@ -858,9 +1062,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.DeleteSnapshotResponseProto deleteSnapshot(
+  public DeleteSnapshotResponseProto deleteSnapshot(
       RpcController controller,
-      ClientNamenodeProtocolProtos.DeleteSnapshotRequestProto req) {
+      DeleteSnapshotRequestProto req) {
     asyncRouterServer(() -> {
       server.deleteSnapshot(req.getSnapshotRoot(), req.getSnapshotName());
       return null;
@@ -869,9 +1073,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.AllowSnapshotResponseProto allowSnapshot(
+  public AllowSnapshotResponseProto allowSnapshot(
       RpcController controller,
-      ClientNamenodeProtocolProtos.AllowSnapshotRequestProto req) {
+      AllowSnapshotRequestProto req) {
     asyncRouterServer(() -> {
       server.allowSnapshot(req.getSnapshotRoot());
       return null;
@@ -880,9 +1084,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.DisallowSnapshotResponseProto disallowSnapshot(
+  public DisallowSnapshotResponseProto disallowSnapshot(
       RpcController controller,
-      ClientNamenodeProtocolProtos.DisallowSnapshotRequestProto req) {
+      DisallowSnapshotRequestProto req) {
     asyncRouterServer(() -> {
       server.disallowSnapshot(req.getSnapshotRoot());
       return null;
@@ -891,9 +1095,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RenameSnapshotResponseProto renameSnapshot(
+  public RenameSnapshotResponseProto renameSnapshot(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RenameSnapshotRequestProto request) {
+      RenameSnapshotRequestProto request) {
     asyncRouterServer(() -> {
       server.renameSnapshot(request.getSnapshotRoot(),
           request.getSnapshotOldName(), request.getSnapshotNewName());
@@ -903,12 +1107,12 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetSnapshottableDirListingResponseProto getSnapshottableDirListing(
-      RpcController controller, ClientNamenodeProtocolProtos.GetSnapshottableDirListingRequestProto request) {
+  public GetSnapshottableDirListingResponseProto getSnapshottableDirListing(
+      RpcController controller, GetSnapshottableDirListingRequestProto request) {
     asyncRouterServer(server::getSnapshottableDirListing,
         result -> {
           if (result != null) {
-            return ClientNamenodeProtocolProtos.GetSnapshottableDirListingResponseProto.newBuilder().
+            return GetSnapshottableDirListingResponseProto.newBuilder().
                 setSnapshottableDirList(PBHelperClient.convert(result)).build();
           } else {
             return NULL_GET_SNAPSHOTTABLE_DIR_LISTING_RESPONSE;
@@ -918,87 +1122,101 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetSnapshotDiffReportResponseProto getSnapshotDiffReport(
-      RpcController controller, ClientNamenodeProtocolProtos.GetSnapshotDiffReportRequestProto request) {
+  public GetSnapshotListingResponseProto getSnapshotListing(
+      RpcController controller, GetSnapshotListingRequestProto request) {
+    asyncRouterServer(() -> server
+            .getSnapshotListing(request.getSnapshotRoot()),
+        result -> {
+          if (result != null) {
+            return GetSnapshotListingResponseProto.newBuilder().
+                setSnapshotList(PBHelperClient.convert(result)).build();
+          } else {
+            return NULL_GET_SNAPSHOT_LISTING_RESPONSE;
+          }
+        });
+    return null;
+  }
+
+  @Override
+  public GetSnapshotDiffReportResponseProto getSnapshotDiffReport(
+      RpcController controller, GetSnapshotDiffReportRequestProto request) {
     asyncRouterServer(() -> server.getSnapshotDiffReport(
         request.getSnapshotRoot(), request.getFromSnapshot(),
         request.getToSnapshot()),
-        report -> ClientNamenodeProtocolProtos.GetSnapshotDiffReportResponseProto.newBuilder()
+        report -> GetSnapshotDiffReportResponseProto.newBuilder()
             .setDiffReport(PBHelperClient.convert(report)).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetSnapshotDiffReportListingResponseProto getSnapshotDiffReportListing(
+  public GetSnapshotDiffReportListingResponseProto getSnapshotDiffReportListing(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetSnapshotDiffReportListingRequestProto request) {
+      GetSnapshotDiffReportListingRequestProto request) {
     asyncRouterServer(() -> server
             .getSnapshotDiffReportListing(request.getSnapshotRoot(),
                 request.getFromSnapshot(), request.getToSnapshot(),
                 request.getCursor().getStartPath().toByteArray(),
                 request.getCursor().getIndex()),
-        report -> ClientNamenodeProtocolProtos
-            .GetSnapshotDiffReportListingResponseProto.newBuilder()
+        report -> GetSnapshotDiffReportListingResponseProto.newBuilder()
             .setDiffReport(PBHelperClient.convert(report)).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.IsFileClosedResponseProto isFileClosed(
-      RpcController controller, ClientNamenodeProtocolProtos.IsFileClosedRequestProto request) {
+  public IsFileClosedResponseProto isFileClosed(
+      RpcController controller, IsFileClosedRequestProto request) {
     asyncRouterServer(() -> server.isFileClosed(request.getSrc()),
-        result -> ClientNamenodeProtocolProtos
-            .IsFileClosedResponseProto.newBuilder()
+        result -> IsFileClosedResponseProto.newBuilder()
             .setResult(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.AddCacheDirectiveResponseProto addCacheDirective(
-      RpcController controller, ClientNamenodeProtocolProtos.AddCacheDirectiveRequestProto request) {
+  public AddCacheDirectiveResponseProto addCacheDirective(
+      RpcController controller, AddCacheDirectiveRequestProto request) {
     asyncRouterServer(() -> server.addCacheDirective(
         PBHelperClient.convert(request.getInfo()),
         PBHelperClient.convertCacheFlags(request.getCacheFlags())),
-        id -> ClientNamenodeProtocolProtos.AddCacheDirectiveResponseProto.newBuilder().
+        id -> AddCacheDirectiveResponseProto.newBuilder().
             setId(id).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ModifyCacheDirectiveResponseProto modifyCacheDirective(
-      RpcController controller, ClientNamenodeProtocolProtos.ModifyCacheDirectiveRequestProto request) {
+  public ModifyCacheDirectiveResponseProto modifyCacheDirective(
+      RpcController controller, ModifyCacheDirectiveRequestProto request) {
     asyncRouterServer(() -> {
       server.modifyCacheDirective(
           PBHelperClient.convert(request.getInfo()),
           PBHelperClient.convertCacheFlags(request.getCacheFlags()));
       return null;
-    }, result -> ClientNamenodeProtocolProtos.ModifyCacheDirectiveResponseProto.newBuilder().build());
+    }, result -> ModifyCacheDirectiveResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RemoveCacheDirectiveResponseProto
+  public RemoveCacheDirectiveResponseProto
   removeCacheDirective(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RemoveCacheDirectiveRequestProto request) {
+      RemoveCacheDirectiveRequestProto request) {
     asyncRouterServer(() -> {
       server.removeCacheDirective(request.getId());
       return null;
-    }, result -> ClientNamenodeProtocolProtos.RemoveCacheDirectiveResponseProto.
+    }, result -> RemoveCacheDirectiveResponseProto.
         newBuilder().build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ListCacheDirectivesResponseProto listCacheDirectives(
-      RpcController controller, ClientNamenodeProtocolProtos.ListCacheDirectivesRequestProto request) {
+  public ListCacheDirectivesResponseProto listCacheDirectives(
+      RpcController controller, ListCacheDirectivesRequestProto request) {
     asyncRouterServer(() -> {
       CacheDirectiveInfo filter =
           PBHelperClient.convert(request.getFilter());
       return  server.listCacheDirectives(request.getPrevId(), filter);
     }, entries -> {
-      ClientNamenodeProtocolProtos.ListCacheDirectivesResponseProto.Builder builder =
-          ClientNamenodeProtocolProtos.ListCacheDirectivesResponseProto.newBuilder();
+      ListCacheDirectivesResponseProto.Builder builder =
+          ListCacheDirectivesResponseProto.newBuilder();
       builder.setHasMore(entries.hasMore());
       for (int i=0, n=entries.size(); i<n; i++) {
         builder.addElements(PBHelperClient.convert(entries.get(i)));
@@ -1009,46 +1227,46 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.AddCachePoolResponseProto addCachePool(
+  public AddCachePoolResponseProto addCachePool(
       RpcController controller,
-      ClientNamenodeProtocolProtos.AddCachePoolRequestProto request) {
+      AddCachePoolRequestProto request) {
     asyncRouterServer(() -> {
       server.addCachePool(PBHelperClient.convert(request.getInfo()));
       return null;
-    }, result -> ClientNamenodeProtocolProtos.AddCachePoolResponseProto.newBuilder().build());
+    }, result -> AddCachePoolResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ModifyCachePoolResponseProto modifyCachePool(
+  public ModifyCachePoolResponseProto modifyCachePool(
       RpcController controller,
-      ClientNamenodeProtocolProtos.ModifyCachePoolRequestProto request) {
+      ModifyCachePoolRequestProto request) {
     asyncRouterServer(() -> {
       server.modifyCachePool(PBHelperClient.convert(request.getInfo()));
       return null;
-    }, result -> ClientNamenodeProtocolProtos.ModifyCachePoolResponseProto.newBuilder().build());
+    }, result -> ModifyCachePoolResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.RemoveCachePoolResponseProto removeCachePool(
+  public RemoveCachePoolResponseProto removeCachePool(
       RpcController controller,
-      ClientNamenodeProtocolProtos.RemoveCachePoolRequestProto request) {
+      RemoveCachePoolRequestProto request) {
     asyncRouterServer(() -> {
       server.removeCachePool(request.getPoolName());
       return null;
-    }, result -> ClientNamenodeProtocolProtos.RemoveCachePoolResponseProto.newBuilder().build());
+    }, result -> RemoveCachePoolResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ListCachePoolsResponseProto listCachePools(
+  public ListCachePoolsResponseProto listCachePools(
       RpcController controller,
-      ClientNamenodeProtocolProtos.ListCachePoolsRequestProto request) {
+      ListCachePoolsRequestProto request) {
     asyncRouterServer(() -> server.listCachePools(request.getPrevPoolName()),
         entries -> {
-          ClientNamenodeProtocolProtos.ListCachePoolsResponseProto.Builder responseBuilder =
-              ClientNamenodeProtocolProtos.ListCachePoolsResponseProto.newBuilder();
+          ListCachePoolsResponseProto.Builder responseBuilder =
+              ListCachePoolsResponseProto.newBuilder();
           responseBuilder.setHasMore(entries.hasMore());
           for (int i=0, n=entries.size(); i<n; i++) {
             responseBuilder.addEntries(PBHelperClient.convert(entries.get(i)));
@@ -1059,9 +1277,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public AclProtos.ModifyAclEntriesResponseProto modifyAclEntries(
-      RpcController controller, AclProtos.ModifyAclEntriesRequestProto req)
-      throws ServiceException {
+  public ModifyAclEntriesResponseProto modifyAclEntries(
+      RpcController controller, ModifyAclEntriesRequestProto req) {
     asyncRouterServer(() -> {
       server.modifyAclEntries(req.getSrc(), PBHelperClient.convertAclEntry(req.getAclSpecList()));
       return null;
@@ -1070,8 +1287,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public AclProtos.RemoveAclEntriesResponseProto removeAclEntries(
-      RpcController controller, AclProtos.RemoveAclEntriesRequestProto req) {
+  public RemoveAclEntriesResponseProto removeAclEntries(
+      RpcController controller, RemoveAclEntriesRequestProto req) {
     asyncRouterServer(() -> {
       server.removeAclEntries(req.getSrc(),
           PBHelperClient.convertAclEntry(req.getAclSpecList()));
@@ -1081,8 +1298,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public AclProtos.RemoveDefaultAclResponseProto removeDefaultAcl(
-      RpcController controller, AclProtos.RemoveDefaultAclRequestProto req) {
+  public RemoveDefaultAclResponseProto removeDefaultAcl(
+      RpcController controller, RemoveDefaultAclRequestProto req) {
     asyncRouterServer(() -> {
       server.removeDefaultAcl(req.getSrc());
       return null;
@@ -1091,9 +1308,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public AclProtos.RemoveAclResponseProto removeAcl(
+  public RemoveAclResponseProto removeAcl(
       RpcController controller,
-      AclProtos.RemoveAclRequestProto req) {
+      RemoveAclRequestProto req) {
     asyncRouterServer(() -> {
       server.removeAcl(req.getSrc());
       return null;
@@ -1102,9 +1319,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public AclProtos.SetAclResponseProto setAcl(
+  public SetAclResponseProto setAcl(
       RpcController controller,
-      AclProtos.SetAclRequestProto req) {
+      SetAclRequestProto req) {
     asyncRouterServer(() -> {
       server.setAcl(req.getSrc(), PBHelperClient.convertAclEntry(req.getAclSpecList()));
       return null;
@@ -1113,31 +1330,31 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public AclProtos.GetAclStatusResponseProto getAclStatus(
+  public GetAclStatusResponseProto getAclStatus(
       RpcController controller,
-      AclProtos.GetAclStatusRequestProto req) {
+      GetAclStatusRequestProto req) {
     asyncRouterServer(() -> server.getAclStatus(req.getSrc()),
         PBHelperClient::convert);
     return null;
   }
 
   @Override
-  public EncryptionZonesProtos.CreateEncryptionZoneResponseProto createEncryptionZone(
-      RpcController controller, EncryptionZonesProtos.CreateEncryptionZoneRequestProto req) {
+  public CreateEncryptionZoneResponseProto createEncryptionZone(
+      RpcController controller, CreateEncryptionZoneRequestProto req) {
     asyncRouterServer(() -> {
       server.createEncryptionZone(req.getSrc(), req.getKeyName());
       return null;
-    }, vo -> EncryptionZonesProtos.CreateEncryptionZoneResponseProto.newBuilder().build());
+    }, vo -> CreateEncryptionZoneResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public EncryptionZonesProtos.GetEZForPathResponseProto getEZForPath(
-      RpcController controller, EncryptionZonesProtos.GetEZForPathRequestProto req) {
+  public GetEZForPathResponseProto getEZForPath(
+      RpcController controller, GetEZForPathRequestProto req) {
     asyncRouterServer(() -> server.getEZForPath(req.getSrc()),
         ret -> {
-          EncryptionZonesProtos.GetEZForPathResponseProto.Builder builder =
-              EncryptionZonesProtos.GetEZForPathResponseProto.newBuilder();
+          GetEZForPathResponseProto.Builder builder =
+              GetEZForPathResponseProto.newBuilder();
           if (ret != null) {
             builder.setZone(PBHelperClient.convert(ret));
           }
@@ -1147,12 +1364,12 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public EncryptionZonesProtos.ListEncryptionZonesResponseProto listEncryptionZones(
-      RpcController controller, EncryptionZonesProtos.ListEncryptionZonesRequestProto req) {
+  public ListEncryptionZonesResponseProto listEncryptionZones(
+      RpcController controller, ListEncryptionZonesRequestProto req) {
     asyncRouterServer(() -> server.listEncryptionZones(req.getId()),
         entries -> {
-          EncryptionZonesProtos.ListEncryptionZonesResponseProto.Builder builder =
-              EncryptionZonesProtos.ListEncryptionZonesResponseProto.newBuilder();
+          ListEncryptionZonesResponseProto.Builder builder =
+              ListEncryptionZonesResponseProto.newBuilder();
           builder.setHasMore(entries.hasMore());
           for (int i=0; i<entries.size(); i++) {
             builder.addZones(PBHelperClient.convert(entries.get(i)));
@@ -1163,22 +1380,22 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public EncryptionZonesProtos.ReencryptEncryptionZoneResponseProto reencryptEncryptionZone(
-      RpcController controller, EncryptionZonesProtos.ReencryptEncryptionZoneRequestProto req) {
+  public ReencryptEncryptionZoneResponseProto reencryptEncryptionZone(
+      RpcController controller, ReencryptEncryptionZoneRequestProto req) {
     asyncRouterServer(() -> {
       server.reencryptEncryptionZone(req.getZone(),
           PBHelperClient.convert(req.getAction()));
       return null;
-    }, vo -> EncryptionZonesProtos.ReencryptEncryptionZoneResponseProto.newBuilder().build());
+    }, vo -> ReencryptEncryptionZoneResponseProto.newBuilder().build());
     return null;
   }
 
-  public EncryptionZonesProtos.ListReencryptionStatusResponseProto listReencryptionStatus(
-      RpcController controller, EncryptionZonesProtos.ListReencryptionStatusRequestProto req) {
+  public ListReencryptionStatusResponseProto listReencryptionStatus(
+      RpcController controller, ListReencryptionStatusRequestProto req) {
     asyncRouterServer(() -> server.listReencryptionStatus(req.getId()),
         entries -> {
-          EncryptionZonesProtos.ListReencryptionStatusResponseProto.Builder builder =
-              EncryptionZonesProtos.ListReencryptionStatusResponseProto.newBuilder();
+          ListReencryptionStatusResponseProto.Builder builder =
+              ListReencryptionStatusResponseProto.newBuilder();
           builder.setHasMore(entries.hasMore());
           for (int i=0; i<entries.size(); i++) {
             builder.addStatuses(PBHelperClient.convert(entries.get(i)));
@@ -1189,39 +1406,37 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ErasureCodingProtos.SetErasureCodingPolicyResponseProto setErasureCodingPolicy(
-      RpcController controller, ErasureCodingProtos.SetErasureCodingPolicyRequestProto req) {
+  public SetErasureCodingPolicyResponseProto setErasureCodingPolicy(
+      RpcController controller, SetErasureCodingPolicyRequestProto req) {
     asyncRouterServer(() -> {
       String ecPolicyName = req.hasEcPolicyName() ?
           req.getEcPolicyName() : null;
       server.setErasureCodingPolicy(req.getSrc(), ecPolicyName);
       return null;
-    }, vo -> ErasureCodingProtos
-        .SetErasureCodingPolicyResponseProto.newBuilder().build());
+    }, vo -> SetErasureCodingPolicyResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ErasureCodingProtos.UnsetErasureCodingPolicyResponseProto unsetErasureCodingPolicy(
-      RpcController controller, ErasureCodingProtos.UnsetErasureCodingPolicyRequestProto req) {
+  public UnsetErasureCodingPolicyResponseProto unsetErasureCodingPolicy(
+      RpcController controller, UnsetErasureCodingPolicyRequestProto req) {
     asyncRouterServer(() -> {
       server.unsetErasureCodingPolicy(req.getSrc());
       return null;
-    }, vo -> ErasureCodingProtos
-        .UnsetErasureCodingPolicyResponseProto.newBuilder().build());
+    }, vo -> UnsetErasureCodingPolicyResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ErasureCodingProtos.GetECTopologyResultForPoliciesResponseProto getECTopologyResultForPolicies(
-      RpcController controller, ErasureCodingProtos.GetECTopologyResultForPoliciesRequestProto req) {
+  public GetECTopologyResultForPoliciesResponseProto getECTopologyResultForPolicies(
+      RpcController controller, GetECTopologyResultForPoliciesRequestProto req) {
     asyncRouterServer(() -> {
       ProtocolStringList policies = req.getPoliciesList();
       return server.getECTopologyResultForPolicies(
           policies.toArray(policies.toArray(new String[policies.size()])));
     }, result -> {
-      ErasureCodingProtos.GetECTopologyResultForPoliciesResponseProto.Builder builder =
-          ErasureCodingProtos.GetECTopologyResultForPoliciesResponseProto.newBuilder();
+      GetECTopologyResultForPoliciesResponseProto.Builder builder =
+          GetECTopologyResultForPoliciesResponseProto.newBuilder();
       builder
           .setResponse(PBHelperClient.convertECTopologyVerifierResult(result));
       return builder.build();
@@ -1230,9 +1445,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public XAttrProtos.SetXAttrResponseProto setXAttr(
+  public SetXAttrResponseProto setXAttr(
       RpcController controller,
-      XAttrProtos.SetXAttrRequestProto req) {
+      SetXAttrRequestProto req) {
     asyncRouterServer(() -> {
       server.setXAttr(req.getSrc(), PBHelperClient.convertXAttr(req.getXAttr()),
           PBHelperClient.convert(req.getFlag()));
@@ -1242,9 +1457,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public XAttrProtos.GetXAttrsResponseProto getXAttrs(
+  public GetXAttrsResponseProto getXAttrs(
       RpcController controller,
-      XAttrProtos.GetXAttrsRequestProto req) {
+      GetXAttrsRequestProto req) {
     asyncRouterServer(() -> server.getXAttrs(req.getSrc(),
         PBHelperClient.convertXAttrs(req.getXAttrsList())),
         PBHelperClient::convertXAttrsResponse);
@@ -1252,18 +1467,18 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public XAttrProtos.ListXAttrsResponseProto listXAttrs(
+  public ListXAttrsResponseProto listXAttrs(
       RpcController controller,
-      XAttrProtos.ListXAttrsRequestProto req) {
+      ListXAttrsRequestProto req) {
     asyncRouterServer(() -> server.listXAttrs(req.getSrc()),
         PBHelperClient::convertListXAttrsResponse);
     return null;
   }
 
   @Override
-  public XAttrProtos.RemoveXAttrResponseProto removeXAttr(
+  public RemoveXAttrResponseProto removeXAttr(
       RpcController controller,
-      XAttrProtos.RemoveXAttrRequestProto req) {
+      RemoveXAttrRequestProto req) {
     asyncRouterServer(() -> {
       server.removeXAttr(req.getSrc(), PBHelperClient.convertXAttr(req.getXAttr()));
       return null;
@@ -1272,9 +1487,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.CheckAccessResponseProto checkAccess(
+  public CheckAccessResponseProto checkAccess(
       RpcController controller,
-      ClientNamenodeProtocolProtos.CheckAccessRequestProto req) {
+      CheckAccessRequestProto req) {
     asyncRouterServer(() -> {
       server.checkAccess(req.getPath(), PBHelperClient.convert(req.getMode()));
       return null;
@@ -1283,8 +1498,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SetStoragePolicyResponseProto setStoragePolicy(
-      RpcController controller, ClientNamenodeProtocolProtos.SetStoragePolicyRequestProto request) {
+  public SetStoragePolicyResponseProto setStoragePolicy(
+      RpcController controller, SetStoragePolicyRequestProto request) {
     asyncRouterServer(() -> {
       server.setStoragePolicy(request.getSrc(), request.getPolicyName());
       return null;
@@ -1293,8 +1508,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.UnsetStoragePolicyResponseProto unsetStoragePolicy(
-      RpcController controller, ClientNamenodeProtocolProtos.UnsetStoragePolicyRequestProto request) {
+  public UnsetStoragePolicyResponseProto unsetStoragePolicy(
+      RpcController controller, UnsetStoragePolicyRequestProto request) {
     asyncRouterServer(() -> {
       server.unsetStoragePolicy(request.getSrc());
       return null;
@@ -1303,24 +1518,24 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetStoragePolicyResponseProto getStoragePolicy(
-      RpcController controller, ClientNamenodeProtocolProtos.GetStoragePolicyRequestProto request) {
+  public GetStoragePolicyResponseProto getStoragePolicy(
+      RpcController controller, GetStoragePolicyRequestProto request) {
     asyncRouterServer(() -> server.getStoragePolicy(request.getPath()),
         result -> {
           HdfsProtos.BlockStoragePolicyProto policy = PBHelperClient.convert(result);
-          return ClientNamenodeProtocolProtos.GetStoragePolicyResponseProto.newBuilder()
+          return GetStoragePolicyResponseProto.newBuilder()
               .setStoragePolicy(policy).build();
         });
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetStoragePoliciesResponseProto getStoragePolicies(
-      RpcController controller, ClientNamenodeProtocolProtos.GetStoragePoliciesRequestProto request) {
+  public GetStoragePoliciesResponseProto getStoragePolicies(
+      RpcController controller, GetStoragePoliciesRequestProto request) {
     asyncRouterServer(server::getStoragePolicies,
         policies -> {
-          ClientNamenodeProtocolProtos.GetStoragePoliciesResponseProto.Builder builder =
-              ClientNamenodeProtocolProtos.GetStoragePoliciesResponseProto.newBuilder();
+          GetStoragePoliciesResponseProto.Builder builder =
+              GetStoragePoliciesResponseProto.newBuilder();
           if (policies == null) {
             return builder.build();
           }
@@ -1332,33 +1547,32 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
     return null;
   }
 
-  public ClientNamenodeProtocolProtos.GetCurrentEditLogTxidResponseProto getCurrentEditLogTxid(
+  public GetCurrentEditLogTxidResponseProto getCurrentEditLogTxid(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetCurrentEditLogTxidRequestProto req) throws ServiceException {
+      GetCurrentEditLogTxidRequestProto req) {
     asyncRouterServer(server::getCurrentEditLogTxid,
-        result -> ClientNamenodeProtocolProtos
-            .GetCurrentEditLogTxidResponseProto.newBuilder()
+        result -> GetCurrentEditLogTxidResponseProto.newBuilder()
             .setTxid(result).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetEditsFromTxidResponseProto getEditsFromTxid(
+  public GetEditsFromTxidResponseProto getEditsFromTxid(
       RpcController controller,
-      ClientNamenodeProtocolProtos.GetEditsFromTxidRequestProto req) {
+      GetEditsFromTxidRequestProto req) {
     asyncRouterServer(() -> server.getEditsFromTxid(req.getTxid()),
         PBHelperClient::convertEditsResponse);
     return null;
   }
 
   @Override
-  public ErasureCodingProtos.GetErasureCodingPoliciesResponseProto getErasureCodingPolicies(
+  public GetErasureCodingPoliciesResponseProto getErasureCodingPolicies(
       RpcController controller,
-      ErasureCodingProtos.GetErasureCodingPoliciesRequestProto request) {
+      GetErasureCodingPoliciesRequestProto request) {
     asyncRouterServer(server::getErasureCodingPolicies,
         ecpInfos -> {
-          ErasureCodingProtos.GetErasureCodingPoliciesResponseProto.Builder resBuilder =
-              ErasureCodingProtos.GetErasureCodingPoliciesResponseProto
+          GetErasureCodingPoliciesResponseProto.Builder resBuilder =
+              GetErasureCodingPoliciesResponseProto
                   .newBuilder();
           for (ErasureCodingPolicyInfo info : ecpInfos) {
             resBuilder.addEcPolicies(
@@ -1370,12 +1584,12 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ErasureCodingProtos.GetErasureCodingCodecsResponseProto getErasureCodingCodecs(
-      RpcController controller, ErasureCodingProtos.GetErasureCodingCodecsRequestProto request) {
+  public GetErasureCodingCodecsResponseProto getErasureCodingCodecs(
+      RpcController controller, GetErasureCodingCodecsRequestProto request) {
     asyncRouterServer(server::getErasureCodingCodecs,
         codecs -> {
-          ErasureCodingProtos.GetErasureCodingCodecsResponseProto.Builder resBuilder =
-              ErasureCodingProtos.GetErasureCodingCodecsResponseProto.newBuilder();
+          GetErasureCodingCodecsResponseProto.Builder resBuilder =
+              GetErasureCodingCodecsResponseProto.newBuilder();
           for (Map.Entry<String, String> codec : codecs.entrySet()) {
             resBuilder.addCodec(
                 PBHelperClient.convertErasureCodingCodec(
@@ -1387,8 +1601,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ErasureCodingProtos.AddErasureCodingPoliciesResponseProto addErasureCodingPolicies(
-      RpcController controller, ErasureCodingProtos.AddErasureCodingPoliciesRequestProto request) {
+  public AddErasureCodingPoliciesResponseProto addErasureCodingPolicies(
+      RpcController controller, AddErasureCodingPoliciesRequestProto request) {
     asyncRouterServer(() -> {
       ErasureCodingPolicy[] policies = request.getEcPoliciesList().stream()
           .map(PBHelperClient::convertErasureCodingPolicy)
@@ -1400,8 +1614,8 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
           Arrays.stream(result)
               .map(PBHelperClient::convertAddErasureCodingPolicyResponse)
               .collect(Collectors.toList());
-      ErasureCodingProtos.AddErasureCodingPoliciesResponseProto response =
-          ErasureCodingProtos.AddErasureCodingPoliciesResponseProto.newBuilder()
+      AddErasureCodingPoliciesResponseProto response =
+          AddErasureCodingPoliciesResponseProto.newBuilder()
               .addAllResponses(responseProtos).build();
       return response;
     });
@@ -1409,43 +1623,43 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ErasureCodingProtos.RemoveErasureCodingPolicyResponseProto removeErasureCodingPolicy(
-      RpcController controller, ErasureCodingProtos.RemoveErasureCodingPolicyRequestProto request) {
+  public RemoveErasureCodingPolicyResponseProto removeErasureCodingPolicy(
+      RpcController controller, RemoveErasureCodingPolicyRequestProto request) {
     asyncRouterServer(() -> {
       server.removeErasureCodingPolicy(request.getEcPolicyName());
       return null;
-    }, vo -> ErasureCodingProtos.RemoveErasureCodingPolicyResponseProto.newBuilder().build());
+    }, vo -> RemoveErasureCodingPolicyResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ErasureCodingProtos.EnableErasureCodingPolicyResponseProto enableErasureCodingPolicy(
-      RpcController controller, ErasureCodingProtos.EnableErasureCodingPolicyRequestProto request) {
+  public EnableErasureCodingPolicyResponseProto enableErasureCodingPolicy(
+      RpcController controller, EnableErasureCodingPolicyRequestProto request) {
     asyncRouterServer(() -> {
       server.enableErasureCodingPolicy(request.getEcPolicyName());
       return null;
-    }, vo -> ErasureCodingProtos.EnableErasureCodingPolicyResponseProto.newBuilder().build());
+    }, vo -> EnableErasureCodingPolicyResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ErasureCodingProtos.DisableErasureCodingPolicyResponseProto disableErasureCodingPolicy(
-      RpcController controller, ErasureCodingProtos.DisableErasureCodingPolicyRequestProto request) {
+  public DisableErasureCodingPolicyResponseProto disableErasureCodingPolicy(
+      RpcController controller, DisableErasureCodingPolicyRequestProto request) {
     asyncRouterServer(() -> {
       server.disableErasureCodingPolicy(request.getEcPolicyName());
       return null;
-    }, vo -> ErasureCodingProtos.DisableErasureCodingPolicyResponseProto.newBuilder().build());
+    }, vo -> DisableErasureCodingPolicyResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ErasureCodingProtos.GetErasureCodingPolicyResponseProto getErasureCodingPolicy(
+  public GetErasureCodingPolicyResponseProto getErasureCodingPolicy(
       RpcController controller,
-      ErasureCodingProtos.GetErasureCodingPolicyRequestProto request) {
+      GetErasureCodingPolicyRequestProto request) {
     asyncRouterServer(() -> server.getErasureCodingPolicy(request.getSrc()),
         ecPolicy -> {
-          ErasureCodingProtos.GetErasureCodingPolicyResponseProto.Builder builder =
-              ErasureCodingProtos.GetErasureCodingPolicyResponseProto.newBuilder();
+          GetErasureCodingPolicyResponseProto.Builder builder =
+              GetErasureCodingPolicyResponseProto.newBuilder();
           if (ecPolicy != null) {
             builder.setEcPolicy(PBHelperClient.convertErasureCodingPolicy(ecPolicy));
           }
@@ -1455,26 +1669,26 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.GetQuotaUsageResponseProto getQuotaUsage(
-      RpcController controller, ClientNamenodeProtocolProtos.GetQuotaUsageRequestProto req) {
+  public GetQuotaUsageResponseProto getQuotaUsage(
+      RpcController controller, GetQuotaUsageRequestProto req) {
     asyncRouterServer(() -> server.getQuotaUsage(req.getPath()),
-        result -> ClientNamenodeProtocolProtos.GetQuotaUsageResponseProto.newBuilder()
+        result -> GetQuotaUsageResponseProto.newBuilder()
             .setUsage(PBHelperClient.convert(result)).build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.ListOpenFilesResponseProto listOpenFiles(
+  public ListOpenFilesResponseProto listOpenFiles(
       RpcController controller,
-      ClientNamenodeProtocolProtos.ListOpenFilesRequestProto req) {
+      ListOpenFilesRequestProto req) {
     asyncRouterServer(() -> {
       EnumSet<OpenFilesIterator.OpenFilesType> openFilesTypes =
           PBHelperClient.convertOpenFileTypes(req.getTypesList());
       return server.listOpenFiles(req.getId(),
           openFilesTypes, req.getPath());
     }, entries -> {
-      ClientNamenodeProtocolProtos.ListOpenFilesResponseProto.Builder builder =
-          ClientNamenodeProtocolProtos.ListOpenFilesResponseProto.newBuilder();
+      ListOpenFilesResponseProto.Builder builder =
+          ListOpenFilesResponseProto.newBuilder();
       builder.setHasMore(entries.hasMore());
       for (int i = 0; i < entries.size(); i++) {
         builder.addEntries(PBHelperClient.convert(entries.get(i)));
@@ -1486,20 +1700,18 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.MsyncResponseProto msync(
-      RpcController controller,
-      ClientNamenodeProtocolProtos.MsyncRequestProto req) {
+  public MsyncResponseProto msync(RpcController controller, MsyncRequestProto req) {
     asyncRouterServer(() -> {
       server.msync();
       return null;
-    }, vo -> ClientNamenodeProtocolProtos.MsyncResponseProto.newBuilder().build());
+    }, vo -> MsyncResponseProto.newBuilder().build());
     return null;
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.SatisfyStoragePolicyResponseProto satisfyStoragePolicy(
-      RpcController controller,
-      ClientNamenodeProtocolProtos.SatisfyStoragePolicyRequestProto request) throws ServiceException {
+  public SatisfyStoragePolicyResponseProto satisfyStoragePolicy(
+      RpcController controller, SatisfyStoragePolicyRequestProto request)
+      throws ServiceException {
     try {
       server.satisfyStoragePolicy(request.getSrc());
     } catch (IOException e) {
@@ -1509,9 +1721,9 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ClientNamenodeProtocolProtos.HAServiceStateResponseProto getHAServiceState(
+  public HAServiceStateResponseProto getHAServiceState(
       RpcController controller,
-      ClientNamenodeProtocolProtos.HAServiceStateRequestProto request) {
+      HAServiceStateRequestProto request) {
     asyncRouterServer(server::getHAServiceState,
         state -> {
           HAServiceProtocolProtos.HAServiceStateProto retState;
@@ -1530,11 +1742,37 @@ public class RouterClientNamenodeProtocolServerSideTranslatorPB
               retState = HAServiceProtocolProtos.HAServiceStateProto.INITIALIZING;
               break;
           }
-          ClientNamenodeProtocolProtos.HAServiceStateResponseProto.Builder builder =
-              ClientNamenodeProtocolProtos.HAServiceStateResponseProto.newBuilder();
+          HAServiceStateResponseProto.Builder builder =
+              HAServiceStateResponseProto.newBuilder();
           builder.setState(retState);
           return builder.build();
         });
+    return null;
+  }
+
+  @Override
+  public GetSlowDatanodeReportResponseProto getSlowDatanodeReport(
+      RpcController controller,
+      GetSlowDatanodeReportRequestProto request) {
+    asyncRouterServer(server::getSlowDatanodeReport,
+        res -> {
+          List<? extends HdfsProtos.DatanodeInfoProto> result =
+              PBHelperClient.convert(res);
+          return GetSlowDatanodeReportResponseProto.newBuilder()
+              .addAllDatanodeInfoProto(result)
+              .build();
+        });
+    return null;
+  }
+
+  @Override
+  public GetEnclosingRootResponseProto getEnclosingRoot(
+      RpcController controller, GetEnclosingRootRequestProto req) {
+    asyncRouterServer(() -> server.getEnclosingRoot(req.getFilename()),
+        enclosingRootPath -> ClientNamenodeProtocolProtos
+            .GetEnclosingRootResponseProto.newBuilder()
+            .setEnclosingRootPath(enclosingRootPath.toUri().toString())
+            .build());
     return null;
   }
 }

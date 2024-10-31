@@ -19,7 +19,35 @@ package org.apache.hadoop.hdfs.protocolPB;
 
 import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.hdfs.protocol.proto.HdfsServerProtos;
+import org.apache.hadoop.hdfs.protocol.proto.HdfsServerProtos.VersionRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.HdfsServerProtos.VersionResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.EndCheckpointRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.EndCheckpointResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.ErrorReportRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.ErrorReportResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetBlockKeysRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetBlockKeysResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetBlocksRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetBlocksResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetEditLogManifestRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetEditLogManifestResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetMostRecentCheckpointTxIdRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetMostRecentCheckpointTxIdResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetNextSPSPathRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetNextSPSPathResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetTransactionIdRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetTransactionIdResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.IsRollingUpgradeRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.IsRollingUpgradeResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.IsUpgradeFinalizedRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.IsUpgradeFinalizedResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.RegisterRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.RegisterResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.RollEditLogRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.RollEditLogResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.StartCheckpointRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.StartCheckpointResponseProto;
 import org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer;
 import org.apache.hadoop.hdfs.server.protocol.NamenodeProtocol;
 import org.apache.hadoop.thirdparty.protobuf.RpcController;
@@ -40,9 +68,9 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public NamenodeProtocolProtos.GetBlocksResponseProto getBlocks(
+  public GetBlocksResponseProto getBlocks(
       RpcController unused,
-      NamenodeProtocolProtos.GetBlocksRequestProto request) {
+      GetBlocksRequestProto request) {
     if (!isAsyncRpc) {
       return getBlocks(unused, request);
     }
@@ -55,21 +83,21 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
           request.hasStorageType() ?
               PBHelperClient.convertStorageType(request.getStorageType()): null);
     }, blocks ->
-        NamenodeProtocolProtos.GetBlocksResponseProto.newBuilder()
+        GetBlocksResponseProto.newBuilder()
             .setBlocks(PBHelper.convert(blocks)).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.GetBlockKeysResponseProto getBlockKeys(
+  public GetBlockKeysResponseProto getBlockKeys(
       RpcController unused,
-      NamenodeProtocolProtos.GetBlockKeysRequestProto request) {
+      GetBlockKeysRequestProto request) {
     if (!isAsyncRpc) {
       return getBlockKeys(unused, request);
     }
     asyncRouterServer(server::getBlockKeys, keys -> {
-      NamenodeProtocolProtos.GetBlockKeysResponseProto.Builder builder =
-          NamenodeProtocolProtos.GetBlockKeysResponseProto.newBuilder();
+      GetBlockKeysResponseProto.Builder builder =
+          GetBlockKeysResponseProto.newBuilder();
       if (keys != null) {
         builder.setKeys(PBHelper.convert(keys));
       }
@@ -79,47 +107,47 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public NamenodeProtocolProtos.GetTransactionIdResponseProto getTransactionId(
+  public GetTransactionIdResponseProto getTransactionId(
       RpcController unused,
-      NamenodeProtocolProtos.GetTransactionIdRequestProto request) {
+      GetTransactionIdRequestProto request) {
     if (!isAsyncRpc) {
       return getTransactionId(unused, request);
     }
     asyncRouterServer(server::getTransactionID,
-        txid -> NamenodeProtocolProtos.GetTransactionIdResponseProto
+        txid -> GetTransactionIdResponseProto
             .newBuilder().setTxId(txid).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.GetMostRecentCheckpointTxIdResponseProto getMostRecentCheckpointTxId(
-      RpcController unused, NamenodeProtocolProtos.GetMostRecentCheckpointTxIdRequestProto request) {
+  public GetMostRecentCheckpointTxIdResponseProto getMostRecentCheckpointTxId(
+      RpcController unused, GetMostRecentCheckpointTxIdRequestProto request) {
     if (!isAsyncRpc) {
       return getMostRecentCheckpointTxId(unused, request);
     }
     asyncRouterServer(server::getMostRecentCheckpointTxId,
-        txid -> NamenodeProtocolProtos.GetMostRecentCheckpointTxIdResponseProto
+        txid -> GetMostRecentCheckpointTxIdResponseProto
             .newBuilder().setTxId(txid).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.RollEditLogResponseProto rollEditLog(
+  public RollEditLogResponseProto rollEditLog(
       RpcController unused,
-      NamenodeProtocolProtos.RollEditLogRequestProto request) {
+      RollEditLogRequestProto request) {
     if (!isAsyncRpc) {
       return rollEditLog(unused, request);
     }
     asyncRouterServer(server::rollEditLog,
-        signature -> NamenodeProtocolProtos.RollEditLogResponseProto.newBuilder()
+        signature -> RollEditLogResponseProto.newBuilder()
             .setSignature(PBHelper.convert(signature)).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.ErrorReportResponseProto errorReport(
+  public ErrorReportResponseProto errorReport(
       RpcController unused,
-      NamenodeProtocolProtos.ErrorReportRequestProto request) {
+      ErrorReportRequestProto request) {
     if (!isAsyncRpc) {
       return errorReport(unused, request);
     }
@@ -132,37 +160,37 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public NamenodeProtocolProtos.RegisterResponseProto registerSubordinateNamenode(
-      RpcController unused, NamenodeProtocolProtos.RegisterRequestProto request) {
+  public RegisterResponseProto registerSubordinateNamenode(
+      RpcController unused, RegisterRequestProto request) {
     if (!isAsyncRpc) {
       return registerSubordinateNamenode(unused, request);
     }
     asyncRouterServer(() -> server.registerSubordinateNamenode(
         PBHelper.convert(request.getRegistration())),
-        reg -> NamenodeProtocolProtos.RegisterResponseProto.newBuilder()
+        reg -> RegisterResponseProto.newBuilder()
             .setRegistration(PBHelper.convert(reg)).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.StartCheckpointResponseProto startCheckpoint(
+  public StartCheckpointResponseProto startCheckpoint(
       RpcController unused,
-      NamenodeProtocolProtos.StartCheckpointRequestProto request) {
+      StartCheckpointRequestProto request) {
     if (!isAsyncRpc) {
       return startCheckpoint(unused, request);
     }
     asyncRouterServer(() ->
             server.startCheckpoint(PBHelper.convert(request.getRegistration())),
-        cmd -> NamenodeProtocolProtos.StartCheckpointResponseProto.newBuilder()
+        cmd -> StartCheckpointResponseProto.newBuilder()
             .setCommand(PBHelper.convert(cmd)).build());
     return null;
   }
 
 
   @Override
-  public NamenodeProtocolProtos.EndCheckpointResponseProto endCheckpoint(
+  public EndCheckpointResponseProto endCheckpoint(
       RpcController unused,
-      NamenodeProtocolProtos.EndCheckpointRequestProto request) {
+      EndCheckpointRequestProto request) {
     if (!isAsyncRpc) {
       return endCheckpoint(unused, request);
     }
@@ -175,63 +203,63 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public NamenodeProtocolProtos.GetEditLogManifestResponseProto getEditLogManifest(
-      RpcController unused, NamenodeProtocolProtos.GetEditLogManifestRequestProto request) {
+  public GetEditLogManifestResponseProto getEditLogManifest(
+      RpcController unused, GetEditLogManifestRequestProto request) {
     if (!isAsyncRpc) {
       return getEditLogManifest(unused, request);
     }
     asyncRouterServer(() -> server.getEditLogManifest(request.getSinceTxId()),
-        manifest -> NamenodeProtocolProtos.GetEditLogManifestResponseProto.newBuilder()
+        manifest -> GetEditLogManifestResponseProto.newBuilder()
             .setManifest(PBHelper.convert(manifest)).build());
     return null;
   }
 
   @Override
-  public HdfsServerProtos.VersionResponseProto versionRequest(
+  public VersionResponseProto versionRequest(
       RpcController controller,
-      HdfsServerProtos.VersionRequestProto request) {
+      VersionRequestProto request) {
     if (!isAsyncRpc) {
       return versionRequest(controller, request);
     }
     asyncRouterServer(server::versionRequest,
-        info -> HdfsServerProtos.VersionResponseProto.newBuilder()
+        info -> VersionResponseProto.newBuilder()
             .setInfo(PBHelper.convert(info)).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.IsUpgradeFinalizedResponseProto isUpgradeFinalized(
-      RpcController controller, NamenodeProtocolProtos.IsUpgradeFinalizedRequestProto request) {
+  public IsUpgradeFinalizedResponseProto isUpgradeFinalized(
+      RpcController controller, IsUpgradeFinalizedRequestProto request) {
     if (!isAsyncRpc) {
       return isUpgradeFinalized(controller, request);
     }
     asyncRouterServer(server::isUpgradeFinalized,
-        isUpgradeFinalized -> NamenodeProtocolProtos.IsUpgradeFinalizedResponseProto.newBuilder()
+        isUpgradeFinalized -> IsUpgradeFinalizedResponseProto.newBuilder()
             .setIsUpgradeFinalized(isUpgradeFinalized).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.IsRollingUpgradeResponseProto isRollingUpgrade(
-      RpcController controller, NamenodeProtocolProtos.IsRollingUpgradeRequestProto request)
+  public IsRollingUpgradeResponseProto isRollingUpgrade(
+      RpcController controller, IsRollingUpgradeRequestProto request)
       throws ServiceException {
     if (!isAsyncRpc) {
       return isRollingUpgrade(controller, request);
     }
     asyncRouterServer(server::isRollingUpgrade,
-        isRollingUpgrade -> NamenodeProtocolProtos.IsRollingUpgradeResponseProto.newBuilder()
+        isRollingUpgrade -> IsRollingUpgradeResponseProto.newBuilder()
             .setIsRollingUpgrade(isRollingUpgrade).build());
     return null;
   }
 
   @Override
-  public NamenodeProtocolProtos.GetNextSPSPathResponseProto getNextSPSPath(
-      RpcController controller, NamenodeProtocolProtos.GetNextSPSPathRequestProto request) {
+  public GetNextSPSPathResponseProto getNextSPSPath(
+      RpcController controller, GetNextSPSPathRequestProto request) {
     if (!isAsyncRpc) {
       return getNextSPSPath(controller, request);
     }
     asyncRouterServer(server::getNextSPSPath,
-        nextSPSPath -> NamenodeProtocolProtos.GetNextSPSPathResponseProto.newBuilder()
+        nextSPSPath -> GetNextSPSPathResponseProto.newBuilder()
             .setSpsPath(nextSPSPath).build());
     return null;
   }
