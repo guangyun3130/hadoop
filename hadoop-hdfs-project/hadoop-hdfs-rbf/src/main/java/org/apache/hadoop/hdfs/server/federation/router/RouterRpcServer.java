@@ -1409,6 +1409,11 @@ public class RouterRpcServer extends AbstractService implements ClientProtocol,
     return getDatanodeStorageReportMap(type, true, -1);
   }
 
+  public Map<String, DatanodeStorageReport[]> getDatanodeStorageReportMapAsync(
+      DatanodeReportType type) throws IOException {
+    return getDatanodeStorageReportMapAsync(type, true, -1);
+  }
+
   /**
    * Get the list of datanodes per subcluster.
    *
