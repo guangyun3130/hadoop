@@ -619,7 +619,7 @@ public class TestRouterMountTable {
       assertEquals(2, ((HdfsFileStatus) finfo1[0]).getChildrenNum());
     } finally {
       nnFs0.delete(new Path("/tmp"), true);
-      nnFs0.delete(new Path("/tmp"), true);
+      nnFs1.delete(new Path("/tmp"), true);
     }
   }
 
