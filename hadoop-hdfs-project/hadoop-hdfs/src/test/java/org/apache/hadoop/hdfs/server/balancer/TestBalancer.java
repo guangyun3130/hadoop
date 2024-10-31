@@ -1299,7 +1299,7 @@ public class TestBalancer {
     parameters = new String[] {"-source",  "testnode1", "-excludeSource", "testnode2"};
     try {
       Balancer.Cli.parse(parameters);
-      fail("IllegalArgumentException is expected when both -source and -excludeSource are specified");
+      fail("Exception is expected when both -source and -excludeSource are specified");
     } catch (IllegalArgumentException e) {
 
     }
@@ -1323,7 +1323,7 @@ public class TestBalancer {
     parameters = new String[] {"-target",  "testnode1", "-excludeTarget", "testnode2"};
     try {
       Balancer.Cli.parse(parameters);
-      fail("IllegalArgumentException is expected when both -target and -excludeTarget are specified");
+      fail("Exception expected when both -target and -excludeTarget are specified");
     } catch (IllegalArgumentException e) {
 
     }

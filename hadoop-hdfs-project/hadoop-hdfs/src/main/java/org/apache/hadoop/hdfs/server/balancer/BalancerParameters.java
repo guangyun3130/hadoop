@@ -157,7 +157,8 @@ final class BalancerParameters {
         Balancer.class.getSimpleName(), getClass().getSimpleName(), policy,
         threshold, maxIdleIteration, excludedNodes.size(),
         includedNodes.size(), sourceNodes.size(), excludedSourceNodes.size(), targetNodes.size(),
-        excludedTargetNodes.size(), blockpools.size(), runDuringUpgrade, sortTopNodes, hotBlockTimeInterval);
+        excludedTargetNodes.size(), blockpools.size(),
+        runDuringUpgrade, sortTopNodes, hotBlockTimeInterval);
   }
 
   static class Builder {

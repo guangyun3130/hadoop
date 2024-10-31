@@ -431,12 +431,13 @@ public class Balancer {
         
         final double average = policy.getAvgUtilization(t);
         if (utilization >= average && !isValidSource) {
-          LOG.info("{} [{}] utilization {} >= average {}, but it's either not specified or excluded as a source; skipping.",
-              dn, t, utilization, average);
+          LOG.info("{} [{}] utilization {} >= average {}, but it's either not specified"
+                  + " or excluded as a source; skipping.", dn, t, utilization, average);
           continue;
         }
         if (utilization <= average && !isValidTarget) {
-          LOG.info("{} [{}] utilization {} <= average {}, but it's either not specified or excluded as a target; skipping.",
+          LOG.info("{} [{}] utilization {} <= average {}, but it's either not specified"
+                  + " or excluded as a target; skipping.",
               dn, t, utilization, average);
           continue;
         }
