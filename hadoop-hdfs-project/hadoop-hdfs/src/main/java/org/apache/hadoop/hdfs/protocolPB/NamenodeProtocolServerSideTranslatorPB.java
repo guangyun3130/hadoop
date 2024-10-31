@@ -73,10 +73,10 @@ public class NamenodeProtocolServerSideTranslatorPB implements
     NamenodeProtocolPB {
   private final NamenodeProtocol impl;
 
-  private final static ErrorReportResponseProto VOID_ERROR_REPORT_RESPONSE = 
+  protected final static ErrorReportResponseProto VOID_ERROR_REPORT_RESPONSE = 
   ErrorReportResponseProto.newBuilder().build();
 
-  private final static EndCheckpointResponseProto VOID_END_CHECKPOINT_RESPONSE =
+  protected final static EndCheckpointResponseProto VOID_END_CHECKPOINT_RESPONSE =
   EndCheckpointResponseProto.newBuilder().build();
 
   public NamenodeProtocolServerSideTranslatorPB(NamenodeProtocol impl) {

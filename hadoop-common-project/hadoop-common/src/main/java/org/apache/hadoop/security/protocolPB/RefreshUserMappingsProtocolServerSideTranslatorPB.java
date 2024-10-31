@@ -32,12 +32,12 @@ import org.apache.hadoop.thirdparty.protobuf.ServiceException;
 public class RefreshUserMappingsProtocolServerSideTranslatorPB implements RefreshUserMappingsProtocolPB {
 
   private final RefreshUserMappingsProtocol impl;
-  
-  private final static RefreshUserToGroupsMappingsResponseProto 
+
+  protected final static RefreshUserToGroupsMappingsResponseProto 
   VOID_REFRESH_USER_GROUPS_MAPPING_RESPONSE =
       RefreshUserToGroupsMappingsResponseProto.newBuilder().build();
 
-  private final static RefreshSuperUserGroupsConfigurationResponseProto
+  protected final static RefreshSuperUserGroupsConfigurationResponseProto
   VOID_REFRESH_SUPERUSER_GROUPS_CONFIGURATION_RESPONSE = 
       RefreshSuperUserGroupsConfigurationResponseProto.newBuilder()
       .build();

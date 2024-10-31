@@ -68,6 +68,10 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.HAUtil;
 import org.apache.hadoop.hdfs.protocol.UnresolvedPathException;
 import org.apache.hadoop.hdfs.protocolPB.AsyncRpcProtocolPBUtil;
+import org.apache.hadoop.hdfs.protocolPB.RouterClientNamenodeProtocolServerSideTranslatorPB;
+import org.apache.hadoop.hdfs.protocolPB.RouterGetUserMappingsProtocolServerSideTranslatorPB;
+import org.apache.hadoop.hdfs.protocolPB.RouterNamenodeProtocolServerSideTranslatorPB;
+import org.apache.hadoop.hdfs.protocolPB.RouterRefreshUserMappingsProtocolServerSideTranslatorPB;
 import org.apache.hadoop.thirdparty.com.google.common.cache.CacheBuilder;
 import org.apache.hadoop.thirdparty.com.google.common.cache.CacheLoader;
 import org.apache.hadoop.thirdparty.com.google.common.cache.LoadingCache;
@@ -313,28 +317,37 @@ public class RouterRpcServer extends AbstractService implements ClientProtocol,
     RPC.setProtocolEngine(this.conf, ClientNamenodeProtocolPB.class,
         ProtobufRpcEngine2.class);
 
-    ClientNamenodeProtocolServerSideTranslatorPB
-        clientProtocolServerTranslator =
-            new ClientNamenodeProtocolServerSideTranslatorPB(this);
+    ClientNamenodeProtocolServerSideTranslatorPB clientProtocolServerTranslator = null;
+    NamenodeProtocolServerSideTranslatorPB namenodeProtocolXlator = null;
+    RefreshUserMappingsProtocolServerSideTranslatorPB refreshUserMappingXlator = null;
+    GetUserMappingsProtocolServerSideTranslatorPB getUserMappingXlator = null;
+
+    if (enableAsync) {
+      clientProtocolServerTranslator = new RouterClientNamenodeProtocolServerSideTranslatorPB(this);
+      namenodeProtocolXlator = new RouterNamenodeProtocolServerSideTranslatorPB(this);
+      getUserMappingXlator = new RouterGetUserMappingsProtocolServerSideTranslatorPB(this);
+      refreshUserMappingXlator = new RouterRefreshUserMappingsProtocolServerSideTranslatorPB(this);
+    } else {
+      clientProtocolServerTranslator =
+          new ClientNamenodeProtocolServerSideTranslatorPB(this);
+      namenodeProtocolXlator = new NamenodeProtocolServerSideTranslatorPB(this);
+      getUserMappingXlator = new GetUserMappingsProtocolServerSideTranslatorPB(this);
+      refreshUserMappingXlator = new RefreshUserMappingsProtocolServerSideTranslatorPB(this);
+    }
+
     BlockingService clientNNPbService = ClientNamenodeProtocol
         .newReflectiveBlockingService(clientProtocolServerTranslator);
 
-    NamenodeProtocolServerSideTranslatorPB namenodeProtocolXlator =
-        new NamenodeProtocolServerSideTranslatorPB(this);
     BlockingService nnPbService = NamenodeProtocolService
         .newReflectiveBlockingService(namenodeProtocolXlator);
-
-    RefreshUserMappingsProtocolServerSideTranslatorPB refreshUserMappingXlator =
-        new RefreshUserMappingsProtocolServerSideTranslatorPB(this);
+    
     BlockingService refreshUserMappingService =
         RefreshUserMappingsProtocolProtos.RefreshUserMappingsProtocolService.
-        newReflectiveBlockingService(refreshUserMappingXlator);
+            newReflectiveBlockingService(refreshUserMappingXlator);
 
-    GetUserMappingsProtocolServerSideTranslatorPB getUserMappingXlator =
-        new GetUserMappingsProtocolServerSideTranslatorPB(this);
     BlockingService getUserMappingService =
         GetUserMappingsProtocolProtos.GetUserMappingsProtocolService.
-        newReflectiveBlockingService(getUserMappingXlator);
+            newReflectiveBlockingService(getUserMappingXlator);
 
     InetSocketAddress confRpcAddress = conf.getSocketAddr(
         RBFConfigKeys.DFS_ROUTER_RPC_BIND_HOST_KEY,
