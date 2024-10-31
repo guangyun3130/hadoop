@@ -525,15 +525,17 @@ public class TestBalancer {
           actualExcludedNodeCount++;
           continue;
         }
-        if(Dispatcher.Util.isExcluded(p.getExcludedTargetNodes(), datanode) ||
-           !Dispatcher.Util.isIncluded(p.getTargetNodes(), datanode)) {
+        if(Dispatcher.Util.isExcluded(p.getExcludedTargetNodes(), datanode)) {
           actualExcludedTargetNodeCount++;
-          continue;
         }
-        if(Dispatcher.Util.isExcluded(p.getExcludedSourceNodes(), datanode) ||
-           !Dispatcher.Util.isIncluded(p.getSourceNodes(), datanode)) {
+        if(!Dispatcher.Util.isIncluded(p.getTargetNodes(), datanode)) {
+          actualExcludedTargetNodeCount++;
+        }
+        if(Dispatcher.Util.isExcluded(p.getExcludedSourceNodes(), datanode)) {
           actualExcludedSourceNodeCount++;
-          continue;
+        }
+        if(!Dispatcher.Util.isIncluded(p.getSourceNodes(), datanode)) {
+          actualExcludedSourceNodeCount++;
         }
         if (Math.abs(avgUtilization - nodeUtilization) > BALANCE_ALLOWED_VARIANCE) {
           balanced = false;
@@ -846,7 +848,11 @@ public class TestBalancer {
           == 0) {
         assertEquals(ExitStatus.NO_MOVE_PROGRESS.getExitCode(), run);
         return;
-      } else {
+      } else if(run == ExitStatus.NO_MOVE_BLOCK.getExitCode()) {
+        LOG.error("Exit status returned: " + run);
+        throw new Exception(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()));
+      }
+      else {
         assertEquals(ExitStatus.SUCCESS.getExitCode(), run);
       }
       waitForHeartBeat(totalDfsUsedSpace, totalCapacity, client, cluster);
@@ -912,8 +918,9 @@ public class TestBalancer {
           b.resetData(conf);
           if (r.getExitStatus() == ExitStatus.IN_PROGRESS) {
             done = false;
-          } else if (r.getExitStatus() != ExitStatus.SUCCESS) {
-            //must be an error statue, return.
+          }
+          else if (r.getExitStatus() != ExitStatus.SUCCESS || r.getExitStatus() != ExitStatus.NO_MOVE_BLOCK) {
+            //must be an error status, return.
             return r.getExitStatus().getExitCode();
           } else {
             if (iteration > 0) {
@@ -2014,14 +2021,98 @@ public class TestBalancer {
     final Configuration conf = new HdfsConfiguration();
     initConf(conf);
     Set<String> excludeTargetNodes = new HashSet<>();
-    excludeTargetNodes.add("datanodeX");
+    excludeTargetNodes.add("datanodeZ");
     BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
     pBuilder.setExcludedTargetNodes(excludeTargetNodes);
     BalancerParameters p = pBuilder.build();
-    doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
-        new HostNameBasedNodes(new String[] {"datanodeX", "datanodeY", "datanodeZ"},
-            BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()),
-        false, false, p);
+    try {
+      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+          new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
+              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+          false, p);
+    } catch (Exception e) {
+      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Test balancer with included target nodes.
+   */
+  @Test(timeout=100000)
+  public void testBalancerIncludeTargetNodes() throws Exception {
+    final Configuration conf = new HdfsConfiguration();
+    initConf(conf);
+    Set<String> includeTargetNodes = new HashSet<>();
+    includeTargetNodes.add("datanodeY");
+    includeTargetNodes.add("datanodeZ");
+    BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
+    pBuilder.setTargetNodes(includeTargetNodes);
+    BalancerParameters p = pBuilder.build();
+    try {
+      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+          new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
+              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+          false, p);
+    } catch (Exception e) {
+      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Test balancer with included source nodes
+   * Since newly added nodes are the only included source nodes no balancing will occur
+   */
+  @Test(timeout=100000)
+  public void testBalancerIncludeSourceNodes() throws Exception {
+    final Configuration conf = new HdfsConfiguration();
+    initConf(conf);
+    Set<String> includeSourceNodes = new HashSet<>();
+    includeSourceNodes.add("datanodeX");
+    includeSourceNodes.add("datanodeY");
+    includeSourceNodes.add("datanodeZ");
+    BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
+    pBuilder.setSourceNodes(includeSourceNodes);
+    BalancerParameters p = pBuilder.build();
+    try {
+      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+          new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
+              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+          false, p);
+    } catch (Exception e) {
+      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
+        throw e;
+      }
+    }
+  }
+
+  /**
+   * Test balancer with excluded source nodes
+   * Since newly added nodes will not be selected as a source all nodes will be included in balancing
+   */
+  @Test(timeout=100000)
+  public void testBalancerExcludeSourceNodes() throws Exception {
+    final Configuration conf = new HdfsConfiguration();
+    initConf(conf);
+    Set<String> excludeSourceNodes = new HashSet<>();
+    excludeSourceNodes.add("datanodeX");
+    excludeSourceNodes.add("datanodeY");
+    BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
+    pBuilder.setExcludedSourceNodes(excludeSourceNodes);
+    BalancerParameters p = pBuilder.build();
+    try {
+      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+          new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
+              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+          false, p);
+    } catch (Exception e) {
+      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
+        throw e;
+      }
+    }
   }
 
 
