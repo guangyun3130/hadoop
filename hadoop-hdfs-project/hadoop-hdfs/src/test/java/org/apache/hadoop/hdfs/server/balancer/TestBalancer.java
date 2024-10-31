@@ -473,7 +473,8 @@ public class TestBalancer {
   static void waitForBalancer(long totalUsedSpace, long totalCapacity,
       ClientProtocol client, MiniDFSCluster cluster, BalancerParameters p,
       int expectedExcludedNodes) throws IOException, TimeoutException {
-    waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p, expectedExcludedNodes, true, 0, 0);
+    waitForBalancer(totalUsedSpace, totalCapacity, client,
+        cluster, p, expectedExcludedNodes, true, 0, 0);
   }
 
   /**
@@ -868,7 +869,8 @@ public class TestBalancer {
           expectedExcludedTargetNodes = p.getExcludedTargetNodes().size();
         }
         waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p,
-            excludedNodes, checkExcludeNodesUtilization, expectedExcludedSourceNodes, expectedExcludedTargetNodes);
+            excludedNodes, checkExcludeNodesUtilization,
+            expectedExcludedSourceNodes, expectedExcludedTargetNodes);
       } catch (TimeoutException e) {
         // See HDFS-11682. NN may not get heartbeat to reflect the newest
         // block changes.
@@ -918,8 +920,7 @@ public class TestBalancer {
           b.resetData(conf);
           if (r.getExitStatus() == ExitStatus.IN_PROGRESS) {
             done = false;
-          }
-          else if (r.getExitStatus() != ExitStatus.SUCCESS || r.getExitStatus() != ExitStatus.NO_MOVE_BLOCK) {
+          } else if (r.getExitStatus() != ExitStatus.SUCCESS || r.getExitStatus() != ExitStatus.NO_MOVE_BLOCK) {
             //must be an error status, return.
             return r.getExitStatus().getExitCode();
           } else {
@@ -2028,7 +2029,8 @@ public class TestBalancer {
     try {
       doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
-              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+              BalancerParameters.DEFAULT.getExcludedNodes(),
+              BalancerParameters.DEFAULT.getIncludedNodes()), false,
           false, p);
     } catch (Exception e) {
       if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
@@ -2053,7 +2055,8 @@ public class TestBalancer {
     try {
       doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
-              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+              BalancerParameters.DEFAULT.getExcludedNodes(),
+              BalancerParameters.DEFAULT.getIncludedNodes()), false,
           false, p);
     } catch (Exception e) {
       if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
@@ -2063,8 +2066,8 @@ public class TestBalancer {
   }
 
   /**
-   * Test balancer with included source nodes
-   * Since newly added nodes are the only included source nodes no balancing will occur
+   * Test balancer with included source nodes.
+   * Since newly added nodes are the only included source nodes no balancing will occur.
    */
   @Test(timeout=100000)
   public void testBalancerIncludeSourceNodes() throws Exception {
@@ -2080,7 +2083,8 @@ public class TestBalancer {
     try {
       doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
-              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+              BalancerParameters.DEFAULT.getExcludedNodes(),
+              BalancerParameters.DEFAULT.getIncludedNodes()), false,
           false, p);
     } catch (Exception e) {
       if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
@@ -2090,8 +2094,8 @@ public class TestBalancer {
   }
 
   /**
-   * Test balancer with excluded source nodes
-   * Since newly added nodes will not be selected as a source all nodes will be included in balancing
+   * Test balancer with excluded source nodes.
+   * Since newly added nodes will not be selected as a source all nodes will be included in balancing.
    */
   @Test(timeout=100000)
   public void testBalancerExcludeSourceNodes() throws Exception {
@@ -2106,7 +2110,8 @@ public class TestBalancer {
     try {
       doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
-              BalancerParameters.DEFAULT.getExcludedNodes(), BalancerParameters.DEFAULT.getIncludedNodes()), false,
+              BalancerParameters.DEFAULT.getExcludedNodes(),
+              BalancerParameters.DEFAULT.getIncludedNodes()), false,
           false, p);
     } catch (Exception e) {
       if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
