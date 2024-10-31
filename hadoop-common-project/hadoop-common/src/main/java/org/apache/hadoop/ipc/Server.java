@@ -2143,6 +2143,10 @@ public abstract class Server {
       return Server.this;
     }
 
+    public Configuration getConf() {
+      return Server.this.getConf();
+    }
+
     /* Return true if the connection has no outstanding rpc */
     private boolean isIdle() {
       return rpcCount.get() == 0;
