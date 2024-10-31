@@ -611,7 +611,6 @@ public class TestRouterMountTable {
       MountTable addEntry = MountTable.newInstance("/testdir", destMap);
       assertTrue(addMountTable(addEntry));
       nnFs0.mkdirs(new Path("/tmp/testdir"));
-      nnFs0.mkdirs(new Path("/tmp/testdir"));
       nnFs1.mkdirs(new Path("/tmp/testdir01"));
       nnFs0.mkdirs(new Path("/tmp/testdir/1"));
       nnFs1.mkdirs(new Path("/tmp/testdir01/1"));
