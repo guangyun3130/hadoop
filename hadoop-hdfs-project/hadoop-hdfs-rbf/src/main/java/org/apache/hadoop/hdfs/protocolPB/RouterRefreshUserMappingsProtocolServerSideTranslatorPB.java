@@ -67,8 +67,7 @@ public class RouterRefreshUserMappingsProtocolServerSideTranslatorPB
   }
 
   @Override
-  public RefreshSuperUserGroupsConfigurationResponseProto
-  refreshSuperUserGroupsConfiguration(
+  public RefreshSuperUserGroupsConfigurationResponseProto refreshSuperUserGroupsConfiguration(
       RpcController controller,
       RefreshSuperUserGroupsConfigurationRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {

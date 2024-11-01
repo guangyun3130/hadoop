@@ -18,7 +18,6 @@
 
 package org.apache.hadoop.hdfs.protocolPB;
 
-import org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer;
 import org.apache.hadoop.hdfs.server.federation.router.ThreadLocalContext;
 import org.apache.hadoop.hdfs.server.federation.router.async.ApplyFunction;
 import org.apache.hadoop.hdfs.server.federation.router.async.AsyncUtil;
