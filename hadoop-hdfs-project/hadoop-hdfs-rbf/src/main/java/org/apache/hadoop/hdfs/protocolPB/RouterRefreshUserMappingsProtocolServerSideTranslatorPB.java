@@ -19,7 +19,6 @@ package org.apache.hadoop.hdfs.protocolPB;
 
 import org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer;
 import org.apache.hadoop.security.RefreshUserMappingsProtocol;
-import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos;
 import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshSuperUserGroupsConfigurationRequestProto;
 import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshSuperUserGroupsConfigurationResponseProto;
 import org.apache.hadoop.security.proto.RefreshUserMappingsProtocolProtos.RefreshUserToGroupsMappingsRequestProto;
@@ -32,9 +31,18 @@ import static org.apache.hadoop.hdfs.protocolPB.AsyncRpcProtocolPBUtil.asyncRout
 
 public class RouterRefreshUserMappingsProtocolServerSideTranslatorPB
     extends RefreshUserMappingsProtocolServerSideTranslatorPB {
+  
   private final RouterRpcServer server;
   private final boolean isAsyncRpc;
 
+  private final static RefreshUserToGroupsMappingsResponseProto
+      VOID_REFRESH_USER_GROUPS_MAPPING_RESPONSE =
+      RefreshUserToGroupsMappingsResponseProto.newBuilder().build();
+
+  private final static RefreshSuperUserGroupsConfigurationResponseProto
+      VOID_REFRESH_SUPERUSER_GROUPS_CONFIGURATION_RESPONSE =
+      RefreshSuperUserGroupsConfigurationResponseProto.newBuilder()
+          .build();
 
   public RouterRefreshUserMappingsProtocolServerSideTranslatorPB(
       RefreshUserMappingsProtocol impl) {

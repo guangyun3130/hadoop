@@ -102,6 +102,13 @@ public final class AsyncRpcProtocolPBUtil {
     return asyncReturn(clazz);
   }
 
+  /**
+   * Asynchronously invokes an RPC call and applies a response transformation function
+   * to the result on server-side.
+   * @param req The IPC call encapsulating the RPC request on server-side.
+   * @param res The function to apply to the response of the RPC call on server-side.
+   * @param <T> Type of the call's result.
+   */
   public static <T> void asyncRouterServer(ServerReq<T> req, ServerRes<T> res) {
     final ProtobufRpcEngineCallback2 callback =
         ProtobufRpcEngine2.Server.registerForDeferredResponse2();

@@ -68,11 +68,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public GetBlocksResponseProto getBlocks(
-      RpcController unused,
-      GetBlocksRequestProto request) {
+  public GetBlocksResponseProto getBlocks(RpcController unused,
+      GetBlocksRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return getBlocks(unused, request);
+      return super.getBlocks(unused, request);
     }
     asyncRouterServer(() -> {
       DatanodeInfo dnInfo = new DatanodeInfo.DatanodeInfoBuilder()
@@ -89,11 +88,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public GetBlockKeysResponseProto getBlockKeys(
-      RpcController unused,
-      GetBlockKeysRequestProto request) {
+  public GetBlockKeysResponseProto getBlockKeys(RpcController unused,
+      GetBlockKeysRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return getBlockKeys(unused, request);
+      return super.getBlockKeys(unused, request);
     }
     asyncRouterServer(server::getBlockKeys, keys -> {
       GetBlockKeysResponseProto.Builder builder =
@@ -107,11 +105,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public GetTransactionIdResponseProto getTransactionId(
-      RpcController unused,
-      GetTransactionIdRequestProto request) {
+  public GetTransactionIdResponseProto getTransactionId(RpcController unused,
+      GetTransactionIdRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return getTransactionId(unused, request);
+      return super.getTransactionId(unused, request);
     }
     asyncRouterServer(server::getTransactionID,
         txid -> GetTransactionIdResponseProto
@@ -121,9 +118,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
 
   @Override
   public GetMostRecentCheckpointTxIdResponseProto getMostRecentCheckpointTxId(
-      RpcController unused, GetMostRecentCheckpointTxIdRequestProto request) {
+      RpcController unused, GetMostRecentCheckpointTxIdRequestProto request)
+      throws ServiceException {
     if (!isAsyncRpc) {
-      return getMostRecentCheckpointTxId(unused, request);
+      return super.getMostRecentCheckpointTxId(unused, request);
     }
     asyncRouterServer(server::getMostRecentCheckpointTxId,
         txid -> GetMostRecentCheckpointTxIdResponseProto
@@ -132,11 +130,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public RollEditLogResponseProto rollEditLog(
-      RpcController unused,
-      RollEditLogRequestProto request) {
+  public RollEditLogResponseProto rollEditLog(RpcController unused,
+      RollEditLogRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return rollEditLog(unused, request);
+      return super.rollEditLog(unused, request);
     }
     asyncRouterServer(server::rollEditLog,
         signature -> RollEditLogResponseProto.newBuilder()
@@ -145,11 +142,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public ErrorReportResponseProto errorReport(
-      RpcController unused,
-      ErrorReportRequestProto request) {
+  public ErrorReportResponseProto errorReport(RpcController unused,
+      ErrorReportRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return errorReport(unused, request);
+      return super.errorReport(unused, request);
     }
     asyncRouterServer(() -> {
       server.errorReport(PBHelper.convert(request.getRegistration()),
@@ -161,9 +157,9 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
 
   @Override
   public RegisterResponseProto registerSubordinateNamenode(
-      RpcController unused, RegisterRequestProto request) {
+      RpcController unused, RegisterRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return registerSubordinateNamenode(unused, request);
+      return super.registerSubordinateNamenode(unused, request);
     }
     asyncRouterServer(() -> server.registerSubordinateNamenode(
         PBHelper.convert(request.getRegistration())),
@@ -173,11 +169,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public StartCheckpointResponseProto startCheckpoint(
-      RpcController unused,
-      StartCheckpointRequestProto request) {
+  public StartCheckpointResponseProto startCheckpoint(RpcController unused,
+      StartCheckpointRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return startCheckpoint(unused, request);
+      return super.startCheckpoint(unused, request);
     }
     asyncRouterServer(() ->
             server.startCheckpoint(PBHelper.convert(request.getRegistration())),
@@ -188,11 +183,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
 
 
   @Override
-  public EndCheckpointResponseProto endCheckpoint(
-      RpcController unused,
-      EndCheckpointRequestProto request) {
+  public EndCheckpointResponseProto endCheckpoint(RpcController unused,
+      EndCheckpointRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return endCheckpoint(unused, request);
+      return super.endCheckpoint(unused, request);
     }
     asyncRouterServer(() -> {
       server.endCheckpoint(PBHelper.convert(request.getRegistration()),
@@ -204,9 +198,9 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
 
   @Override
   public GetEditLogManifestResponseProto getEditLogManifest(
-      RpcController unused, GetEditLogManifestRequestProto request) {
+      RpcController unused, GetEditLogManifestRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return getEditLogManifest(unused, request);
+      return super.getEditLogManifest(unused, request);
     }
     asyncRouterServer(() -> server.getEditLogManifest(request.getSinceTxId()),
         manifest -> GetEditLogManifestResponseProto.newBuilder()
@@ -217,9 +211,9 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   @Override
   public VersionResponseProto versionRequest(
       RpcController controller,
-      VersionRequestProto request) {
+      VersionRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return versionRequest(controller, request);
+      return super.versionRequest(controller, request);
     }
     asyncRouterServer(server::versionRequest,
         info -> VersionResponseProto.newBuilder()
@@ -228,10 +222,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
   }
 
   @Override
-  public IsUpgradeFinalizedResponseProto isUpgradeFinalized(
-      RpcController controller, IsUpgradeFinalizedRequestProto request) {
+  public IsUpgradeFinalizedResponseProto isUpgradeFinalized(RpcController controller,
+      IsUpgradeFinalizedRequestProto request) throws ServiceException {
     if (!isAsyncRpc) {
-      return isUpgradeFinalized(controller, request);
+      return super.isUpgradeFinalized(controller, request);
     }
     asyncRouterServer(server::isUpgradeFinalized,
         isUpgradeFinalized -> IsUpgradeFinalizedResponseProto.newBuilder()
@@ -244,7 +238,7 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
       RpcController controller, IsRollingUpgradeRequestProto request)
       throws ServiceException {
     if (!isAsyncRpc) {
-      return isRollingUpgrade(controller, request);
+      return super.isRollingUpgrade(controller, request);
     }
     asyncRouterServer(server::isRollingUpgrade,
         isRollingUpgrade -> IsRollingUpgradeResponseProto.newBuilder()
@@ -254,9 +248,10 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
 
   @Override
   public GetNextSPSPathResponseProto getNextSPSPath(
-      RpcController controller, GetNextSPSPathRequestProto request) {
+      RpcController controller, GetNextSPSPathRequestProto request)
+      throws ServiceException {
     if (!isAsyncRpc) {
-      return getNextSPSPath(controller, request);
+      return super.getNextSPSPath(controller, request);
     }
     asyncRouterServer(server::getNextSPSPath,
         nextSPSPath -> GetNextSPSPathResponseProto.newBuilder()

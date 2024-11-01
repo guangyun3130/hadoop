@@ -33,11 +33,11 @@ public class RefreshUserMappingsProtocolServerSideTranslatorPB implements Refres
 
   private final RefreshUserMappingsProtocol impl;
 
-  protected final static RefreshUserToGroupsMappingsResponseProto 
+  private final static RefreshUserToGroupsMappingsResponseProto 
   VOID_REFRESH_USER_GROUPS_MAPPING_RESPONSE =
       RefreshUserToGroupsMappingsResponseProto.newBuilder().build();
 
-  protected final static RefreshSuperUserGroupsConfigurationResponseProto
+  private final static RefreshSuperUserGroupsConfigurationResponseProto
   VOID_REFRESH_SUPERUSER_GROUPS_CONFIGURATION_RESPONSE = 
       RefreshSuperUserGroupsConfigurationResponseProto.newBuilder()
       .build();
