@@ -34,6 +34,8 @@ import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetEditLogMa
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetEditLogManifestResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetMostRecentCheckpointTxIdRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetMostRecentCheckpointTxIdResponseProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetMostRecentNameNodeFileTxIdRequestProto;
+import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetMostRecentNameNodeFileTxIdResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetNextSPSPathRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetNextSPSPathResponseProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.GetTransactionIdRequestProto;
@@ -49,9 +51,12 @@ import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.RollEditLogR
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.StartCheckpointRequestProto;
 import org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos.StartCheckpointResponseProto;
 import org.apache.hadoop.hdfs.server.federation.router.RouterRpcServer;
+import org.apache.hadoop.hdfs.server.namenode.NNStorage;
 import org.apache.hadoop.hdfs.server.protocol.NamenodeProtocol;
 import org.apache.hadoop.thirdparty.protobuf.RpcController;
 import org.apache.hadoop.thirdparty.protobuf.ServiceException;
+
+import java.io.IOException;
 
 import static org.apache.hadoop.hdfs.protocolPB.AsyncRpcProtocolPBUtil.asyncRouterServer;
 
@@ -125,6 +130,20 @@ public class RouterNamenodeProtocolServerSideTranslatorPB
     }
     asyncRouterServer(server::getMostRecentCheckpointTxId,
         txid -> GetMostRecentCheckpointTxIdResponseProto
+            .newBuilder().setTxId(txid).build());
+    return null;
+  }
+
+  @Override
+  public GetMostRecentNameNodeFileTxIdResponseProto getMostRecentNameNodeFileTxId(
+      RpcController unused, GetMostRecentNameNodeFileTxIdRequestProto request)
+      throws ServiceException {
+    if (!isAsyncRpc) {
+      return super.getMostRecentNameNodeFileTxId(unused, request);
+    }
+    asyncRouterServer(() -> server.getMostRecentNameNodeFileTxId(
+        NNStorage.NameNodeFile.valueOf(request.getNameNodeFile())),
+        txid -> GetMostRecentNameNodeFileTxIdResponseProto
             .newBuilder().setTxId(txid).build());
     return null;
   }
