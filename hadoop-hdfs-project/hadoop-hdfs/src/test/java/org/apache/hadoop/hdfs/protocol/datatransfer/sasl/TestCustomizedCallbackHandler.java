@@ -18,7 +18,6 @@
 package org.apache.hadoop.hdfs.protocol.datatransfer.sasl;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.CommonConfigurationKeysPublic;
 import org.apache.hadoop.hdfs.client.HdfsClientConfigKeys;
 import org.apache.hadoop.hdfs.protocol.datatransfer.sasl.SaslDataTransferServer.SaslServerCallbackHandler;
 import org.apache.hadoop.security.CustomizedCallbackHandler;
@@ -34,6 +33,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.apache.hadoop.fs.CommonConfigurationKeysPublic.HADOOP_SECURITY_SASL_CUSTOMIZEDCALLBACKHANDLER_CLASS_KEY;
 
 /** For testing {@link CustomizedCallbackHandler}. */
 public class TestCustomizedCallbackHandler {
@@ -87,7 +88,7 @@ public class TestCustomizedCallbackHandler {
     assertCallbacks(callbacks);
 
     reset();
-    conf.setClass(CommonConfigurationKeysPublic.HADOOP_SECURITY_SASL_CUSTOMIZEDCALLBACKHANDLER_CLASS_KEY,
+    conf.setClass(HADOOP_SECURITY_SASL_CUSTOMIZEDCALLBACKHANDLER_CLASS_KEY,
         MyCallbackHandler.class, CustomizedCallbackHandler.class);
     new SaslRpcServer.SaslDigestCallbackHandler(null, null, conf).handle(callbacks);
     assertCallbacks(callbacks);

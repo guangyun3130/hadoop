@@ -37,7 +37,8 @@ public interface CustomizedCallbackHandler {
   class Cache {
     private static final Map<String, CustomizedCallbackHandler> MAP = new HashMap<>();
 
-    private static synchronized CustomizedCallbackHandler getSynchronously(String key, Configuration conf) {
+    private static synchronized CustomizedCallbackHandler getSynchronously(
+        String key, Configuration conf) {
       //check again synchronously
       final CustomizedCallbackHandler cached = MAP.get(key);
       if (cached != null) {
@@ -68,6 +69,8 @@ public interface CustomizedCallbackHandler {
     public static synchronized void clear() {
       MAP.clear();
     }
+
+    private Cache() { }
   }
 
   class DefaultHandler implements CustomizedCallbackHandler {
