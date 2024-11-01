@@ -852,8 +852,7 @@ public class TestBalancer {
       } else if(run == ExitStatus.NO_MOVE_BLOCK.getExitCode()) {
         LOG.error("Exit status returned: " + run);
         throw new Exception(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()));
-      }
-      else {
+      } else {
         assertEquals(ExitStatus.SUCCESS.getExitCode(), run);
       }
       waitForHeartBeat(totalDfsUsedSpace, totalCapacity, client, cluster);
@@ -920,7 +919,8 @@ public class TestBalancer {
           b.resetData(conf);
           if (r.getExitStatus() == ExitStatus.IN_PROGRESS) {
             done = false;
-          } else if (r.getExitStatus() != ExitStatus.SUCCESS || r.getExitStatus() != ExitStatus.NO_MOVE_BLOCK) {
+          } else if (r.getExitStatus() != ExitStatus.SUCCESS
+              || r.getExitStatus() != ExitStatus.NO_MOVE_BLOCK) {
             //must be an error status, return.
             return r.getExitStatus().getExitCode();
           } else {
@@ -2095,7 +2095,8 @@ public class TestBalancer {
 
   /**
    * Test balancer with excluded source nodes.
-   * Since newly added nodes will not be selected as a source all nodes will be included in balancing.
+   * Since newly added nodes will not be selected as a source,
+   * all nodes will be included in balancing.
    */
   @Test(timeout=100000)
   public void testBalancerExcludeSourceNodes() throws Exception {
