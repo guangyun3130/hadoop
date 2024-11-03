@@ -820,6 +820,7 @@ public class TestBalancerLongRunningTasks {
       });
       int r = Balancer.run(namenodes, nsIds, balancerParameters, conf);
       assertEquals(ExitStatus.SUCCESS.getExitCode(), r);
+      DefaultMetricsSystem.setMiniClusterMode(true);
     }
   }
 
