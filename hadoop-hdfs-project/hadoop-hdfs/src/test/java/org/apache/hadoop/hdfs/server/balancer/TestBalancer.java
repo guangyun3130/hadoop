@@ -560,6 +560,69 @@ public class TestBalancer {
     } while (!balanced);
   }
 
+  /**
+   * Wait until balanced: each datanode gives utilization within.
+   * Used when testing for included / excluded target and source nodes.
+   * BALANCE_ALLOWED_VARIANCE of average
+   * @throws IOException
+   * @throws TimeoutException
+   */
+  static void waitForBalancer(long totalUsedSpace, long totalCapacity,
+      ClientProtocol client, MiniDFSCluster cluster, BalancerParameters p,
+      int expectedExcludedSourceNodes, int expectedExcludedTargetNodes)
+      throws IOException, TimeoutException {
+    long timeout = TIMEOUT;
+    long failtime = (timeout <= 0L) ? Long.MAX_VALUE
+        : Time.monotonicNow() + timeout;
+    if (!p.getExcludedTargetNodes().isEmpty()) {
+      totalCapacity -= p.getExcludedTargetNodes().size() * CAPACITY;
+    }
+    final double avgUtilization = ((double)totalUsedSpace) / totalCapacity;
+    boolean balanced;
+    do {
+      DatanodeInfo[] datanodeReport =
+          client.getDatanodeReport(DatanodeReportType.ALL);
+      assertEquals(datanodeReport.length, cluster.getDataNodes().size());
+      balanced = true;
+      int actualExcludedSourceNodeCount = 0;
+      int actualExcludedTargetNodeCount = 0;
+      for (DatanodeInfo datanode : datanodeReport) {
+        double nodeUtilization =
+            ((double) datanode.getDfsUsed() + datanode.getNonDfsUsed()) /
+                datanode.getCapacity();
+        if(Dispatcher.Util.isExcluded(p.getExcludedTargetNodes(), datanode)) {
+          actualExcludedTargetNodeCount++;
+        }
+        if(!Dispatcher.Util.isIncluded(p.getTargetNodes(), datanode)) {
+          actualExcludedTargetNodeCount++;
+        }
+        if(Dispatcher.Util.isExcluded(p.getExcludedSourceNodes(), datanode)) {
+          actualExcludedSourceNodeCount++;
+        }
+        if(!Dispatcher.Util.isIncluded(p.getSourceNodes(), datanode)) {
+          actualExcludedSourceNodeCount++;
+        }
+        if (Math.abs(avgUtilization - nodeUtilization) > BALANCE_ALLOWED_VARIANCE) {
+          balanced = false;
+          if (Time.monotonicNow() > failtime) {
+            throw new TimeoutException(
+                "Rebalancing expected avg utilization to become "
+                    + avgUtilization + ", but on datanode " + datanode
+                    + " it remains at " + nodeUtilization
+                    + " after more than " + TIMEOUT + " msec.");
+          }
+          try {
+            Thread.sleep(100);
+          } catch (InterruptedException ignored) {
+          }
+          break;
+        }
+      }
+      assertEquals(expectedExcludedSourceNodes, actualExcludedSourceNodeCount);
+      assertEquals(expectedExcludedTargetNodes, actualExcludedTargetNodeCount);
+    } while (!balanced);
+  }
+
   String long2String(long[] array) {
     if (array.length == 0) {
       return "<empty>";
@@ -657,10 +720,10 @@ public class TestBalancer {
     }
   }
 
-  private void doTest(Configuration conf, long[] capacities, String[] racks,
+  private void doTest(Configuration conf,
       long newCapacity, String newRack, NewNodeInfo nodes,
       boolean useTool, boolean useFile, BalancerParameters p) throws Exception {
-    doTest(conf, capacities, racks, newCapacity, 0L, newRack, nodes,
+    doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, newCapacity, 0L, newRack, nodes,
         useTool, useFile, false, 0.3, p);
   }
 
@@ -867,9 +930,15 @@ public class TestBalancer {
         if(!p.getExcludedTargetNodes().isEmpty()) {
           expectedExcludedTargetNodes = p.getExcludedTargetNodes().size();
         }
-        waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p,
-            excludedNodes, checkExcludeNodesUtilization,
-            expectedExcludedSourceNodes, expectedExcludedTargetNodes);
+        if(expectedExcludedSourceNodes > 0 || expectedExcludedTargetNodes > 0) {
+          waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p,
+              expectedExcludedSourceNodes, expectedExcludedTargetNodes);
+        } else {
+          waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p,
+              excludedNodes,
+              checkExcludeNodesUtilization,
+              expectedExcludedSourceNodes, expectedExcludedTargetNodes);
+        }
       } catch (TimeoutException e) {
         // See HDFS-11682. NN may not get heartbeat to reflect the newest
         // block changes.
@@ -2027,7 +2096,7 @@ public class TestBalancer {
     pBuilder.setExcludedTargetNodes(excludeTargetNodes);
     BalancerParameters p = pBuilder.build();
     try {
-      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+      doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
               BalancerParameters.DEFAULT.getIncludedNodes()), false,
@@ -2053,7 +2122,7 @@ public class TestBalancer {
     pBuilder.setTargetNodes(includeTargetNodes);
     BalancerParameters p = pBuilder.build();
     try {
-      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+      doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
               BalancerParameters.DEFAULT.getIncludedNodes()), false,
@@ -2081,7 +2150,7 @@ public class TestBalancer {
     pBuilder.setSourceNodes(includeSourceNodes);
     BalancerParameters p = pBuilder.build();
     try {
-      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+      doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
               BalancerParameters.DEFAULT.getIncludedNodes()), false,
@@ -2109,7 +2178,7 @@ public class TestBalancer {
     pBuilder.setExcludedSourceNodes(excludeSourceNodes);
     BalancerParameters p = pBuilder.build();
     try {
-      doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, CAPACITY, RACK2,
+      doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
               BalancerParameters.DEFAULT.getIncludedNodes()), false,
