@@ -111,12 +111,12 @@ public abstract class SecretManager<T extends TokenIdentifier> {
   /**
    * The name of the hashing algorithm.
    */
-  private static final String DEFAULT_HMAC_ALGORITHM = "HmacSHA1";
+  private static final String DEFAULT_HMAC_ALGORITHM = "HmacSHA256";
 
   /**
    * The length of the random keys to use.
    */
-  private static final int KEY_LENGTH = 64;
+  private static final int KEY_LENGTH = 128;
 
   /**
    * A thread local store for the Macs.
