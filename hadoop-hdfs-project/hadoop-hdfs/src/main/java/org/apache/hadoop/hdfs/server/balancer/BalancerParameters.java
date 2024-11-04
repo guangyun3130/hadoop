@@ -65,6 +65,8 @@ final class BalancerParameters {
 
   private final boolean sortTopNodes;
 
+  private final int limitOverUtilizedNum;
+
   static final BalancerParameters DEFAULT = new BalancerParameters();
 
   private BalancerParameters() {
@@ -85,6 +87,7 @@ final class BalancerParameters {
     this.runDuringUpgrade = builder.runDuringUpgrade;
     this.runAsService = builder.runAsService;
     this.sortTopNodes = builder.sortTopNodes;
+    this.limitOverUtilizedNum = builder.limitOverUtilizedNum;
     this.hotBlockTimeInterval = builder.hotBlockTimeInterval;
   }
 
@@ -140,6 +143,10 @@ final class BalancerParameters {
     return this.sortTopNodes;
   }
 
+  int getLimitOverUtilizedNum() {
+    return this.limitOverUtilizedNum;
+  }
+
   long getHotBlockTimeInterval() {
     return this.hotBlockTimeInterval;
   }
@@ -152,13 +159,13 @@ final class BalancerParameters {
         + " #excluded source nodes = %s," + " #target nodes = %s,"
         + " #excluded target nodes = %s,"
         + " #blockpools = %s," + " run during upgrade = %s,"
-        + " sort top nodes = %s,"
+        + " sort top nodes = %s," + " limit overUtilized nodes num = %s,"
         + " hot block time interval = %s]",
         Balancer.class.getSimpleName(), getClass().getSimpleName(), policy,
         threshold, maxIdleIteration, excludedNodes.size(),
         includedNodes.size(), sourceNodes.size(), excludedSourceNodes.size(), targetNodes.size(),
         excludedTargetNodes.size(), blockpools.size(),
-        runDuringUpgrade, sortTopNodes, hotBlockTimeInterval);
+        runDuringUpgrade, sortTopNodes, limitOverUtilizedNum, hotBlockTimeInterval);
   }
 
   static class Builder {
@@ -177,6 +184,7 @@ final class BalancerParameters {
     private boolean runDuringUpgrade = false;
     private boolean runAsService = false;
     private boolean sortTopNodes = false;
+    private int limitOverUtilizedNum = Integer.MAX_VALUE;
     private long hotBlockTimeInterval = 0;
 
     Builder() {
@@ -249,6 +257,11 @@ final class BalancerParameters {
 
     Builder setSortTopNodes(boolean shouldSortTopNodes) {
       this.sortTopNodes = shouldSortTopNodes;
+      return this;
+    }
+
+    Builder setLimitOverUtilizedNum(int overUtilizedNum) {
+      this.limitOverUtilizedNum = overUtilizedNum;
       return this;
     }
 
