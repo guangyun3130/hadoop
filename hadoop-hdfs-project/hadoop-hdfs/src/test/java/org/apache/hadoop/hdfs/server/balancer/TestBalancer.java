@@ -43,10 +43,7 @@ import org.apache.hadoop.hdfs.protocol.ErasureCodingPolicy;
 import org.junit.AfterClass;
 
 import static org.apache.hadoop.hdfs.server.datanode.SimulatedFSDataset.CONFIG_PROPERTY_NONDFSUSED;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doAnswer;
@@ -474,7 +471,7 @@ public class TestBalancer {
       ClientProtocol client, MiniDFSCluster cluster, BalancerParameters p,
       int expectedExcludedNodes) throws IOException, TimeoutException {
     waitForBalancer(totalUsedSpace, totalCapacity, client,
-        cluster, p, expectedExcludedNodes, true, 0, 0);
+        cluster, p, expectedExcludedNodes, true);
   }
 
   /**
@@ -485,8 +482,7 @@ public class TestBalancer {
    */
   static void waitForBalancer(long totalUsedSpace, long totalCapacity,
       ClientProtocol client, MiniDFSCluster cluster, BalancerParameters p,
-      int expectedExcludedNodes, boolean checkExcludeNodesUtilization,
-      int expectedExcludedSourceNodes, int expectedExcludedTargetNodes)
+      int expectedExcludedNodes, boolean checkExcludeNodesUtilization)
       throws IOException, TimeoutException {
     long timeout = TIMEOUT;
     long failtime = (timeout <= 0L) ? Long.MAX_VALUE
@@ -526,18 +522,6 @@ public class TestBalancer {
           actualExcludedNodeCount++;
           continue;
         }
-        if(Dispatcher.Util.isExcluded(p.getExcludedTargetNodes(), datanode)) {
-          actualExcludedTargetNodeCount++;
-        }
-        if(!Dispatcher.Util.isIncluded(p.getTargetNodes(), datanode)) {
-          actualExcludedTargetNodeCount++;
-        }
-        if(Dispatcher.Util.isExcluded(p.getExcludedSourceNodes(), datanode)) {
-          actualExcludedSourceNodeCount++;
-        }
-        if(!Dispatcher.Util.isIncluded(p.getSourceNodes(), datanode)) {
-          actualExcludedSourceNodeCount++;
-        }
         if (Math.abs(avgUtilization - nodeUtilization) > BALANCE_ALLOWED_VARIANCE) {
           balanced = false;
           if (Time.monotonicNow() > failtime) {
@@ -555,8 +539,6 @@ public class TestBalancer {
         }
       }
       assertEquals(expectedExcludedNodes,actualExcludedNodeCount);
-      assertEquals(expectedExcludedSourceNodes, actualExcludedSourceNodeCount);
-      assertEquals(expectedExcludedTargetNodes, actualExcludedTargetNodeCount);
     } while (!balanced);
   }
 
@@ -936,8 +918,7 @@ public class TestBalancer {
         } else {
           waitForBalancer(totalUsedSpace, totalCapacity, client, cluster, p,
               excludedNodes,
-              checkExcludeNodesUtilization,
-              expectedExcludedSourceNodes, expectedExcludedTargetNodes);
+              checkExcludeNodesUtilization);
         }
       } catch (TimeoutException e) {
         // See HDFS-11682. NN may not get heartbeat to reflect the newest
@@ -2085,9 +2066,11 @@ public class TestBalancer {
 
   /**
    * Test balancer with excluded target nodes.
+   * One of three added nodes is excluded in the target nodes list.
+   * Balancer should only move blocks to the two included nodes.
    */
   @Test(timeout=100000)
-  public void testBalancerExcludeTargetNodes() throws Exception {
+  public void testBalancerExcludeTargetNodesNoMoveBlock() throws Exception {
     final Configuration conf = new HdfsConfiguration();
     initConf(conf);
     Set<String> excludeTargetNodes = new HashSet<>();
@@ -2095,24 +2078,24 @@ public class TestBalancer {
     BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
     pBuilder.setExcludedTargetNodes(excludeTargetNodes);
     BalancerParameters p = pBuilder.build();
-    try {
+    Exception exception = assertThrows(Exception.class, () -> {
       doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
-              BalancerParameters.DEFAULT.getIncludedNodes()), false,
-          false, p);
-    } catch (Exception e) {
-      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
-        throw e;
-      }
-    }
+              BalancerParameters.DEFAULT.getIncludedNodes()),
+          false, false, p);
+    });
+
+    assertTrue(exception.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
   }
 
   /**
    * Test balancer with included target nodes.
+   * Two of three added nodes are included in the target nodes list.
+   * Balancer should only move blocks to the included nodes.
    */
   @Test(timeout=100000)
-  public void testBalancerIncludeTargetNodes() throws Exception {
+  public void testBalancerIncludeTargetNodesNoBlockMove() throws Exception {
     final Configuration conf = new HdfsConfiguration();
     initConf(conf);
     Set<String> includeTargetNodes = new HashSet<>();
@@ -2121,17 +2104,38 @@ public class TestBalancer {
     BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
     pBuilder.setTargetNodes(includeTargetNodes);
     BalancerParameters p = pBuilder.build();
-    try {
+    Exception exception = assertThrows(Exception.class, () -> {
       doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
-              BalancerParameters.DEFAULT.getIncludedNodes()), false,
-          false, p);
-    } catch (Exception e) {
-      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
-        throw e;
-      }
-    }
+              BalancerParameters.DEFAULT.getIncludedNodes()),
+          false, false, p);
+    });
+
+    assertTrue(exception.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
+  }
+
+  /**
+   * Test balancer with included target nodes.
+   * Three of three added nodes are included in the target nodes list.
+   * Balancer should exit with success code.
+   */
+  @Test(timeout=100000)
+  public void testBalancerIncludeTargetNodesSuccess() throws Exception {
+    final Configuration conf = new HdfsConfiguration();
+    initConf(conf);
+    Set<String> includeTargetNodes = new HashSet<>();
+    includeTargetNodes.add("datanodeX");
+    includeTargetNodes.add("datanodeY");
+    includeTargetNodes.add("datanodeZ");
+    BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
+    pBuilder.setTargetNodes(includeTargetNodes);
+    BalancerParameters p = pBuilder.build();
+    doTest(conf, CAPACITY, RACK2,
+        new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
+            BalancerParameters.DEFAULT.getExcludedNodes(),
+            BalancerParameters.DEFAULT.getIncludedNodes()),
+        false, false, p);
   }
 
   /**
@@ -2139,7 +2143,7 @@ public class TestBalancer {
    * Since newly added nodes are the only included source nodes no balancing will occur.
    */
   @Test(timeout=100000)
-  public void testBalancerIncludeSourceNodes() throws Exception {
+  public void testBalancerIncludeSourceNodesNoMoveBlock() throws Exception {
     final Configuration conf = new HdfsConfiguration();
     initConf(conf);
     Set<String> includeSourceNodes = new HashSet<>();
@@ -2149,17 +2153,15 @@ public class TestBalancer {
     BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
     pBuilder.setSourceNodes(includeSourceNodes);
     BalancerParameters p = pBuilder.build();
-    try {
+    Exception exception = assertThrows(Exception.class, () -> {
       doTest(conf, CAPACITY, RACK2,
           new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
               BalancerParameters.DEFAULT.getExcludedNodes(),
-              BalancerParameters.DEFAULT.getIncludedNodes()), false,
-          false, p);
-    } catch (Exception e) {
-      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
-        throw e;
-      }
-    }
+              BalancerParameters.DEFAULT.getIncludedNodes()),
+          false, false, p);
+    });
+
+    assertTrue(exception.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
   }
 
   /**
@@ -2177,17 +2179,11 @@ public class TestBalancer {
     BalancerParameters.Builder pBuilder = new BalancerParameters.Builder();
     pBuilder.setExcludedSourceNodes(excludeSourceNodes);
     BalancerParameters p = pBuilder.build();
-    try {
-      doTest(conf, CAPACITY, RACK2,
-          new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
-              BalancerParameters.DEFAULT.getExcludedNodes(),
-              BalancerParameters.DEFAULT.getIncludedNodes()), false,
-          false, p);
-    } catch (Exception e) {
-      if (!e.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode()))) {
-        throw e;
-      }
-    }
+    doTest(conf, CAPACITY, RACK2,
+        new HostNameBasedNodes(new String[]{"datanodeX", "datanodeY", "datanodeZ"},
+            BalancerParameters.DEFAULT.getExcludedNodes(),
+            BalancerParameters.DEFAULT.getIncludedNodes()), false,
+        false, p);
   }
 
 
