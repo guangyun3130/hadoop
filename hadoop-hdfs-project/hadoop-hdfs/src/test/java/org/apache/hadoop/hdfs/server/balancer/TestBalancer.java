@@ -2095,7 +2095,7 @@ public class TestBalancer {
    * Balancer should only move blocks to the included nodes.
    */
   @Test(timeout=100000)
-  public void testBalancerIncludeTargetNodesNoBlockMove() throws Exception {
+  public void testBalancerIncludeTargetNodesNoMoveBlock() throws Exception {
     final Configuration conf = new HdfsConfiguration();
     initConf(conf);
     Set<String> includeTargetNodes = new HashSet<>();
