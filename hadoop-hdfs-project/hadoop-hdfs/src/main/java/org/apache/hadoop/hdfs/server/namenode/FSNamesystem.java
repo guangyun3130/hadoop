@@ -4739,7 +4739,7 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
     return blockManager.getMissingReplOneBlocksCount();
   }
 
-  @Metric({"BadlyDistributedBlocks", "Number of Badly Distributed Blocks"})
+  @Metric({"BadlyDistBlocks", "Number of Badly Distributed Blocks"})
   public long getBadlyDistributedBlocksCount() {
     // not locking
     return blockManager.getBadlyDistributedBlocksCount();

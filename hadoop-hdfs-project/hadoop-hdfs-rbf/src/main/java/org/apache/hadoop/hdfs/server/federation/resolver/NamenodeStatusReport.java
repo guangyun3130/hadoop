@@ -395,6 +395,7 @@ public class NamenodeStatusReport {
    * @param numCorruptFiles number of corrupt files.
    * @param numOfMissingBlocksWithReplicationFactorOne number of missing
    * blocks with rep one.
+   * @param numOfBadlyDistributedBlocks number of badly distributed blocks
    * @param highestPriorityLowRedundancyRepBlocks number of high priority low
    * redundancy rep blocks.
    * @param highPriorityLowRedundancyECBlocks number of high priority low
