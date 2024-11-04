@@ -37,7 +37,6 @@ import static org.apache.hadoop.hdfs.server.federation.router.RBFConfigKeys.DN_R
 import static org.apache.hadoop.hdfs.server.federation.router.RBFConfigKeys.DFS_ROUTER_FEDERATION_RENAME_OPTION;
 import static org.apache.hadoop.hdfs.server.federation.router.RBFConfigKeys.DFS_ROUTER_FEDERATION_RENAME_OPTION_DEFAULT;
 import static org.apache.hadoop.hdfs.server.federation.router.RouterFederationRename.RouterRenameOption;
-import static org.apache.hadoop.hdfs.server.federation.router.RouterRpcClient.isExpectedClass;
 import static org.apache.hadoop.hdfs.server.federation.router.async.AsyncUtil.asyncApply;
 import static org.apache.hadoop.hdfs.server.federation.router.async.AsyncUtil.asyncCatch;
 import static org.apache.hadoop.hdfs.server.federation.router.async.AsyncUtil.asyncComplete;
