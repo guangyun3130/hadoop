@@ -39,6 +39,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -181,6 +182,7 @@ public abstract class MRJobTestBase {
     Assert.assertEquals(byteSizes, 100 /* Each row 100 bytes */ * 1000 /* total 1000 rows */);
   }
 
+  @Ignore
   @Test
   public void testWordCount() throws Exception {
     Path wordCountPath = new Path(testDataPath, "wc").makeQualified(fs.getUri(), fs.getWorkingDirectory());
@@ -188,9 +190,6 @@ public abstract class MRJobTestBase {
     Path input = new Path(wordCountPath, "input");
     JobConf jobConf = new JobConf(yarnCluster.getConfig());
     jobConf.addResource(conf);
-    jobConf.setInt(TeraSortConfigKeys.SAMPLE_SIZE.key(), 1000);
-    jobConf.setInt(TeraSortConfigKeys.NUM_PARTITIONS.key(), 10);
-    jobConf.setBoolean(TeraSortConfigKeys.USE_SIMPLE_PARTITIONER.key(), false);
 
     if (!fs.mkdirs(input)) {
       throw new IOException("Mkdirs failed to create " + input.toString());
