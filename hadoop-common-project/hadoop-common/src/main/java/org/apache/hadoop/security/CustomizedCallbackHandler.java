@@ -15,23 +15,72 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.hdfs.protocol.datatransfer.sasl;
+package org.apache.hadoop.security;
+
+import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** For handling customized {@link Callback}. */
 public interface CustomizedCallbackHandler {
-  class DefaultHandler implements CustomizedCallbackHandler{
+  Logger LOG = LoggerFactory.getLogger(CustomizedCallbackHandler.class);
+
+  class Cache {
+    private static final Map<String, CustomizedCallbackHandler> MAP = new HashMap<>();
+
+    private static synchronized CustomizedCallbackHandler getSynchronously(
+        String key, Configuration conf) {
+      //check again synchronously
+      final CustomizedCallbackHandler cached = MAP.get(key);
+      if (cached != null) {
+        return cached; //cache hit
+      }
+
+      //cache miss
+      final Class<?> clazz = conf.getClass(key, DefaultHandler.class);
+      LOG.info("{} = {}", key, clazz);
+      final Object created;
+      try {
+        created = clazz.newInstance();
+      } catch (Exception e) {
+        throw new IllegalStateException("Failed to create a new instance of " + clazz, e);
+      }
+
+      final CustomizedCallbackHandler handler = created instanceof CustomizedCallbackHandler ?
+          (CustomizedCallbackHandler) created : CustomizedCallbackHandler.delegate(created);
+      MAP.put(key, handler);
+      return handler;
+    }
+
+    private static CustomizedCallbackHandler get(String key, Configuration conf) {
+      final CustomizedCallbackHandler cached = MAP.get(key);
+      return cached != null ? cached : getSynchronously(key, conf);
+    }
+
+    public static synchronized void clear() {
+      MAP.clear();
+    }
+
+    private Cache() { }
+  }
+
+  class DefaultHandler implements CustomizedCallbackHandler {
     @Override
     public void handleCallbacks(List<Callback> callbacks, String username, char[] password)
         throws UnsupportedCallbackException {
       if (!callbacks.isEmpty()) {
-        throw new UnsupportedCallbackException(callbacks.get(0));
+        final Callback cb = callbacks.get(0);
+        throw new UnsupportedCallbackException(callbacks.get(0),
+            "Unsupported callback: " + (cb == null ? null : cb.getClass()));
       }
     }
   }
@@ -53,6 +102,10 @@ public interface CustomizedCallbackHandler {
         throw new IOException("Failed to invoke " + method, e);
       }
     };
+  }
+
+  static CustomizedCallbackHandler get(String key, Configuration conf) {
+    return Cache.get(key, conf);
   }
 
   void handleCallbacks(List<Callback> callbacks, String name, char[] password)
