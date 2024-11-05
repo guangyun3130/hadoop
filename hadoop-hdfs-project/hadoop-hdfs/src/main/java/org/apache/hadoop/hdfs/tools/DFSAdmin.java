@@ -123,7 +123,7 @@ public class DFSAdmin extends FsShell {
   private static final Logger LOG = LoggerFactory.getLogger(DFSAdmin.class);
 
   /**
-   * An abstract class for the execution of a file system command
+   * An abstract class for the execution of a file system command.
    */
   abstract private static class DFSAdminCommand extends Command {
     protected DistributedFileSystem dfs;

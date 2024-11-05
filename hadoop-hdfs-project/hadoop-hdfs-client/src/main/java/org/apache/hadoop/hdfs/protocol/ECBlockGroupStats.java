@@ -108,7 +108,7 @@ public final class ECBlockGroupStats {
             getBytesInFutureBlockGroups())
         .append(", PendingDeletionBlocks=").append(
             getPendingDeletionBlocks())
-        .append(" , badlyDistributedBlocks=").append(getBadlyDistributedBlocks());
+        .append(" , BadlyDistributedBlocks=").append(getBadlyDistributedBlocks());
     if (hasHighestPriorityLowRedundancyBlocks()) {
       statsBuilder.append(", HighestPriorityLowRedundancyBlocks=")
           .append(getHighestPriorityLowRedundancyBlocks());

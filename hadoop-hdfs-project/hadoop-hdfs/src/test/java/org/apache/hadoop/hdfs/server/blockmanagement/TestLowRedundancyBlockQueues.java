@@ -179,7 +179,7 @@ public class TestLowRedundancyBlockQueues {
     BlockInfo block_very_low_redundancy = genBlockInfo(3);
     BlockInfo block_corrupt = genBlockInfo(4);
     BlockInfo block_corrupt_repl_one = genBlockInfo(5);
-    BlockInfo block_badly_distributed = genBlockInfo(6);
+    BlockInfo blockBadlyDistributed = genBlockInfo(6);
 
     // Add a block with a single entry
     assertAdded(queues, block1, 1, 0, 3);
@@ -227,10 +227,10 @@ public class TestLowRedundancyBlockQueues {
     verifyBlockStats(queues, 2, 3, 2, 0, 0, 0, 0, 1);
 
     // insert a block with too many replicas to make badly distributed
-    assertAdded(queues, block_badly_distributed, 2, 0, 1);
-    assertInLevel(queues, block_badly_distributed,
+    assertAdded(queues, blockBadlyDistributed, 2, 0, 1);
+    assertInLevel(queues, blockBadlyDistributed,
         LowRedundancyBlocks.QUEUE_REPLICAS_BADLY_DISTRIBUTED);
-    verifyBlockStats(queues, 2, 3, 2, 0, 0, 0, 0, 2);
+    verifyBlockStats(queues, 3, 3, 2, 0, 0, 0, 0, 2);
   }
 
   @Test

@@ -782,7 +782,7 @@ public class BlockManager implements BlockStatsMXBean {
     return storagePolicySuite;
   }
 
-  /** get the BlockTokenSecretManager */
+  /** @return get the BlockTokenSecretManager */
   @VisibleForTesting
   public BlockTokenSecretManager getBlockTokenSecretManager() {
     return blockTokenSecretManager;

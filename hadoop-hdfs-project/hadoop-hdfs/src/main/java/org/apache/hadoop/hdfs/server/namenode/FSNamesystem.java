@@ -4836,7 +4836,7 @@ public class FSNamesystem implements Namesystem, FSNamesystemMBean,
     return new ECBlockGroupStats(getLowRedundancyECBlockGroups(),
         getCorruptECBlockGroups(), getMissingECBlockGroups(),
         getBytesInFutureECBlockGroups(), getPendingDeletionECBlocks(),
-        getHighestPriorityLowRedundancyECBlocks());
+        getBadlyDistributedBlocks(), getHighestPriorityLowRedundancyECBlocks());
   }
 
   @Override // FSNamesystemMBean
