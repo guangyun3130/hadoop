@@ -705,7 +705,8 @@ public class TestBalancer {
   private void doTest(Configuration conf,
       long newCapacity, String newRack, NewNodeInfo nodes,
       boolean useTool, boolean useFile, BalancerParameters p) throws Exception {
-    doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1}, newCapacity, 0L, newRack, nodes,
+    doTest(conf, new long[]{CAPACITY, CAPACITY}, new String[]{RACK0, RACK1},
+        newCapacity, 0L, newRack, nodes,
         useTool, useFile, false, 0.3, p);
   }
 
@@ -2086,7 +2087,8 @@ public class TestBalancer {
           false, false, p);
     });
 
-    assertTrue(exception.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
+    assertTrue(exception.getMessage()
+        .contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
   }
 
   /**
@@ -2112,7 +2114,8 @@ public class TestBalancer {
           false, false, p);
     });
 
-    assertTrue(exception.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
+    assertTrue(exception.getMessage()
+        .contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
   }
 
   /**
@@ -2161,7 +2164,8 @@ public class TestBalancer {
           false, false, p);
     });
 
-    assertTrue(exception.getMessage().contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
+    assertTrue(exception.getMessage()
+        .contains(String.valueOf(ExitStatus.NO_MOVE_BLOCK.getExitCode())));
   }
 
   /**
