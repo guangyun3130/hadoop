@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity;
 
+import org.apache.hadoop.test.GenericTestUtils;
 import org.apache.hadoop.thirdparty.com.google.common.collect.ImmutableList;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.Container;
@@ -1096,9 +1097,8 @@ public class TestCapacitySchedulerAsyncScheduling {
       cs.setResourceCalculator(null);
 
       // wait for RM to be shutdown until timeout
-      boolean done = TestUtils.waitForUntilTimeout(
-          noExitSecurityManager::isCheckExitCalled, 100, 5000);
-      Assert.assertTrue("RM should be shut down, but nothing happened", done);
+      GenericTestUtils.waitFor(noExitSecurityManager::isCheckExitCalled,
+          100, 5000);
     } finally {
       System.setSecurityManager(originalSecurityManager);
       rm.stop();
