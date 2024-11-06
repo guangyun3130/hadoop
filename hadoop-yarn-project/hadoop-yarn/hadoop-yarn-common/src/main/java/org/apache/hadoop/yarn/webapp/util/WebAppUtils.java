@@ -512,13 +512,18 @@ public class WebAppUtils {
       char[] passchars = conf.getPassword(alias);
       if (passchars != null) {
         password = new String(passchars);
-        LOG.debug("Successful password retrieval for alias: {}", alias);
+        LOG.info("Successful password retrieval for alias: {}", alias);
       }
     }
     catch (IOException ioe) {
       password = null;
       LOG.error("Unable to retrieve password for alias: {}", alias, ioe);
     }
+
+    if (password == null) {
+      LOG.error("Password does not exist for alias: {}", alias);
+    }
+
     return password;
   }
 
