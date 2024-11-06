@@ -504,8 +504,6 @@ public class TestBalancer {
       assertEquals(datanodeReport.length, cluster.getDataNodes().size());
       balanced = true;
       int actualExcludedNodeCount = 0;
-      int actualExcludedSourceNodeCount = 0;
-      int actualExcludedTargetNodeCount = 0;
       for (DatanodeInfo datanode : datanodeReport) {
         double nodeUtilization =
             ((double) datanode.getDfsUsed() + datanode.getNonDfsUsed()) /
