@@ -226,8 +226,15 @@ public class TestObserverWithRouter {
 
     long rpcCountForActive = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getActiveProxyOps();
-    // Create and complete calls should be sent to active
-    assertEquals("Two calls should be sent to active", 2, rpcCountForActive);
+
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // Create and complete calls should be sent to active
+      assertEquals("Two calls should be sent to active", 2, rpcCountForActive);
+    } else {
+      // Create, complete and 2 msyncs calls should be sent to active
+      assertEquals("Four calls should be sent to active", 4, rpcCountForActive);
+    }
 
     long rpcCountForObserver = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getObserverProxyOps();
@@ -258,8 +265,14 @@ public class TestObserverWithRouter {
 
     long rpcCountForActive = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getActiveProxyOps();
-    // Create, complete and getBlockLocations calls should be sent to active
-    assertEquals("Three calls should be sent to active", 3, rpcCountForActive);
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // Create, complete and getBlockLocations calls should be sent to active
+      assertEquals("Three calls should be sent to active", 3, rpcCountForActive);
+    } else {
+      // Create, complete, 2 msyncs and getBlockLocations calls should be sent to active
+      assertEquals("Five calls should be sent to active", 5, rpcCountForActive);
+    }
 
     long rpcCountForObserver = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getObserverProxyOps();
@@ -283,8 +296,14 @@ public class TestObserverWithRouter {
 
     long rpcCountForActive = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getActiveProxyOps();
-    // Create, complete and read calls should be sent to active
-    assertEquals("Three calls should be sent to active", 3, rpcCountForActive);
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // Create, complete and read calls should be sent to active
+      assertEquals("Three calls should be sent to active", 3, rpcCountForActive);
+    } else {
+      // Create, complete, msync and read calls should be sent to active
+      assertEquals("Four calls should be sent to active", 4, rpcCountForActive);
+    }
 
     long rpcCountForObserver = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getObserverProxyOps();
@@ -310,9 +329,14 @@ public class TestObserverWithRouter {
 
     long rpcCountForActive = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getActiveProxyOps();
-    // Create, complete and getBlockLocation calls should be sent to active
-    assertEquals("Three calls should be sent to active", 3,
-        rpcCountForActive);
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // Create, complete and getBlockLocation calls should be sent to active
+      assertEquals("Three calls should be sent to active", 3, rpcCountForActive);
+    } else {
+      // Create, complete, 2 msyncs and getBlockLocation calls should be sent to active
+      assertEquals("Five calls should be sent to active", 5, rpcCountForActive);
+    }
 
     long rpcCountForObserver = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getObserverProxyOps();
@@ -340,9 +364,15 @@ public class TestObserverWithRouter {
     long expectedActiveRpc = 2;
     long expectedObserverRpc = 1;
 
-    // Create and complete calls should be sent to active
-    assertEquals("Two calls should be sent to active",
-        expectedActiveRpc, rpcCountForActive);
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // Create and complete calls should be sent to active
+      assertEquals("Two calls should be sent to active", expectedActiveRpc, rpcCountForActive);
+    } else {
+      // Create, complete and 2 msyncs calls should be sent to active
+      expectedActiveRpc += 2;
+      assertEquals("Four calls should be sent to active", expectedActiveRpc, rpcCountForActive);
+    }
 
     long rpcCountForObserver = routerContext.getRouter()
         .getRpcServer().getRPCMetrics().getObserverProxyOps();
@@ -476,11 +506,14 @@ public class TestObserverWithRouter {
     long rpcCountForActive = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getActiveProxyOps();
 
-    // Create, complete and getBlockLocations
-    // calls should be sent to active.
-    assertEquals("Three calls should be send to active",
-        3, rpcCountForActive);
-
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // Create, complete and getBlockLocations calls should be sent to active
+      assertEquals("Three calls should be sent to active", 3, rpcCountForActive);
+    } else {
+      // Create, complete, 2 msyncs and getBlockLocations calls should be sent to active
+      assertEquals("Five calls should be sent to active", 5, rpcCountForActive);
+    }
 
     boolean hasUnavailable = false;
     for(String ns : cluster.getNameservices()) {
@@ -540,13 +573,20 @@ public class TestObserverWithRouter {
 
     rpcCountForActive = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getActiveProxyOps();
-    // getListingCall sent to active.
-    assertEquals("Only one call should be sent to active", 1, rpcCountForActive);
-
     rpcCountForObserver = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getObserverProxyOps();
-    // getList call should be sent to observer
-    assertEquals("No calls should be sent to observer", 0, rpcCountForObserver);
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // getList call sent to active.
+      assertEquals("Only one call should be sent to active", 1, rpcCountForActive);
+      // No call should send to observer
+      assertEquals("No calls should be sent to observer", 0, rpcCountForObserver);
+    } else {
+      // 2 msyncs calls should be sent to active
+      assertEquals("Two calls should be sent to active", 2, rpcCountForActive);
+      // getList call should be sent to observer
+      assertEquals("One call should be sent to observer", 1, rpcCountForObserver);
+    }
   }
 
   @Test
@@ -735,10 +775,18 @@ public class TestObserverWithRouter {
     long rpcCountForObserver = routerContext.getRouter().getRpcServer()
         .getRPCMetrics().getObserverProxyOps();
 
-    // First list status goes to active
-    assertEquals("One call should be sent to active", 1, rpcCountForActive);
-    // Last two listStatuses  go to observer.
-    assertEquals("Two calls should be sent to observer", 2, rpcCountForObserver);
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      // First list status goes to active
+      assertEquals("One call should be sent to active", 1, rpcCountForActive);
+      // Last two listStatuses go to observer.
+      assertEquals("Two calls should be sent to observer", 2, rpcCountForObserver);
+    } else {
+      // 2 msyncs status go to active
+      assertEquals("Two calls should be sent to active", 2, rpcCountForActive);
+      // All listStatuses go to observer.
+      assertEquals("Three calls should be sent to observer", 3, rpcCountForObserver);
+    }
 
     Assertions.assertSame(namespaceStateId1, namespaceStateId2,
         "The same object should be used in the shared RouterStateIdContext");
@@ -770,8 +818,14 @@ public class TestObserverWithRouter {
     Thread.sleep(recordExpiry * 2);
 
     List<String> namespace2 = routerStateIdContext.getNamespaces();
-    assertEquals(1, namespace1.size());
-    assertEquals("ns0", namespace1.get(0));
+    if (fileSystem.getConf().getBoolean(
+        HdfsClientConfigKeys.DFS_RBF_OBSERVER_READ_ENABLE, false)){
+      assertEquals(1, namespace1.size());
+      assertEquals("ns0", namespace1.get(0));
+    } else {
+      // 2 msyncs status go to active
+      assertEquals(2, namespace1.size());
+    }
     assertTrue(namespace2.isEmpty());
   }
 
